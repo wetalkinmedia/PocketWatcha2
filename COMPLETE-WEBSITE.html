@@ -1,0 +1,1389 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart Money Allocation Calculator</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 1rem;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 24px;
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.2);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #60a5fa 0%, #3b82f6 50%, #06b6d4 100%);
+            padding: 2rem;
+            text-align: center;
+            color: white;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.1);
+        }
+
+        .header-content {
+            position: relative;
+            z-index: 10;
+        }
+
+        .header h1 {
+            font-size: 3rem;
+            font-weight: bold;
+            margin-bottom: 0.75rem;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .header p {
+            font-size: 1.25rem;
+            opacity: 0.9;
+            font-weight: 500;
+        }
+
+        .auth-button {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border-radius: 50px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .auth-button:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        }
+
+        .form-section {
+            padding: 2rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 1.125rem;
+            font-weight: 600;
+            color: #374151;
+            margin-bottom: 0.5rem;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 1rem;
+            border: 2px solid #e5e7eb;
+            border-radius: 12px;
+            font-size: 1rem;
+            background: white;
+            transition: all 0.3s ease;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1);
+            transform: translateY(-2px);
+        }
+
+        .calculate-btn {
+            width: 100%;
+            padding: 1.25rem 1.5rem;
+            background: linear-gradient(135deg, #9333ea 0%, #7c3aed 50%, #6d28d9 100%);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 1.25rem;
+            font-weight: bold;
+            cursor: pointer;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            transition: all 0.3s ease;
+        }
+
+        .calculate-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(147, 51, 234, 0.4);
+        }
+
+        .results {
+            margin: 2rem;
+            padding: 2rem;
+            background: linear-gradient(135deg, #ec4899 0%, #ef4444 50%, #f59e0b 100%);
+            border-radius: 16px;
+            color: white;
+            position: relative;
+            overflow: hidden;
+            display: none;
+        }
+
+        .results::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.1);
+        }
+
+        .results-content {
+            position: relative;
+            z-index: 10;
+        }
+
+        .results h2 {
+            font-size: 2rem;
+            font-weight: bold;
+            text-align: center;
+            margin-bottom: 2rem;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .allocation-item {
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(10px);
+            padding: 1.5rem;
+            border-radius: 16px;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            margin-bottom: 1.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .allocation-item:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-2px);
+        }
+
+        .allocation-header {
+            display: flex;
+            justify-content: between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .allocation-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .allocation-percentage {
+            background: rgba(255, 255, 255, 0.4);
+            padding: 0.5rem 1rem;
+            border-radius: 50px;
+            font-weight: bold;
+            font-size: 1.125rem;
+        }
+
+        .allocation-amount {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #fef3c7;
+            margin-bottom: 1rem;
+        }
+
+        .allocation-advice {
+            color: rgba(255, 255, 255, 0.9);
+            font-style: italic;
+            line-height: 1.6;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.3);
+            max-width: 500px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            background: linear-gradient(135deg, #3b82f6 0%, #9333ea 100%);
+            padding: 1.5rem;
+            color: white;
+            position: relative;
+        }
+
+        .modal-header h2 {
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+        }
+
+        .modal-close {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            background: none;
+            border: none;
+            color: white;
+            font-size: 1.5rem;
+            cursor: pointer;
+            width: 2rem;
+            height: 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            transition: background 0.3s ease;
+        }
+
+        .modal-close:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .modal-body {
+            padding: 1.5rem;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .btn-primary {
+            width: 100%;
+            padding: 0.75rem 1.5rem;
+            background: linear-gradient(135deg, #3b82f6 0%, #9333ea 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4);
+        }
+
+        .btn-secondary {
+            background: none;
+            border: none;
+            color: #3b82f6;
+            font-weight: 600;
+            cursor: pointer;
+            padding: 0.5rem;
+            text-align: center;
+            width: 100%;
+            margin-top: 1rem;
+        }
+
+        .btn-secondary:hover {
+            color: #9333ea;
+        }
+
+        .user-profile {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 16px;
+            padding: 1.5rem;
+            margin: 0 2rem 1.5rem 2rem;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            display: none;
+        }
+
+        .profile-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .profile-title {
+            font-size: 1.25rem;
+            font-weight: bold;
+            color: #374151;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .profile-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+        }
+
+        .profile-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.875rem;
+            color: #6b7280;
+        }
+
+        .test-panel {
+            position: fixed;
+            bottom: 1rem;
+            right: 1rem;
+            z-index: 999;
+        }
+
+        .test-toggle {
+            background: #374151;
+            color: white;
+            border: none;
+            padding: 0.75rem;
+            border-radius: 50%;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+            transition: all 0.3s ease;
+        }
+
+        .test-toggle:hover {
+            background: #4b5563;
+            transform: translateY(-2px);
+        }
+
+        .test-content {
+            display: none;
+            position: absolute;
+            bottom: 4rem;
+            right: 0;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+            width: 350px;
+            max-height: 400px;
+            overflow: hidden;
+        }
+
+        .test-header {
+            background: #374151;
+            color: white;
+            padding: 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .test-body {
+            padding: 1rem;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .test-credentials {
+            background: #dbeafe;
+            padding: 0.75rem;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+        }
+
+        .test-credentials h4 {
+            color: #1e40af;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .test-credentials p {
+            color: #1d4ed8;
+            font-size: 0.875rem;
+            margin-bottom: 0.25rem;
+        }
+
+        .message {
+            padding: 0.75rem;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            text-align: center;
+            font-weight: 600;
+        }
+
+        .message.success {
+            background: #d1fae5;
+            color: #065f46;
+        }
+
+        .message.error {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2rem;
+            }
+
+            .header p {
+                font-size: 1rem;
+            }
+
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+
+            .auth-button {
+                position: static;
+                margin: 1rem auto 0;
+            }
+
+            .allocation-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 0.5rem;
+            }
+
+            .test-content {
+                width: 300px;
+                right: -150px;
+            }
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        .loading {
+            opacity: 0.6;
+            pointer-events: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <div class="header-content">
+                <h1>💰 Smart Money Allocator</h1>
+                <p>Turn your money into a well-balanced financial smoothie!</p>
+            </div>
+            <button class="auth-button" id="authButton">
+                <span id="authIcon">👤</span>
+                <span id="authText">Login</span>
+            </button>
+        </div>
+
+        <!-- User Profile (hidden by default) -->
+        <div class="user-profile" id="userProfile">
+            <div class="profile-header">
+                <h3 class="profile-title">
+                    <span>👤</span>
+                    <span id="welcomeText">Welcome!</span>
+                </h3>
+                <button class="btn-primary" onclick="editProfile()" style="width: auto; padding: 0.5rem 1rem;">
+                    ✏️ Edit Profile
+                </button>
+            </div>
+            <div class="profile-grid" id="profileGrid">
+                <!-- Profile data will be populated here -->
+            </div>
+        </div>
+
+        <!-- Calculator Form -->
+        <div class="form-section">
+            <div class="form-group">
+                <label for="currency">💱 Currency</label>
+                <select class="form-control" id="currency">
+                    <option value="USD">🇺🇸 USD - US Dollar</option>
+                    <option value="EUR">🇪🇺 EUR - Euro</option>
+                    <option value="GBP">🇬🇧 GBP - British Pound</option>
+                    <option value="CAD">🇨🇦 CAD - Canadian Dollar</option>
+                    <option value="AUD">🇦🇺 AUD - Australian Dollar</option>
+                    <option value="JPY">🇯🇵 JPY - Japanese Yen</option>
+                    <option value="CHF">🇨🇭 CHF - Swiss Franc</option>
+                    <option value="CNY">🇨🇳 CNY - Chinese Yuan</option>
+                    <option value="INR">🇮🇳 INR - Indian Rupee</option>
+                    <option value="BRL">🇧🇷 BRL - Brazilian Real</option>
+                    <option value="MXN">🇲🇽 MXN - Mexican Peso</option>
+                    <option value="SGD">🇸🇬 SGD - Singapore Dollar</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="income">💰 Monthly Income</label>
+                <input type="number" class="form-control" id="income" placeholder="Enter your monthly income" min="0" step="0.01">
+            </div>
+
+            <div class="form-group">
+                <label for="age">🎂 Age Group</label>
+                <select class="form-control" id="age">
+                    <option value="">Select your age group</option>
+                    <option value="18-25">18-25 (Young Adult)</option>
+                    <option value="26-35">26-35 (Early Career)</option>
+                    <option value="36-45">36-45 (Mid Career)</option>
+                    <option value="46-55">46-55 (Pre-Retirement)</option>
+                    <option value="56+">56+ (Near/In Retirement)</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="demographic">🏠 Living Situation</label>
+                <select class="form-control" id="demographic">
+                    <option value="">Select your situation</option>
+                    <option value="student">Student</option>
+                    <option value="single">Single Professional</option>
+                    <option value="couple">Couple (No Kids)</option>
+                    <option value="family">Family (With Kids)</option>
+                    <option value="retiree">Retiree</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="city">🌍 Current City/Location</label>
+                <select class="form-control" id="city">
+                    <option value="">Select your location</option>
+                    <optgroup label="🇺🇸 United States - High Cost">
+                        <option value="new-york">New York City, NY</option>
+                        <option value="san-francisco">San Francisco, CA</option>
+                        <option value="los-angeles">Los Angeles, CA</option>
+                        <option value="seattle">Seattle, WA</option>
+                        <option value="boston">Boston, MA</option>
+                        <option value="washington-dc">Washington, DC</option>
+                    </optgroup>
+                    <optgroup label="🇺🇸 United States - Medium Cost">
+                        <option value="chicago">Chicago, IL</option>
+                        <option value="denver">Denver, CO</option>
+                        <option value="austin">Austin, TX</option>
+                        <option value="atlanta">Atlanta, GA</option>
+                        <option value="philadelphia">Philadelphia, PA</option>
+                        <option value="miami">Miami, FL</option>
+                    </optgroup>
+                    <optgroup label="🇺🇸 United States - Low Cost">
+                        <option value="kansas-city">Kansas City, MO</option>
+                        <option value="indianapolis">Indianapolis, IN</option>
+                        <option value="cleveland">Cleveland, OH</option>
+                        <option value="birmingham">Birmingham, AL</option>
+                        <option value="buffalo">Buffalo, NY</option>
+                        <option value="memphis">Memphis, TN</option>
+                    </optgroup>
+                    <optgroup label="🇬🇧 United Kingdom">
+                        <option value="london">London</option>
+                        <option value="manchester">Manchester</option>
+                        <option value="edinburgh">Edinburgh</option>
+                        <option value="birmingham-uk">Birmingham</option>
+                    </optgroup>
+                    <optgroup label="🇨🇦 Canada">
+                        <option value="toronto">Toronto</option>
+                        <option value="vancouver">Vancouver</option>
+                        <option value="montreal">Montreal</option>
+                        <option value="calgary">Calgary</option>
+                    </optgroup>
+                    <optgroup label="🇦🇺 Australia">
+                        <option value="sydney">Sydney</option>
+                        <option value="melbourne">Melbourne</option>
+                        <option value="brisbane">Brisbane</option>
+                        <option value="perth">Perth</option>
+                    </optgroup>
+                    <optgroup label="🇪🇺 Europe">
+                        <option value="paris">Paris, France</option>
+                        <option value="berlin">Berlin, Germany</option>
+                        <option value="amsterdam">Amsterdam, Netherlands</option>
+                        <option value="zurich">Zurich, Switzerland</option>
+                        <option value="stockholm">Stockholm, Sweden</option>
+                        <option value="madrid">Madrid, Spain</option>
+                        <option value="rome">Rome, Italy</option>
+                    </optgroup>
+                    <optgroup label="🌍 Africa">
+                        <option value="cape-town">Cape Town, South Africa</option>
+                        <option value="johannesburg">Johannesburg, South Africa</option>
+                        <option value="lagos">Lagos, Nigeria</option>
+                        <option value="nairobi">Nairobi, Kenya</option>
+                        <option value="cairo">Cairo, Egypt</option>
+                        <option value="casablanca">Casablanca, Morocco</option>
+                    </optgroup>
+                    <optgroup label="🌏 Asia">
+                        <option value="tokyo">Tokyo, Japan</option>
+                        <option value="singapore">Singapore</option>
+                        <option value="hong-kong">Hong Kong</option>
+                        <option value="shanghai">Shanghai, China</option>
+                        <option value="mumbai">Mumbai, India</option>
+                        <option value="bangalore">Bangalore, India</option>
+                        <option value="delhi">Delhi, India</option>
+                        <option value="seoul">Seoul, South Korea</option>
+                        <option value="bangkok">Bangkok, Thailand</option>
+                        <option value="kuala-lumpur">Kuala Lumpur, Malaysia</option>
+                        <option value="dubai">Dubai, UAE</option>
+                    </optgroup>
+                    <optgroup label="🌎 Americas">
+                        <option value="sao-paulo">São Paulo, Brazil</option>
+                        <option value="mexico-city">Mexico City, Mexico</option>
+                        <option value="buenos-aires">Buenos Aires, Argentina</option>
+                        <option value="santiago">Santiago, Chile</option>
+                        <option value="lima">Lima, Peru</option>
+                        <option value="bogota">Bogotá, Colombia</option>
+                    </optgroup>
+                    <optgroup label="Other">
+                        <option value="other">Other Location</option>
+                    </optgroup>
+                </select>
+            </div>
+
+            <button class="calculate-btn" onclick="calculateAllocation()">
+                Calculate My Money Magic ✨
+            </button>
+        </div>
+
+        <!-- Results Section -->
+        <div class="results" id="results">
+            <div class="results-content">
+                <h2 id="resultsTitle">🎯 Your Personalized Money Plan</h2>
+                <div id="allocationsContainer">
+                    <!-- Allocation items will be populated here -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Login/Register Modal -->
+    <div class="modal" id="authModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="modalTitle">👋 Welcome Back!</h2>
+                <p id="modalSubtitle">Sign in to access your personalized money plan</p>
+                <button class="modal-close" onclick="closeModal()">&times;</button>
+                
+                <!-- Test Credentials Info -->
+                <div class="test-credentials" id="testCredentials">
+                    <h4>🧪 Test Credentials:</h4>
+                    <p>Email: john.doe@example.com</p>
+                    <p>Password: password123</p>
+                </div>
+            </div>
+            <div class="modal-body">
+                <div id="authMessage"></div>
+                <form id="authForm">
+                    <div id="signupFields" class="hidden">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>👤 First Name</label>
+                                <input type="text" class="form-control" id="firstName" placeholder="John">
+                            </div>
+                            <div class="form-group">
+                                <label>Last Name</label>
+                                <input type="text" class="form-control" id="lastName" placeholder="Doe">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>📧 Email Address</label>
+                        <input type="email" class="form-control" id="email" placeholder="john.doe@example.com" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label>🔒 Password</label>
+                        <input type="password" class="form-control" id="password" placeholder="Enter your password" required>
+                    </div>
+
+                    <div id="confirmPasswordField" class="form-group hidden">
+                        <label>🔒 Confirm Password</label>
+                        <input type="password" class="form-control" id="confirmPassword" placeholder="Confirm your password">
+                    </div>
+
+                    <div id="additionalFields" class="hidden">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>🎂 Age</label>
+                                <input type="number" class="form-control" id="profileAge" placeholder="30" min="18" max="100">
+                            </div>
+                            <div class="form-group">
+                                <label>💰 Annual Salary</label>
+                                <input type="number" class="form-control" id="salary" placeholder="75000" min="0">
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>📍 Zip Code</label>
+                                <input type="text" class="form-control" id="zipCode" placeholder="12345">
+                            </div>
+                            <div class="form-group">
+                                <label>📞 Phone Number</label>
+                                <input type="tel" class="form-control" id="phoneNumber" placeholder="(555) 123-4567">
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label>💕 Relationship Status</label>
+                            <select class="form-control" id="relationshipStatus">
+                                <option value="single">Single</option>
+                                <option value="married">Married</option>
+                                <option value="in-relationship">In a Relationship</option>
+                                <option value="divorced">Divorced</option>
+                                <option value="widowed">Widowed</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label>💼 Occupation</label>
+                            <input type="text" class="form-control" id="occupation" placeholder="Software Engineer">
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn-primary" id="authSubmitBtn">
+                        🚀 Sign In
+                    </button>
+
+                    <button type="button" class="btn-secondary" onclick="toggleAuthMode()">
+                        Don't have an account? Sign Up
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Test Panel -->
+    <div class="test-panel">
+        <button class="test-toggle" onclick="toggleTestPanel()" title="Show Test Panel">
+            🗄️
+        </button>
+        <div class="test-content" id="testContent">
+            <div class="test-header">
+                <h3>Test Panel</h3>
+                <button onclick="toggleTestPanel()" style="background: none; border: none; color: white; cursor: pointer;">&times;</button>
+            </div>
+            <div class="test-body">
+                <div class="test-credentials">
+                    <h4>🔑 Test Credentials</h4>
+                    <p><strong>Email:</strong> john.doe@example.com</p>
+                    <p><strong>Password:</strong> password123</p>
+                    <hr style="margin: 0.5rem 0; border-color: #93c5fd;">
+                    <p><strong>Email:</strong> jane.smith@example.com</p>
+                    <p><strong>Password:</strong> password456</p>
+                </div>
+
+                <div>
+                    <h4>👥 Registered Users (<span id="userCount">2</span>)</h4>
+                    <div id="usersList" style="max-height: 120px; overflow-y: auto; font-size: 0.75rem;">
+                        <div style="background: #f9fafb; padding: 0.5rem; border-radius: 4px; margin-bottom: 0.5rem;">
+                            <p><strong>John Doe</strong></p>
+                            <p style="color: #6b7280;">john.doe@example.com</p>
+                            <p style="color: #6b7280;">Software Engineer • Age 28</p>
+                        </div>
+                        <div style="background: #f9fafb; padding: 0.5rem; border-radius: 4px;">
+                            <p><strong>Jane Smith</strong></p>
+                            <p style="color: #6b7280;">jane.smith@example.com</p>
+                            <p style="color: #6b7280;">Marketing Manager • Age 32</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div style="margin-top: 1rem;">
+                    <h4>⏰ Active Sessions (<span id="sessionCount">0</span>)</h4>
+                    <div id="sessionsList" style="max-height: 80px; overflow-y: auto; font-size: 0.75rem;">
+                        <p style="color: #6b7280; font-size: 0.75rem;">No active sessions</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Global state
+        let currentUser = null;
+        let isSignUp = false;
+        let users = [
+            {
+                id: 'test-user-1',
+                email: 'john.doe@example.com',
+                password: 'password123',
+                profile: {
+                    firstName: 'John',
+                    lastName: 'Doe',
+                    age: 28,
+                    salary: 75000,
+                    zipCode: '10001',
+                    relationshipStatus: 'single',
+                    occupation: 'Software Engineer',
+                    phoneNumber: '(555) 123-4567'
+                }
+            },
+            {
+                id: 'test-user-2',
+                email: 'jane.smith@example.com',
+                password: 'password456',
+                profile: {
+                    firstName: 'Jane',
+                    lastName: 'Smith',
+                    age: 32,
+                    salary: 95000,
+                    zipCode: '90210',
+                    relationshipStatus: 'married',
+                    occupation: 'Marketing Manager',
+                    phoneNumber: '(555) 987-6543'
+                }
+            }
+        ];
+
+        // Currency symbols
+        const currencySymbols = {
+            'USD': '$', 'EUR': '€', 'GBP': '£', 'CAD': 'C$', 'AUD': 'A$',
+            'JPY': '¥', 'CHF': 'CHF', 'CNY': '¥', 'INR': '₹', 'BRL': 'R$',
+            'MXN': '$', 'SGD': 'S$'
+        };
+
+        // City multipliers
+        const cityMultipliers = {
+            'new-york': 1.4, 'san-francisco': 1.5, 'los-angeles': 1.3, 'seattle': 1.25,
+            'boston': 1.3, 'washington-dc': 1.35, 'chicago': 1.1, 'denver': 1.15,
+            'austin': 1.2, 'atlanta': 1.05, 'philadelphia': 1.1, 'miami': 1.15,
+            'kansas-city': 0.8, 'indianapolis': 0.75, 'cleveland': 0.7, 'birmingham': 0.65,
+            'buffalo': 0.7, 'memphis': 0.7, 'london': 1.4, 'manchester': 1.0,
+            'edinburgh': 1.1, 'birmingham-uk': 0.9, 'toronto': 1.2, 'vancouver': 1.3,
+            'montreal': 1.0, 'calgary': 1.05, 'sydney': 1.35, 'melbourne': 1.25,
+            'brisbane': 1.1, 'perth': 1.15, 'paris': 1.3, 'berlin': 1.0,
+            'amsterdam': 1.25, 'zurich': 1.6, 'stockholm': 1.2, 'madrid': 0.95,
+            'rome': 1.0, 'cape-town': 0.6, 'johannesburg': 0.55, 'lagos': 0.4,
+            'nairobi': 0.5, 'cairo': 0.3, 'casablanca': 0.45, 'tokyo': 1.3,
+            'singapore': 1.2, 'hong-kong': 1.4, 'shanghai': 0.9, 'mumbai': 0.4,
+            'bangalore': 0.45, 'delhi': 0.5, 'seoul': 1.2, 'bangkok': 0.6,
+            'kuala-lumpur': 0.7, 'dubai': 1.3, 'sao-paulo': 0.6, 'mexico-city': 0.5,
+            'buenos-aires': 0.4, 'santiago': 0.7, 'lima': 0.45, 'bogota': 0.4,
+            'other': 1.0
+        };
+
+        // Allocation suggestions
+        const suggestions = {
+            necessities: {
+                '18-25': ["Get 2-3 roommates in affordable cities - rent drops significantly! 🏠", "Skip the daily expensive coffee and make it at home - your wallet will thank you! ☕"],
+                '26-35': ["Meal prep like a boss instead of ordering takeout every night! 🥗", "Consider buying in emerging neighborhoods - appreciation potential! 🏡"],
+                '36-45': ["Refinance that mortgage if rates dropped - every percent counts! 🏦", "Energy-efficient appliances now = lower bills forever! 💡"],
+                '46-55': ["Downsize before retirement - less house, more travel fund! ✈️", "Pay off that mortgage early if you can - freedom feels amazing! 🎉"],
+                '56+': ["Healthcare costs are real - budget accordingly and stay healthy! 🏥", "Consider senior discounts everywhere - you've earned them! 🎫"]
+            },
+            savings: {
+                '18-25': ["Start that emergency fund with just $25/month - future you will be grateful! 🙏", "Automate savings so you can't spend it on impulse purchases! 🤖"],
+                '26-35': ["Aim for 6 months of expenses saved - job security in uncertain times! 💪", "High-yield savings account > regular savings - make your money work! 💰"],
+                '36-45': ["Beef up that emergency fund - kids and mortgages need backup plans! 👨‍👩‍👧‍👦", "Consider a money market account for better returns on your safety net! 📊"],
+                '46-55': ["Max out those catch-up contributions - retirement is closer than you think! ⏰", "Consider a conservative bond ladder for steady returns! 📈"],
+                '56+': ["Keep 1-2 years of expenses liquid - you never know what life throws! 🎯", "CDs and treasury bills are your friends for safe, steady growth! 🏛️"]
+            },
+            investments: {
+                '18-25': ["Index funds > individual stocks - diversification is your superpower! 🦸‍♀️", "Start with $50/month in a Roth IRA - compound interest is magic! ✨"],
+                '26-35': ["Max that 401k match - it's literally free money from your boss! 💸", "Consider target-date funds if picking stocks feels overwhelming! 🎯"],
+                '36-45': ["Rebalance annually - don't let one asset class take over your portfolio! ⚖️", "529 plans for kids' education - because college is expensive! 🎓"],
+                '46-55': ["Start shifting to more conservative investments - protect what you've built! 🛡️", "Consider dividend-paying stocks for steady income streams! 💰"],
+                '56+': ["Focus on income-generating investments - bonds, REITs, dividend stocks! 🏢", "Don't abandon stocks entirely - inflation protection is key! 📈"]
+            },
+            entertainment: {
+                '18-25': ["Netflix party > movie theater - same fun, way less money! 🎬", "Happy hours and potlucks > expensive dinners out! 🍻"],
+                '26-35': ["Date nights at home can be just as romantic (and cheaper)! 💕", "Free community events > pricey weekend plans! 🎪"],
+                '36-45': ["Family game nights > expensive theme parks every weekend! 🎲", "Staycations can be more relaxing than costly vacations! 🏖️"],
+                '46-55': ["Senior discounts on entertainment - use them proudly! 🎭", "Off-season travel = same experience, half the price! ✈️"],
+                '56+': ["Community center activities > expensive club memberships! 🏊‍♂️", "Matinee movies and early bird dinners - why pay full price? 🍽️"]
+            },
+            personal: {
+                '18-25': ["YouTube University > expensive courses sometimes! 📺", "Library books > buying every book you might read! 📖"],
+                '26-35': ["Professional development courses > that designer handbag! 💼", "Gym membership > personal trainer sessions to start! 💪"],
+                '36-45': ["Online certifications > MBA (unless your employer pays)! 💻", "Meditation app > expensive therapy (though therapy is great too)! 🧘‍♀️"],
+                '46-55': ["Health and wellness investments pay the best dividends! 🍎", "Learning new skills keeps your mind sharp and wallet happy! 🧠"],
+                '56+': ["Invest in experiences and health - money can't buy time! ⏳", "Hobbies that generate income are the best hobbies! 🎨"]
+            }
+        };
+
+        // Initialize app
+        document.addEventListener('DOMContentLoaded', function() {
+            checkAuthStatus();
+            setupEventListeners();
+            startTimer();
+        });
+
+        function setupEventListeners() {
+            // Form submission
+            document.getElementById('authForm').addEventListener('submit', handleAuth);
+            
+            // Enter key on income field
+            document.getElementById('income').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    calculateAllocation();
+                }
+            });
+
+            // Auth button
+            document.getElementById('authButton').addEventListener('click', function() {
+                if (currentUser) {
+                    logout();
+                } else {
+                    openModal();
+                }
+            });
+        }
+
+        function checkAuthStatus() {
+            const token = localStorage.getItem('auth_token');
+            if (token) {
+                // In a real app, validate token with server
+                const userData = localStorage.getItem('user_data');
+                if (userData) {
+                    currentUser = JSON.parse(userData);
+                    updateAuthUI();
+                    populateFormFromProfile();
+                }
+            }
+        }
+
+        function updateAuthUI() {
+            const authButton = document.getElementById('authButton');
+            const authIcon = document.getElementById('authIcon');
+            const authText = document.getElementById('authText');
+            const userProfile = document.getElementById('userProfile');
+
+            if (currentUser) {
+                authIcon.textContent = '👋';
+                authText.textContent = 'Logout';
+                userProfile.style.display = 'block';
+                updateUserProfile();
+            } else {
+                authIcon.textContent = '👤';
+                authText.textContent = 'Login';
+                userProfile.style.display = 'none';
+            }
+        }
+
+        function updateUserProfile() {
+            if (!currentUser) return;
+
+            document.getElementById('welcomeText').textContent = `Welcome, ${currentUser.profile.firstName}!`;
+            
+            const profileGrid = document.getElementById('profileGrid');
+            profileGrid.innerHTML = `
+                <div class="profile-item">
+                    <span>📧</span>
+                    <span>${currentUser.email}</span>
+                </div>
+                <div class="profile-item">
+                    <span>📞</span>
+                    <span>${currentUser.profile.phoneNumber}</span>
+                </div>
+                <div class="profile-item">
+                    <span>📍</span>
+                    <span>${currentUser.profile.zipCode}</span>
+                </div>
+                <div class="profile-item">
+                    <span>💕</span>
+                    <span>${currentUser.profile.relationshipStatus.replace('-', ' ')}</span>
+                </div>
+                <div class="profile-item">
+                    <span>💼</span>
+                    <span>${currentUser.profile.occupation}</span>
+                </div>
+                <div class="profile-item">
+                    <span>💰</span>
+                    <span>$${currentUser.profile.salary.toLocaleString()}/year</span>
+                </div>
+            `;
+        }
+
+        function populateFormFromProfile() {
+            if (!currentUser) return;
+
+            // Set monthly income
+            document.getElementById('income').value = Math.round(currentUser.profile.salary / 12);
+
+            // Map age to age group
+            const age = currentUser.profile.age;
+            let ageGroup = '';
+            if (age >= 18 && age <= 25) ageGroup = '18-25';
+            else if (age >= 26 && age <= 35) ageGroup = '26-35';
+            else if (age >= 36 && age <= 45) ageGroup = '36-45';
+            else if (age >= 46 && age <= 55) ageGroup = '46-55';
+            else if (age >= 56) ageGroup = '56+';
+            
+            document.getElementById('age').value = ageGroup;
+
+            // Map relationship status to demographic
+            if (currentUser.profile.relationshipStatus === 'married') {
+                document.getElementById('demographic').value = 'couple';
+            } else if (currentUser.profile.relationshipStatus === 'single') {
+                document.getElementById('demographic').value = 'single';
+            }
+        }
+
+        function openModal() {
+            document.getElementById('authModal').style.display = 'flex';
+            updateModalForMode();
+        }
+
+        function closeModal() {
+            document.getElementById('authModal').style.display = 'none';
+            clearForm();
+        }
+
+        function toggleAuthMode() {
+            isSignUp = !isSignUp;
+            updateModalForMode();
+        }
+
+        function updateModalForMode() {
+            const modalTitle = document.getElementById('modalTitle');
+            const modalSubtitle = document.getElementById('modalSubtitle');
+            const signupFields = document.getElementById('signupFields');
+            const confirmPasswordField = document.getElementById('confirmPasswordField');
+            const additionalFields = document.getElementById('additionalFields');
+            const authSubmitBtn = document.getElementById('authSubmitBtn');
+            const testCredentials = document.getElementById('testCredentials');
+
+            if (isSignUp) {
+                modalTitle.textContent = '🚀 Create Your Profile';
+                modalSubtitle.textContent = 'Get personalized financial advice tailored just for you!';
+                signupFields.classList.remove('hidden');
+                confirmPasswordField.classList.remove('hidden');
+                additionalFields.classList.remove('hidden');
+                authSubmitBtn.textContent = '🎯 Create My Profile';
+                testCredentials.style.display = 'none';
+                document.querySelector('.btn-secondary').textContent = 'Already have an account? Sign In';
+            } else {
+                modalTitle.textContent = '👋 Welcome Back!';
+                modalSubtitle.textContent = 'Sign in to access your personalized money plan';
+                signupFields.classList.add('hidden');
+                confirmPasswordField.classList.add('hidden');
+                additionalFields.classList.add('hidden');
+                authSubmitBtn.textContent = '🚀 Sign In';
+                testCredentials.style.display = 'block';
+                document.querySelector('.btn-secondary').textContent = "Don't have an account? Sign Up";
+            }
+        }
+
+        function handleAuth(e) {
+            e.preventDefault();
+            
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            
+            if (isSignUp) {
+                handleSignUp(email, password);
+            } else {
+                handleSignIn(email, password);
+            }
+        }
+
+        function handleSignIn(email, password) {
+            const user = users.find(u => u.email === email && u.password === password);
+            
+            if (user) {
+                currentUser = user;
+                localStorage.setItem('auth_token', 'demo_token_' + Date.now());
+                localStorage.setItem('user_data', JSON.stringify(user));
+                
+                showMessage('Login successful! Welcome back! 🎉', 'success');
+                setTimeout(() => {
+                    closeModal();
+                    updateAuthUI();
+                    populateFormFromProfile();
+                }, 1500);
+            } else {
+                showMessage('Invalid email or password! ❌', 'error');
+            }
+        }
+
+        function handleSignUp(email, password) {
+            const confirmPassword = document.getElementById('confirmPassword').value;
+            
+            if (password !== confirmPassword) {
+                showMessage('Passwords do not match! 🔄', 'error');
+                return;
+            }
+
+            if (users.find(u => u.email === email)) {
+                showMessage('User already exists with this email! 📧', 'error');
+                return;
+            }
+
+            // Validate required fields
+            const requiredFields = ['firstName', 'lastName', 'profileAge', 'salary', 'zipCode', 'phoneNumber', 'occupation'];
+            for (let field of requiredFields) {
+                if (!document.getElementById(field).value) {
+                    showMessage('Please fill in all fields! 📝', 'error');
+                    return;
+                }
+            }
+
+            const newUser = {
+                id: 'user_' + Date.now(),
+                email: email,
+                password: password,
+                profile: {
+                    firstName: document.getElementById('firstName').value,
+                    lastName: document.getElementById('lastName').value,
+                    age: parseInt(document.getElementById('profileAge').value),
+                    salary: parseInt(document.getElementById('salary').value),
+                    zipCode: document.getElementById('zipCode').value,
+                    relationshipStatus: document.getElementById('relationshipStatus').value,
+                    occupation: document.getElementById('occupation').value,
+                    phoneNumber: document.getElementById('phoneNumber').value
+                }
+            };
+
+            users.push(newUser);
+            currentUser = newUser;
+            localStorage.setItem('auth_token', 'demo_token_' + Date.now());
+            localStorage.setItem('user_data', JSON.stringify(newUser));
+
+            showMessage('Account created successfully! Welcome! 🎉', 'success');
+            setTimeout(() => {
+                closeModal();
+                updateAuthUI();
+                populateFormFromProfile();
+            }, 1500);
+        }
+
+        function logout() {
+            currentUser = null;
+            localStorage.removeItem('auth_token');
+            localStorage.removeItem('user_data');
+            updateAuthUI();
+            clearCalculatorForm();
+            document.getElementById('results').style.display = 'none';
+        }
+
+        function editProfile() {
+            if (currentUser) {
+                // Pre-populate form with current data
+                document.getElementById('email').value = currentUser.email;
+                document.getElementById('firstName').value = currentUser.profile.firstName;
+                document.getElementById('lastName').value = currentUser.profile.lastName;
+                document.getElementById('profileAge').value = currentUser.profile.age;
+                document.getElementById('salary').value = currentUser.profile.salary;
+                document.getElementById('zipCode').value = currentUser.profile.zipCode;
+                document.getElementById('relationshipStatus').value = currentUser.profile.relationshipStatus;
+                document.getElementById('occupation').value = currentUser.profile.occupation;
+                document.getElementById('phoneNumber').value = currentUser.profile.phoneNumber;
+                
+                isSignUp = true;
+                openModal();
+            }
+        }
+
+        function clearForm() {
+            document.getElementById('authForm').reset();
+            document.getElementById('authMessage').innerHTML = '';
+        }
+
+        function clearCalculatorForm() {
+            document.getElementById('income').value = '';
+            document.getElementById('age').value = '';
+            document.getElementById('demographic').value = '';
+            document.getElementById('city').value = '';
+        }
+
+        function showMessage(message, type) {
+            const messageDiv = document.getElementById('authMessage');
+            messageDiv.innerHTML = `<div class="message ${type}">${message}</div>`;
+        }
+
+        function calculateAllocation() {
+            const income = parseFloat(document.getElementById('income').value);
+            const currency = document.getElementById('currency').value;
+            const age = document.getElementById('age').value;
+            const demographic = document.getElementById('demographic').value;
+            const city = document.getElementById('city').value;
+
+            if (!income || !age || !demographic || !currency || !city || income <= 0) {
+                alert('Please fill in all fields with valid information! 🤔');
+                return;
+            }
+
+            const allocations = getPersonalizedAllocation(age, demographic, city);
+            displayResults(allocations, income, currency, age, city);
+        }
+
+        function getPersonalizedAllocation(age, demographic, city) {
+            const cityMultiplier = cityMultipliers[city] || 1.0;
+            
+            let base = {
+                necessities: { percentage: 50, name: "Essential Expenses", emoji: "🏠" },
+                savings: { percentage: 20, name: "Emergency Fund & Savings", emoji: "🛡️" },
+                investments: { percentage: 15, name: "Investments & Future", emoji: "📈" },
+                entertainment: { percentage: 10, name: "Fun & Entertainment", emoji: "🎉" },
+                personal: { percentage: 5, name: "Personal Development", emoji: "📚" }
+            };
+
+            // City-based adjustments
+            if (cityMultiplier > 1.3) {
+                base.necessities.percentage += 10;
+                base.investments.percentage = Math.max(5, base.investments.percentage - 5);
+                base.entertainment.percentage = Math.max(3, base.entertainment.percentage - 3);
+                base.personal.percentage = Math.max(2, base.personal.percentage - 2);
+            } else if (cityMultiplier > 1.1) {
+                base.necessities.percentage += 5;
+                base.investments.percentage = Math.max(5, base.investments.percentage - 3);
+                base.entertainment.percentage = Math.max(5, base.entertainment.percentage - 2);
+            } else if (cityMultiplier < 0.8) {
+                base.necessities.percentage = Math.max(35, base.necessities.percentage - 10);
+                base.investments.percentage += 7;
+                base.savings.percentage += 3;
+            }
+
+            // Age-based adjustments
+            switch (age) {
+                case "18-25":
+                    base.investments.percentage = Math.max(5, base.investments.percentage - 5);
+                    base.entertainment.percentage = 15;
+                    base.personal.percentage = 10;
+                    break;
+                case "26-35":
+                    base.investments.percentage += 5;
+                    base.savings.percentage = Math.max(10, base.savings.percentage - 5);
+                    break;
+                case "36-45":
+                    base.investments.percentage += 10;
+                    base.savings.percentage = Math.max(10, base.savings.percentage - 5);
+                    base.entertainment.percentage = Math.max(6, base.entertainment.percentage - 2);
+                    break;
+                case "46-55":
+                    base.investments.percentage += 15;
+                    base.savings.percentage = Math.max(8, base.savings.percentage - 8);
+                    base.entertainment.percentage = Math.max(5, base.entertainment.percentage - 4);
+                    break;
+                case "56+":
+                    base.necessities.percentage = 55;
+                    base.investments.percentage += 5;
+                    base.savings.percentage = Math.max(10, base.savings.percentage - 5);
+                    break;
+            }
+
+            // Demographic adjustments
+            switch (demographic) {
+                case "student":
+                    base.necessities.percentage = Math.max(40, base.necessities.percentage - 5);
+                    base.entertainment.percentage = 20;
+                    base.personal.percentage = 10;
+                    base.investments.percentage = Math.max(5, base.investments.percentage - 10);
+                    break;
+                case "family":
+                    base.necessities.percentage = 60;
+                    base.entertainment.percentage = Math.max(3, base.entertainment.percentage - 5);
+                    base.savings.percentage = Math.max(10, base.savings.percentage - 5);
+                    break;
+                case "retiree":
+                    base.necessities.percentage = 70;
+                    base.entertainment.percentage = 15;
+                    base.savings.percentage = Math.max(5, base.savings.percentage - 10);
+                    base.investments.percentage = Math.max(3, base.investments.percentage - 12);
+                    break;
+            }
+
+            // Ensure percentages add up to 100
+            const total = Object.values(base).reduce((sum, item) => sum + item.percentage, 0);
+            if (total !== 100) {
+                const diff = 100 - total;
+                base.necessities.percentage += diff;
+            }
+
+            return base;
+        }
+
+        function displayResults(allocations, income, currency, age, city) {
+            const resultsDiv = document.getElementById('results');
+            const container = document.getElementById('allocationsContainer');
+            const currencySymbol = currencySymbols[currency] || currency;
+
+            container.innerHTML = '';
+
+            Object.entries(allocations).forEach(([key, allocation], index) => {
+                const amount = (income * allocation.percentage / 100);
+                const suggestion = getSuggestion(key, age);
+
+                const itemDiv = document.createElement('div');
+                itemDiv.className = 'allocation-item';
+                itemDiv.style.animationDelay = `${index * 150}ms`;
+
+                itemDiv.innerHTML = `
+                    <div class="allocation-header">
+                        <h3 class="allocation-title">
+                            <span style="font-size: 1.5rem;">${allocation.emoji}</span>
+                            ${allocation.name}
+                        </h3>
+                        <div class="allocation-percentage">${allocation.percentage}%</div>
+                    </div>
+                    <div class="allocation-amount">
+                        ${currencySymbol}${amount.toFixed(2)} per month
+                    </div>
+                    <div class="allocation-advice">
+                        ${suggestion}
+                    </div>
+                `;
+
+                container.appendChild(itemDiv);
+            });
+
+            resultsDiv.style.display = 'block';
+            resultsDiv.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+
+        function getSuggestion(category, age) {
+            const categoryAdvice = suggestions[category][age];
+            return categoryAdvice[Math.floor(Math.random() * categoryAdvice.length)];
+        }
+
+        function toggleTestPanel() {
+            const testContent = document.getElementById('testContent');
+            testContent.style.display = testContent.style.display === 'block' ? 'none' : 'block';
+        }
+
+        // 5-minute timer for login popup
+        function startTimer() {
+            setTimeout(() => {
+                if (!currentUser) {
+                    openModal();
+                }
+            }, 300000); // 5 minutes
+        }
+
+        // Close modal when clicking outside
+        document.getElementById('authModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeModal();
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,1166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart Money Allocation Calculator</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .fade-in {
+            animation: fadeIn 0.5s ease-in;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .slide-up {
+            animation: slideUp 0.3s ease-out;
+        }
+        
+        @keyframes slideUp {
+            from { transform: translateY(100px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+        
+        .allocation-item {
+            animation: slideInLeft 0.6s ease-out forwards;
+            opacity: 0;
+        }
+        
+        @keyframes slideInLeft {
+            from { transform: translateX(-50px); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+        
+        .modal-backdrop {
+            backdrop-filter: blur(5px);
+        }
+    </style>
+</head>
+<body class="min-h-screen bg-gradient-to-br from-blue-600 via-purple-700 to-purple-900">
+    <!-- Header -->
+    <div class="bg-gradient-to-br from-blue-400 via-blue-500 to-cyan-400 p-8 text-center text-white relative overflow-hidden">
+        <div class="absolute inset-0 bg-black bg-opacity-10"></div>
+        
+        <!-- Login/Logout Button -->
+        <div class="absolute top-4 right-4 z-20">
+            <div id="auth-section">
+                <button id="login-btn" class="flex items-center gap-2 bg-white bg-opacity-20 hover:bg-opacity-30 px-4 py-2 rounded-full transition-all duration-300 transform hover:-translate-y-1 hover:shadow-lg">
+                    <span>👤</span>
+                    <span class="hidden sm:inline">Login</span>
+                </button>
+                <div id="user-info" class="hidden">
+                    <div class="flex items-center gap-3">
+                        <div class="hidden sm:flex items-center gap-2 bg-white bg-opacity-20 px-3 py-2 rounded-full">
+                            <span>👤</span>
+                            <span id="user-name" class="text-sm font-medium"></span>
+                        </div>
+                        <button id="logout-btn" class="flex items-center gap-2 bg-white bg-opacity-20 hover:bg-opacity-30 px-4 py-2 rounded-full transition-all duration-300 transform hover:-translate-y-1 hover:shadow-lg">
+                            <span>🚪</span>
+                            <span class="hidden sm:inline">Logout</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="relative z-10">
+            <h1 class="text-4xl md:text-5xl font-bold mb-3 drop-shadow-lg">
+                💰 Smart Money Allocator
+            </h1>
+            <p class="text-xl md:text-2xl opacity-90 font-medium">
+                Turn your money into a well-balanced financial smoothie!
+            </p>
+        </div>
+        <div class="absolute -top-4 -right-4 w-24 h-24 bg-white bg-opacity-20 rounded-full blur-xl"></div>
+        <div class="absolute -bottom-8 -left-8 w-32 h-32 bg-white bg-opacity-10 rounded-full blur-2xl"></div>
+    </div>
+
+    <!-- Main Container -->
+    <div class="min-h-screen p-4">
+        <div class="max-w-4xl mx-auto bg-white bg-opacity-95 backdrop-blur-sm rounded-3xl shadow-2xl overflow-hidden">
+            
+            <!-- User Profile Section -->
+            <div id="user-profile" class="hidden px-8 pt-8">
+                <div class="bg-white bg-opacity-95 backdrop-blur-sm rounded-2xl p-6 shadow-lg mb-6">
+                    <div class="flex justify-between items-center mb-4">
+                        <h3 class="text-xl font-bold text-gray-800 flex items-center gap-2">
+                            <span class="text-blue-600">👤</span>
+                            <span id="welcome-text">Welcome!</span>
+                        </h3>
+                        <button id="edit-profile-btn" class="flex items-center gap-2 px-4 py-2 bg-blue-100 text-blue-700 rounded-lg hover:bg-blue-200 transition-colors">
+                            <span>✏️</span>
+                            Edit Profile
+                        </button>
+                    </div>
+                    
+                    <div id="profile-details" class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+                        <!-- Profile details will be populated by JavaScript -->
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Calculator Form -->
+            <div class="p-8 space-y-6">
+                <div class="space-y-2">
+                    <label for="currency" class="block text-lg font-semibold text-gray-800">
+                        💱 Currency
+                    </label>
+                    <select id="currency" class="w-full p-4 border-2 border-gray-200 rounded-xl text-lg bg-white focus:border-blue-400 focus:ring-4 focus:ring-blue-100 transition-all duration-300 transform focus:-translate-y-1 focus:shadow-lg cursor-pointer">
+                        <option value="USD">🇺🇸 USD - US Dollar</option>
+                        <option value="EUR">🇪🇺 EUR - Euro</option>
+                        <option value="GBP">🇬🇧 GBP - British Pound</option>
+                        <option value="CAD">🇨🇦 CAD - Canadian Dollar</option>
+                        <option value="AUD">🇦🇺 AUD - Australian Dollar</option>
+                        <option value="JPY">🇯🇵 JPY - Japanese Yen</option>
+                        <option value="CHF">🇨🇭 CHF - Swiss Franc</option>
+                        <option value="CNY">🇨🇳 CNY - Chinese Yuan</option>
+                        <option value="INR">🇮🇳 INR - Indian Rupee</option>
+                        <option value="BRL">🇧🇷 BRL - Brazilian Real</option>
+                        <option value="MXN">🇲🇽 MXN - Mexican Peso</option>
+                        <option value="SGD">🇸🇬 SGD - Singapore Dollar</option>
+                    </select>
+                </div>
+
+                <div class="space-y-2">
+                    <label for="income" class="block text-lg font-semibold text-gray-800">
+                        💰 Monthly Income
+                    </label>
+                    <input type="number" id="income" placeholder="Enter your monthly income" min="0" step="0.01" class="w-full p-4 border-2 border-gray-200 rounded-xl text-lg bg-white focus:border-blue-400 focus:ring-4 focus:ring-blue-100 transition-all duration-300 transform focus:-translate-y-1 focus:shadow-lg">
+                </div>
+
+                <div class="space-y-2">
+                    <label for="age" class="block text-lg font-semibold text-gray-800">
+                        🎂 Age Group
+                    </label>
+                    <select id="age" class="w-full p-4 border-2 border-gray-200 rounded-xl text-lg bg-white focus:border-blue-400 focus:ring-4 focus:ring-blue-100 transition-all duration-300 transform focus:-translate-y-1 focus:shadow-lg cursor-pointer">
+                        <option value="">Select your age group</option>
+                        <option value="18-25">18-25 (Young Adult)</option>
+                        <option value="26-35">26-35 (Early Career)</option>
+                        <option value="36-45">36-45 (Mid Career)</option>
+                        <option value="46-55">46-55 (Pre-Retirement)</option>
+                        <option value="56+">56+ (Near/In Retirement)</option>
+                    </select>
+                </div>
+
+                <div class="space-y-2">
+                    <label for="demographic" class="block text-lg font-semibold text-gray-800">
+                        🏠 Living Situation
+                    </label>
+                    <select id="demographic" class="w-full p-4 border-2 border-gray-200 rounded-xl text-lg bg-white focus:border-blue-400 focus:ring-4 focus:ring-blue-100 transition-all duration-300 transform focus:-translate-y-1 focus:shadow-lg cursor-pointer">
+                        <option value="">Select your situation</option>
+                        <option value="student">Student</option>
+                        <option value="single">Single Professional</option>
+                        <option value="couple">Couple (No Kids)</option>
+                        <option value="family">Family (With Kids)</option>
+                        <option value="retiree">Retiree</option>
+                    </select>
+                </div>
+
+                <div class="space-y-2">
+                    <label for="city" class="block text-lg font-semibold text-gray-800">
+                        🌍 Current City/Location
+                    </label>
+                    <select id="city" class="w-full p-4 border-2 border-gray-200 rounded-xl text-lg bg-white focus:border-blue-400 focus:ring-4 focus:ring-blue-100 transition-all duration-300 transform focus:-translate-y-1 focus:shadow-lg cursor-pointer">
+                        <option value="">Select your location</option>
+                        <optgroup label="🇺🇸 United States - High Cost">
+                            <option value="new-york">New York City, NY</option>
+                            <option value="san-francisco">San Francisco, CA</option>
+                            <option value="los-angeles">Los Angeles, CA</option>
+                            <option value="seattle">Seattle, WA</option>
+                            <option value="boston">Boston, MA</option>
+                            <option value="washington-dc">Washington, DC</option>
+                        </optgroup>
+                        <optgroup label="🇺🇸 United States - Medium Cost">
+                            <option value="chicago">Chicago, IL</option>
+                            <option value="denver">Denver, CO</option>
+                            <option value="austin">Austin, TX</option>
+                            <option value="atlanta">Atlanta, GA</option>
+                            <option value="philadelphia">Philadelphia, PA</option>
+                            <option value="miami">Miami, FL</option>
+                        </optgroup>
+                        <optgroup label="🇺🇸 United States - Low Cost">
+                            <option value="kansas-city">Kansas City, MO</option>
+                            <option value="indianapolis">Indianapolis, IN</option>
+                            <option value="cleveland">Cleveland, OH</option>
+                            <option value="birmingham">Birmingham, AL</option>
+                            <option value="buffalo">Buffalo, NY</option>
+                            <option value="memphis">Memphis, TN</option>
+                        </optgroup>
+                        <optgroup label="🇬🇧 United Kingdom">
+                            <option value="london">London</option>
+                            <option value="manchester">Manchester</option>
+                            <option value="edinburgh">Edinburgh</option>
+                            <option value="birmingham-uk">Birmingham</option>
+                        </optgroup>
+                        <optgroup label="🇨🇦 Canada">
+                            <option value="toronto">Toronto</option>
+                            <option value="vancouver">Vancouver</option>
+                            <option value="montreal">Montreal</option>
+                            <option value="calgary">Calgary</option>
+                        </optgroup>
+                        <optgroup label="🇦🇺 Australia">
+                            <option value="sydney">Sydney</option>
+                            <option value="melbourne">Melbourne</option>
+                            <option value="brisbane">Brisbane</option>
+                            <option value="perth">Perth</option>
+                        </optgroup>
+                        <optgroup label="🇪🇺 Europe">
+                            <option value="paris">Paris, France</option>
+                            <option value="berlin">Berlin, Germany</option>
+                            <option value="amsterdam">Amsterdam, Netherlands</option>
+                            <option value="zurich">Zurich, Switzerland</option>
+                            <option value="stockholm">Stockholm, Sweden</option>
+                            <option value="madrid">Madrid, Spain</option>
+                            <option value="rome">Rome, Italy</option>
+                        </optgroup>
+                        <optgroup label="🌍 Africa">
+                            <option value="cape-town">Cape Town, South Africa</option>
+                            <option value="johannesburg">Johannesburg, South Africa</option>
+                            <option value="lagos">Lagos, Nigeria</option>
+                            <option value="nairobi">Nairobi, Kenya</option>
+                            <option value="cairo">Cairo, Egypt</option>
+                        </optgroup>
+                        <optgroup label="🌏 Asia">
+                            <option value="tokyo">Tokyo, Japan</option>
+                            <option value="singapore">Singapore</option>
+                            <option value="hong-kong">Hong Kong</option>
+                            <option value="shanghai">Shanghai, China</option>
+                            <option value="mumbai">Mumbai, India</option>
+                            <option value="bangalore">Bangalore, India</option>
+                            <option value="seoul">Seoul, South Korea</option>
+                            <option value="bangkok">Bangkok, Thailand</option>
+                            <option value="dubai">Dubai, UAE</option>
+                        </optgroup>
+                        <optgroup label="🌎 Americas">
+                            <option value="sao-paulo">São Paulo, Brazil</option>
+                            <option value="mexico-city">Mexico City, Mexico</option>
+                            <option value="buenos-aires">Buenos Aires, Argentina</option>
+                            <option value="santiago">Santiago, Chile</option>
+                        </optgroup>
+                        <optgroup label="Other">
+                            <option value="other">Other Location</option>
+                        </optgroup>
+                    </select>
+                </div>
+
+                <button id="calculate-btn" class="w-full py-5 px-6 bg-gradient-to-r from-purple-600 via-purple-700 to-violet-800 text-white text-xl font-bold rounded-xl hover:from-purple-700 hover:via-purple-800 hover:to-violet-900 transform hover:-translate-y-1 hover:shadow-2xl active:translate-y-0 transition-all duration-300 uppercase tracking-wider">
+                    Calculate My Money Magic ✨
+                </button>
+            </div>
+
+            <!-- Results Section -->
+            <div id="results" class="hidden mt-8 mx-8 mb-8 p-8 bg-gradient-to-br from-pink-500 via-red-500 to-yellow-500 rounded-2xl text-white relative overflow-hidden">
+                <div class="absolute inset-0 bg-black bg-opacity-10"></div>
+                <div class="relative z-10">
+                    <h2 class="text-3xl font-bold text-center mb-8">
+                        🎯 Your Personalized Money Plan
+                        <div id="city-info" class="text-lg font-normal mt-2 opacity-90"></div>
+                    </h2>
+                    
+                    <div id="allocations" class="grid gap-6">
+                        <!-- Allocation items will be populated by JavaScript -->
+                    </div>
+                </div>
+                
+                <!-- Decorative elements -->
+                <div class="absolute -top-8 -right-8 w-32 h-32 bg-white bg-opacity-10 rounded-full blur-2xl"></div>
+                <div class="absolute -bottom-12 -left-12 w-40 h-40 bg-white bg-opacity-5 rounded-full blur-3xl"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Login Modal -->
+    <div id="login-modal" class="hidden fixed inset-0 bg-black bg-opacity-50 modal-backdrop flex items-center justify-center z-50 p-4">
+        <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full max-h-[90vh] overflow-y-auto slide-up">
+            <div class="bg-gradient-to-r from-blue-500 to-purple-600 p-6 text-white relative">
+                <button id="close-modal" class="absolute top-4 right-4 text-white hover:text-gray-200 transition-colors text-2xl">
+                    ×
+                </button>
+                <h2 id="modal-title" class="text-2xl font-bold mb-2">
+                    👋 Welcome Back!
+                </h2>
+                <p id="modal-subtitle" class="opacity-90">
+                    Sign in to access your personalized money plan
+                </p>
+                <!-- Test Credentials Info -->
+                <div id="test-credentials" class="mt-4 p-3 bg-white bg-opacity-20 rounded-lg text-sm">
+                    <p class="font-semibold mb-1">🧪 Test Credentials:</p>
+                    <p>Email: john.doe@example.com</p>
+                    <p>Password: password123</p>
+                </div>
+            </div>
+
+            <form id="auth-form" class="p-6 space-y-4">
+                <div id="message" class="hidden p-3 rounded-lg text-center font-semibold"></div>
+
+                <!-- Basic Info (Sign Up Only) -->
+                <div id="signup-fields" class="hidden space-y-4">
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-2">
+                                👤 First Name
+                            </label>
+                            <input type="text" id="firstName" class="w-full p-3 border-2 border-gray-200 rounded-lg focus:border-blue-400 focus:ring-2 focus:ring-blue-100 transition-all" placeholder="John">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-2">
+                                Last Name
+                            </label>
+                            <input type="text" id="lastName" class="w-full p-3 border-2 border-gray-200 rounded-lg focus:border-blue-400 focus:ring-2 focus:ring-blue-100 transition-all" placeholder="Doe">
+                        </div>
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-2">
+                        📧 Email Address
+                    </label>
+                    <input type="email" id="email" class="w-full p-3 border-2 border-gray-200 rounded-lg focus:border-blue-400 focus:ring-2 focus:ring-blue-100 transition-all" placeholder="john.doe@example.com" required>
+                </div>
+
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-2">
+                        🔒 Password
+                    </label>
+                    <input type="password" id="password" class="w-full p-3 border-2 border-gray-200 rounded-lg focus:border-blue-400 focus:ring-2 focus:ring-blue-100 transition-all" placeholder="Enter your password" required>
+                </div>
+
+                <div id="confirm-password-field" class="hidden">
+                    <label class="block text-sm font-semibold text-gray-700 mb-2">
+                        🔒 Confirm Password
+                    </label>
+                    <input type="password" id="confirmPassword" class="w-full p-3 border-2 border-gray-200 rounded-lg focus:border-blue-400 focus:ring-2 focus:ring-blue-100 transition-all" placeholder="Confirm your password">
+                </div>
+
+                <!-- Additional Sign Up Fields -->
+                <div id="additional-signup-fields" class="hidden space-y-4">
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-2">
+                                🎂 Age
+                            </label>
+                            <input type="number" id="userAge" class="w-full p-3 border-2 border-gray-200 rounded-lg focus:border-blue-400 focus:ring-2 focus:ring-blue-100 transition-all" placeholder="30" min="18" max="100">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-2">
+                                💰 Annual Salary
+                            </label>
+                            <input type="number" id="salary" class="w-full p-3 border-2 border-gray-200 rounded-lg focus:border-blue-400 focus:ring-2 focus:ring-blue-100 transition-all" placeholder="75000" min="0">
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-2">
+                                📍 Zip Code
+                            </label>
+                            <input type="text" id="zipCode" class="w-full p-3 border-2 border-gray-200 rounded-lg focus:border-blue-400 focus:ring-2 focus:ring-blue-100 transition-all" placeholder="12345">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-2">
+                                📞 Phone Number
+                            </label>
+                            <input type="tel" id="phoneNumber" class="w-full p-3 border-2 border-gray-200 rounded-lg focus:border-blue-400 focus:ring-2 focus:ring-blue-100 transition-all" placeholder="(555) 123-4567">
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-2">
+                            💕 Relationship Status
+                        </label>
+                        <select id="relationshipStatus" class="w-full p-3 border-2 border-gray-200 rounded-lg focus:border-blue-400 focus:ring-2 focus:ring-blue-100 transition-all">
+                            <option value="single">Single</option>
+                            <option value="married">Married</option>
+                            <option value="in-relationship">In a Relationship</option>
+                            <option value="divorced">Divorced</option>
+                            <option value="widowed">Widowed</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-2">
+                            💼 Occupation
+                        </label>
+                        <input type="text" id="occupation" class="w-full p-3 border-2 border-gray-200 rounded-lg focus:border-blue-400 focus:ring-2 focus:ring-blue-100 transition-all" placeholder="Software Engineer">
+                    </div>
+                </div>
+
+                <button type="submit" id="auth-submit" class="w-full py-3 bg-gradient-to-r from-blue-500 to-purple-600 text-white font-bold rounded-lg hover:from-blue-600 hover:to-purple-700 transform hover:-translate-y-1 hover:shadow-lg transition-all duration-300">
+                    🚀 Sign In
+                </button>
+
+                <div class="text-center">
+                    <button type="button" id="toggle-auth" class="text-blue-600 hover:text-blue-800 font-semibold transition-colors">
+                        Don't have an account? Sign Up
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Test Panel -->
+    <div id="test-panel-toggle" class="fixed bottom-4 right-4 bg-gray-800 text-white p-3 rounded-full shadow-lg hover:bg-gray-700 transition-colors z-50 cursor-pointer" title="Show Test Panel">
+        🗄️
+    </div>
+
+    <div id="test-panel" class="hidden fixed bottom-4 right-4 bg-white rounded-lg shadow-2xl border border-gray-200 w-96 max-h-96 overflow-hidden z-50">
+        <div class="bg-gray-800 text-white p-3 flex justify-between items-center">
+            <h3 class="font-semibold flex items-center gap-2">
+                🗄️ Test Panel
+            </h3>
+            <div class="flex gap-2">
+                <button id="refresh-test-data" class="p-1 hover:bg-gray-700 rounded" title="Refresh Data">
+                    🔄
+                </button>
+                <button id="close-test-panel" class="p-1 hover:bg-gray-700 rounded">
+                    ×
+                </button>
+            </div>
+        </div>
+        
+        <div class="p-4 overflow-y-auto max-h-80">
+            <!-- Test Credentials -->
+            <div class="mb-4 p-3 bg-blue-50 rounded-lg">
+                <h4 class="font-semibold text-blue-800 mb-2 flex items-center gap-2">
+                    🔑 Test Credentials
+                </h4>
+                <div class="text-sm text-blue-700 space-y-1">
+                    <p><strong>Email:</strong> john.doe@example.com</p>
+                    <p><strong>Password:</strong> password123</p>
+                    <hr class="my-2 border-blue-200">
+                    <p><strong>Email:</strong> jane.smith@example.com</p>
+                    <p><strong>Password:</strong> password456</p>
+                </div>
+            </div>
+
+            <!-- Users -->
+            <div class="mb-4">
+                <h4 class="font-semibold text-gray-800 mb-2 flex items-center gap-2">
+                    👥 Registered Users (<span id="user-count">0</span>)
+                </h4>
+                <div id="users-list" class="space-y-2 max-h-32 overflow-y-auto">
+                    <!-- Users will be populated by JavaScript -->
+                </div>
+            </div>
+
+            <!-- Active Sessions -->
+            <div>
+                <h4 class="font-semibold text-gray-800 mb-2 flex items-center gap-2">
+                    ⏰ Active Sessions (<span id="session-count">0</span>)
+                </h4>
+                <div id="sessions-list" class="space-y-2 max-h-24 overflow-y-auto">
+                    <!-- Sessions will be populated by JavaScript -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Application State
+        let currentUser = null;
+        let isSignUp = false;
+        let timer = null;
+        let timerStarted = false;
+
+        // Data Storage (In-memory for demo)
+        const users = new Map();
+        const sessions = new Map();
+
+        // Initialize with test users
+        function initializeTestUsers() {
+            const testUsers = [
+                {
+                    id: 'test-user-1',
+                    email: 'john.doe@example.com',
+                    password: btoa('password123' + 'salt'),
+                    profile: {
+                        firstName: 'John',
+                        lastName: 'Doe',
+                        age: 28,
+                        salary: 75000,
+                        zipCode: '10001',
+                        relationshipStatus: 'single',
+                        occupation: 'Software Engineer',
+                        phoneNumber: '(555) 123-4567'
+                    },
+                    createdAt: new Date(),
+                    lastLogin: new Date()
+                },
+                {
+                    id: 'test-user-2',
+                    email: 'jane.smith@example.com',
+                    password: btoa('password456' + 'salt'),
+                    profile: {
+                        firstName: 'Jane',
+                        lastName: 'Smith',
+                        age: 32,
+                        salary: 95000,
+                        zipCode: '90210',
+                        relationshipStatus: 'married',
+                        occupation: 'Marketing Manager',
+                        phoneNumber: '(555) 987-6543'
+                    },
+                    createdAt: new Date(),
+                    lastLogin: new Date()
+                }
+            ];
+
+            testUsers.forEach(user => {
+                users.set(user.email, user);
+            });
+        }
+
+        // Currency symbols
+        const currencySymbols = {
+            'USD': '$', 'EUR': '€', 'GBP': '£', 'CAD': 'C$', 'AUD': 'A$',
+            'JPY': '¥', 'CHF': 'CHF', 'CNY': '¥', 'INR': '₹', 'BRL': 'R$',
+            'MXN': '$', 'SGD': 'S$'
+        };
+
+        // City multipliers
+        const cityMultipliers = {
+            'new-york': 1.4, 'san-francisco': 1.5, 'los-angeles': 1.3, 'seattle': 1.25,
+            'boston': 1.3, 'washington-dc': 1.35, 'chicago': 1.1, 'denver': 1.15,
+            'austin': 1.2, 'atlanta': 1.05, 'philadelphia': 1.1, 'miami': 1.15,
+            'kansas-city': 0.8, 'indianapolis': 0.75, 'cleveland': 0.7, 'birmingham': 0.65,
+            'buffalo': 0.7, 'memphis': 0.7, 'london': 1.4, 'manchester': 1.0,
+            'edinburgh': 1.1, 'birmingham-uk': 0.9, 'toronto': 1.2, 'vancouver': 1.3,
+            'montreal': 1.0, 'calgary': 1.05, 'sydney': 1.35, 'melbourne': 1.25,
+            'brisbane': 1.1, 'perth': 1.15, 'paris': 1.3, 'berlin': 1.0,
+            'amsterdam': 1.25, 'zurich': 1.6, 'stockholm': 1.2, 'madrid': 0.95,
+            'rome': 1.0, 'cape-town': 0.6, 'johannesburg': 0.55, 'lagos': 0.4,
+            'nairobi': 0.5, 'cairo': 0.3, 'tokyo': 1.3, 'singapore': 1.2,
+            'hong-kong': 1.4, 'shanghai': 0.9, 'mumbai': 0.4, 'bangalore': 0.45,
+            'seoul': 1.2, 'bangkok': 0.6, 'dubai': 1.3, 'sao-paulo': 0.6,
+            'mexico-city': 0.5, 'buenos-aires': 0.4, 'santiago': 0.7, 'other': 1.0
+        };
+
+        // City names
+        const cityNames = {
+            'new-york': '🇺🇸 New York City, NY',
+            'san-francisco': '🇺🇸 San Francisco, CA',
+            'london': '🇬🇧 London',
+            'tokyo': '🇯🇵 Tokyo, Japan',
+            'sydney': '🇦🇺 Sydney',
+            'paris': '🇫🇷 Paris, France',
+            'other': '🌍 Other Location'
+        };
+
+        // Suggestions database
+        const suggestions = {
+            necessities: {
+                "18-25": ["Get 2-3 roommates in affordable cities - rent drops significantly! 🏠", "Skip the daily expensive coffee and make it at home - your wallet will thank you! ☕"],
+                "26-35": ["Meal prep like a boss instead of ordering takeout every night! 🥗", "Consider buying in emerging neighborhoods - appreciation potential! 🏡"],
+                "36-45": ["Refinance that mortgage if rates dropped - every percent counts! 🏦", "Energy-efficient appliances now = lower bills forever! 💡"],
+                "46-55": ["Downsize before retirement - less house, more travel fund! ✈️", "Pay off that mortgage early if you can - freedom feels amazing! 🎉"],
+                "56+": ["Healthcare costs are real - budget accordingly and stay healthy! 🏥", "Consider senior discounts everywhere - you've earned them! 🎫"]
+            },
+            savings: {
+                "18-25": ["Start that emergency fund with just $25/month - future you will be grateful! 🙏", "Automate savings so you can't spend it on impulse purchases! 🤖"],
+                "26-35": ["Aim for 6 months of expenses saved - job security in uncertain times! 💪", "High-yield savings account > regular savings - make your money work! 💰"],
+                "36-45": ["Beef up that emergency fund - kids and mortgages need backup plans! 👨‍👩‍👧‍👦", "Consider a money market account for better returns on your safety net! 📊"],
+                "46-55": ["Max out those catch-up contributions - retirement is closer than you think! ⏰", "Consider a conservative bond ladder for steady returns! 📈"],
+                "56+": ["Keep 1-2 years of expenses liquid - you never know what life throws! 🎯", "CDs and treasury bills are your friends for safe, steady growth! 🏛️"]
+            },
+            investments: {
+                "18-25": ["Index funds > individual stocks - diversification is your superpower! 🦸‍♀️", "Start with $50/month in a Roth IRA - compound interest is magic! ✨"],
+                "26-35": ["Max that 401k match - it's literally free money from your boss! 💸", "Consider target-date funds if picking stocks feels overwhelming! 🎯"],
+                "36-45": ["Rebalance annually - don't let one asset class take over your portfolio! ⚖️", "529 plans for kids' education - because college is expensive! 🎓"],
+                "46-55": ["Start shifting to more conservative investments - protect what you've built! 🛡️", "Consider dividend-paying stocks for steady income streams! 💰"],
+                "56+": ["Focus on income-generating investments - bonds, REITs, dividend stocks! 🏢", "Don't abandon stocks entirely - inflation protection is key! 📈"]
+            },
+            entertainment: {
+                "18-25": ["Netflix party > movie theater - same fun, way less money! 🎬", "Happy hours and potlucks > expensive dinners out! 🍻"],
+                "26-35": ["Date nights at home can be just as romantic (and cheaper)! 💕", "Free community events > pricey weekend plans! 🎪"],
+                "36-45": ["Family game nights > expensive theme parks every weekend! 🎲", "Staycations can be more relaxing than costly vacations! 🏖️"],
+                "46-55": ["Senior discounts on entertainment - use them proudly! 🎭", "Off-season travel = same experience, half the price! ✈️"],
+                "56+": ["Community center activities > expensive club memberships! 🏊‍♂️", "Matinee movies and early bird dinners - why pay full price? 🍽️"]
+            },
+            personal: {
+                "18-25": ["YouTube University > expensive courses sometimes! 📺", "Library books > buying every book you might read! 📖"],
+                "26-35": ["Professional development courses > that designer handbag! 💼", "Gym membership > personal trainer sessions to start! 💪"],
+                "36-45": ["Online certifications > MBA (unless your employer pays)! 💻", "Meditation app > expensive therapy (though therapy is great too)! 🧘‍♀️"],
+                "46-55": ["Health and wellness investments pay the best dividends! 🍎", "Learning new skills keeps your mind sharp and wallet happy! 🧠"],
+                "56+": ["Invest in experiences and health - money can't buy time! ⏳", "Hobbies that generate income are the best hobbies! 🎨"]
+            }
+        };
+
+        // Utility Functions
+        function hashPassword(password) {
+            return btoa(password + 'salt');
+        }
+
+        function verifyPassword(password, hash) {
+            return hashPassword(password) === hash;
+        }
+
+        function generateToken() {
+            return Math.random().toString(36).substring(2) + Date.now().toString(36);
+        }
+
+        function getCurrencySymbol(currency) {
+            return currencySymbols[currency] || currency;
+        }
+
+        function getCityMultiplier(city) {
+            return cityMultipliers[city] || 1.0;
+        }
+
+        function getCityName(city) {
+            return cityNames[city] || city;
+        }
+
+        function getSuggestion(category, age) {
+            const categoryAdvice = suggestions[category][age];
+            return categoryAdvice[Math.floor(Math.random() * categoryAdvice.length)];
+        }
+
+        // Allocation Logic
+        function getPersonalizedAllocation(age, demographic, city) {
+            const cityMultiplier = getCityMultiplier(city);
+            
+            let base = {
+                necessities: { percentage: 50, name: "Essential Expenses", emoji: "🏠" },
+                savings: { percentage: 20, name: "Emergency Fund & Savings", emoji: "🛡️" },
+                investments: { percentage: 15, name: "Investments & Future", emoji: "📈" },
+                entertainment: { percentage: 10, name: "Fun & Entertainment", emoji: "🎉" },
+                personal: { percentage: 5, name: "Personal Development", emoji: "📚" }
+            };
+
+            // City-based adjustments
+            if (cityMultiplier > 1.3) {
+                base.necessities.percentage += 10;
+                base.investments.percentage = Math.max(5, base.investments.percentage - 5);
+                base.entertainment.percentage = Math.max(3, base.entertainment.percentage - 3);
+                base.personal.percentage = Math.max(2, base.personal.percentage - 2);
+            } else if (cityMultiplier > 1.1) {
+                base.necessities.percentage += 5;
+                base.investments.percentage = Math.max(5, base.investments.percentage - 3);
+                base.entertainment.percentage = Math.max(5, base.entertainment.percentage - 2);
+            } else if (cityMultiplier < 0.8) {
+                base.necessities.percentage = Math.max(35, base.necessities.percentage - 10);
+                base.investments.percentage += 7;
+                base.savings.percentage += 3;
+            }
+
+            // Age-based adjustments
+            switch (age) {
+                case "18-25":
+                    base.investments.percentage = Math.max(5, base.investments.percentage - 5);
+                    base.entertainment.percentage = 15;
+                    base.personal.percentage = 10;
+                    break;
+                case "26-35":
+                    base.investments.percentage += 5;
+                    base.savings.percentage = Math.max(10, base.savings.percentage - 5);
+                    break;
+                case "36-45":
+                    base.investments.percentage += 10;
+                    base.savings.percentage = Math.max(10, base.savings.percentage - 5);
+                    base.entertainment.percentage = Math.max(6, base.entertainment.percentage - 2);
+                    break;
+                case "46-55":
+                    base.investments.percentage += 15;
+                    base.savings.percentage = Math.max(8, base.savings.percentage - 8);
+                    base.entertainment.percentage = Math.max(5, base.entertainment.percentage - 4);
+                    break;
+                case "56+":
+                    base.necessities.percentage = 55;
+                    base.investments.percentage += 5;
+                    base.savings.percentage = Math.max(10, base.savings.percentage - 5);
+                    break;
+            }
+
+            // Demographic adjustments
+            switch (demographic) {
+                case "student":
+                    base.necessities.percentage = Math.max(40, base.necessities.percentage - 5);
+                    base.entertainment.percentage = 20;
+                    base.personal.percentage = 10;
+                    base.investments.percentage = Math.max(5, base.investments.percentage - 10);
+                    break;
+                case "family":
+                    base.necessities.percentage = 60;
+                    base.entertainment.percentage = Math.max(3, base.entertainment.percentage - 5);
+                    base.savings.percentage = Math.max(10, base.savings.percentage - 5);
+                    break;
+                case "retiree":
+                    base.necessities.percentage = 70;
+                    base.entertainment.percentage = 15;
+                    base.savings.percentage = Math.max(5, base.savings.percentage - 10);
+                    base.investments.percentage = Math.max(3, base.investments.percentage - 12);
+                    break;
+            }
+
+            // Ensure percentages add up to 100
+            const total = Object.values(base).reduce((sum, item) => sum + item.percentage, 0);
+            if (total !== 100) {
+                const diff = 100 - total;
+                base.necessities.percentage += diff;
+            }
+
+            return base;
+        }
+
+        // Authentication Functions
+        function register(email, password, profile) {
+            if (users.has(email)) {
+                return { success: false, message: 'User already exists with this email' };
+            }
+
+            const user = {
+                id: 'user-' + Date.now(),
+                email,
+                password: hashPassword(password),
+                profile,
+                createdAt: new Date()
+            };
+
+            users.set(email, user);
+            return { success: true, message: 'Account created successfully!', user };
+        }
+
+        function login(email, password) {
+            const user = users.get(email);
+            
+            if (!user) {
+                return { success: false, message: 'User not found' };
+            }
+
+            if (!verifyPassword(password, user.password)) {
+                return { success: false, message: 'Invalid password' };
+            }
+
+            user.lastLogin = new Date();
+            users.set(email, user);
+
+            const token = generateToken();
+            sessions.set(token, {
+                userId: user.id,
+                expiresAt: new Date(Date.now() + 24 * 60 * 60 * 1000)
+            });
+
+            localStorage.setItem('auth_token', token);
+            return { success: true, message: 'Login successful!', token, user };
+        }
+
+        function logout() {
+            const token = localStorage.getItem('auth_token');
+            if (token) {
+                sessions.delete(token);
+                localStorage.removeItem('auth_token');
+            }
+            currentUser = null;
+            updateAuthUI();
+        }
+
+        function validateSession() {
+            const token = localStorage.getItem('auth_token');
+            if (!token) return false;
+
+            const session = sessions.get(token);
+            if (!session || session.expiresAt < new Date()) {
+                if (session) sessions.delete(token);
+                localStorage.removeItem('auth_token');
+                return false;
+            }
+
+            const user = Array.from(users.values()).find(u => u.id === session.userId);
+            if (!user) {
+                sessions.delete(token);
+                localStorage.removeItem('auth_token');
+                return false;
+            }
+
+            currentUser = user;
+            return true;
+        }
+
+        // UI Functions
+        function updateAuthUI() {
+            const loginBtn = document.getElementById('login-btn');
+            const userInfo = document.getElementById('user-info');
+            const userProfile = document.getElementById('user-profile');
+            const userName = document.getElementById('user-name');
+            const welcomeText = document.getElementById('welcome-text');
+
+            if (currentUser) {
+                loginBtn.style.display = 'none';
+                userInfo.style.display = 'block';
+                userProfile.style.display = 'block';
+                userName.textContent = `${currentUser.profile.firstName} ${currentUser.profile.lastName}`;
+                welcomeText.textContent = `Welcome, ${currentUser.profile.firstName}!`;
+                populateUserProfile();
+                autoPopulateForm();
+            } else {
+                loginBtn.style.display = 'block';
+                userInfo.style.display = 'none';
+                userProfile.style.display = 'none';
+            }
+        }
+
+        function populateUserProfile() {
+            const profileDetails = document.getElementById('profile-details');
+            const profile = currentUser.profile;
+            
+            profileDetails.innerHTML = `
+                <div class="flex items-center gap-2">
+                    <span class="text-gray-500">📧</span>
+                    <span class="text-gray-700">${currentUser.email}</span>
+                </div>
+                <div class="flex items-center gap-2">
+                    <span class="text-gray-500">📞</span>
+                    <span class="text-gray-700">${profile.phoneNumber}</span>
+                </div>
+                <div class="flex items-center gap-2">
+                    <span class="text-gray-500">📍</span>
+                    <span class="text-gray-700">${profile.zipCode}</span>
+                </div>
+                <div class="flex items-center gap-2">
+                    <span class="text-gray-500">💕</span>
+                    <span class="text-gray-700 capitalize">${profile.relationshipStatus.replace('-', ' ')}</span>
+                </div>
+                <div class="flex items-center gap-2">
+                    <span class="text-gray-500">💼</span>
+                    <span class="text-gray-700">${profile.occupation}</span>
+                </div>
+                <div class="flex items-center gap-2">
+                    <span class="text-gray-500">💰</span>
+                    <span class="text-gray-700">$${profile.salary.toLocaleString()}/year</span>
+                </div>
+            `;
+        }
+
+        function autoPopulateForm() {
+            if (!currentUser) return;
+
+            const profile = currentUser.profile;
+            
+            // Set monthly income
+            document.getElementById('income').value = (profile.salary / 12).toString();
+            
+            // Map age to age group
+            const age = profile.age;
+            let ageGroup = '';
+            if (age >= 18 && age <= 25) ageGroup = '18-25';
+            else if (age >= 26 && age <= 35) ageGroup = '26-35';
+            else if (age >= 36 && age <= 45) ageGroup = '36-45';
+            else if (age >= 46 && age <= 55) ageGroup = '46-55';
+            else if (age >= 56) ageGroup = '56+';
+            
+            document.getElementById('age').value = ageGroup;
+            
+            // Map relationship status to demographic
+            if (profile.relationshipStatus === 'married') {
+                document.getElementById('demographic').value = 'couple';
+            } else if (profile.relationshipStatus === 'single') {
+                document.getElementById('demographic').value = 'single';
+            }
+        }
+
+        function showMessage(message, isSuccess = false) {
+            const messageDiv = document.getElementById('message');
+            messageDiv.textContent = message;
+            messageDiv.className = `p-3 rounded-lg text-center font-semibold ${
+                isSuccess ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
+            }`;
+            messageDiv.style.display = 'block';
+        }
+
+        function hideMessage() {
+            document.getElementById('message').style.display = 'none';
+        }
+
+        function toggleAuthMode() {
+            isSignUp = !isSignUp;
+            const modalTitle = document.getElementById('modal-title');
+            const modalSubtitle = document.getElementById('modal-subtitle');
+            const testCredentials = document.getElementById('test-credentials');
+            const signupFields = document.getElementById('signup-fields');
+            const confirmPasswordField = document.getElementById('confirm-password-field');
+            const additionalSignupFields = document.getElementById('additional-signup-fields');
+            const authSubmit = document.getElementById('auth-submit');
+            const toggleAuth = document.getElementById('toggle-auth');
+
+            if (isSignUp) {
+                modalTitle.textContent = '🚀 Create Your Profile';
+                modalSubtitle.textContent = 'Get personalized financial advice tailored just for you!';
+                testCredentials.style.display = 'none';
+                signupFields.style.display = 'block';
+                confirmPasswordField.style.display = 'block';
+                additionalSignupFields.style.display = 'block';
+                authSubmit.textContent = '🎯 Create My Profile';
+                toggleAuth.textContent = 'Already have an account? Sign In';
+            } else {
+                modalTitle.textContent = '👋 Welcome Back!';
+                modalSubtitle.textContent = 'Sign in to access your personalized money plan';
+                testCredentials.style.display = 'block';
+                signupFields.style.display = 'none';
+                confirmPasswordField.style.display = 'none';
+                additionalSignupFields.style.display = 'none';
+                authSubmit.textContent = '🚀 Sign In';
+                toggleAuth.textContent = "Don't have an account? Sign Up";
+            }
+            hideMessage();
+        }
+
+        function showModal() {
+            document.getElementById('login-modal').style.display = 'flex';
+        }
+
+        function hideModal() {
+            document.getElementById('login-modal').style.display = 'none';
+            hideMessage();
+        }
+
+        function startTimer() {
+            if (timerStarted || currentUser) return;
+            
+            timerStarted = true;
+            timer = setTimeout(() => {
+                if (!currentUser) {
+                    showModal();
+                }
+            }, 300000); // 5 minutes
+        }
+
+        function updateTestPanel() {
+            const userCount = document.getElementById('user-count');
+            const sessionCount = document.getElementById('session-count');
+            const usersList = document.getElementById('users-list');
+            const sessionsList = document.getElementById('sessions-list');
+
+            userCount.textContent = users.size;
+            sessionCount.textContent = sessions.size;
+
+            // Update users list
+            usersList.innerHTML = '';
+            users.forEach(user => {
+                const userDiv = document.createElement('div');
+                userDiv.className = 'text-xs bg-gray-50 p-2 rounded border';
+                userDiv.innerHTML = `
+                    <p><strong>${user.profile.firstName} ${user.profile.lastName}</strong></p>
+                    <p class="text-gray-600">${user.email}</p>
+                    <p class="text-gray-500">${user.profile.occupation} • Age ${user.profile.age}</p>
+                    ${user.lastLogin ? `<p class="text-green-600">Last login: ${user.lastLogin.toLocaleString()}</p>` : ''}
+                `;
+                usersList.appendChild(userDiv);
+            });
+
+            // Update sessions list
+            sessionsList.innerHTML = '';
+            if (sessions.size === 0) {
+                sessionsList.innerHTML = '<p class="text-gray-500 text-xs">No active sessions</p>';
+            } else {
+                sessions.forEach((session, token) => {
+                    const sessionDiv = document.createElement('div');
+                    sessionDiv.className = 'text-xs bg-green-50 p-2 rounded border';
+                    sessionDiv.innerHTML = `
+                        <p><strong>Token:</strong> ${token.substring(0, 8)}...</p>
+                        <p><strong>User:</strong> ${session.userId}</p>
+                        <p class="text-gray-600">Expires: ${session.expiresAt.toLocaleString()}</p>
+                    `;
+                    sessionsList.appendChild(sessionDiv);
+                });
+            }
+        }
+
+        // Event Listeners
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeTestUsers();
+            
+            // Check for existing session
+            if (validateSession()) {
+                updateAuthUI();
+            } else {
+                startTimer();
+            }
+
+            // Login button
+            document.getElementById('login-btn').addEventListener('click', showModal);
+
+            // Logout button
+            document.getElementById('logout-btn').addEventListener('click', logout);
+
+            // Edit profile button
+            document.getElementById('edit-profile-btn').addEventListener('click', showModal);
+
+            // Modal close
+            document.getElementById('close-modal').addEventListener('click', hideModal);
+
+            // Toggle auth mode
+            document.getElementById('toggle-auth').addEventListener('click', toggleAuthMode);
+
+            // Auth form submission
+            document.getElementById('auth-form').addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                const email = document.getElementById('email').value;
+                const password = document.getElementById('password').value;
+
+                if (isSignUp) {
+                    const confirmPassword = document.getElementById('confirmPassword').value;
+                    
+                    if (password !== confirmPassword) {
+                        showMessage('Passwords do not match! 🔄');
+                        return;
+                    }
+
+                    if (password.length < 6) {
+                        showMessage('Password must be at least 6 characters long! 🔒');
+                        return;
+                    }
+
+                    const profile = {
+                        firstName: document.getElementById('firstName').value,
+                        lastName: document.getElementById('lastName').value,
+                        age: parseInt(document.getElementById('userAge').value),
+                        salary: parseInt(document.getElementById('salary').value),
+                        zipCode: document.getElementById('zipCode').value,
+                        relationshipStatus: document.getElementById('relationshipStatus').value,
+                        occupation: document.getElementById('occupation').value,
+                        phoneNumber: document.getElementById('phoneNumber').value
+                    };
+
+                    // Validate required fields
+                    const requiredFields = Object.entries(profile).filter(([key, value]) => {
+                        if (key === 'age' || key === 'salary') return value <= 0 || isNaN(value);
+                        return !value || value.toString().trim() === '';
+                    });
+                    
+                    if (requiredFields.length > 0) {
+                        showMessage('Please fill in all fields! 📝');
+                        return;
+                    }
+
+                    const result = register(email, password, profile);
+                    if (result.success) {
+                        showMessage('Account created successfully! Welcome! 🎉', true);
+                        setTimeout(() => {
+                            const loginResult = login(email, password);
+                            if (loginResult.success) {
+                                currentUser = loginResult.user;
+                                updateAuthUI();
+                                hideModal();
+                            }
+                        }, 1500);
+                    } else {
+                        showMessage(result.message);
+                    }
+                } else {
+                    if (!email || !password) {
+                        showMessage('Please enter your email and password! 📧');
+                        return;
+                    }
+
+                    const result = login(email, password);
+                    if (result.success) {
+                        showMessage('Login successful! Welcome back! 🎉', true);
+                        currentUser = result.user;
+                        setTimeout(() => {
+                            updateAuthUI();
+                            hideModal();
+                        }, 1500);
+                    } else {
+                        showMessage(result.message);
+                    }
+                }
+            });
+
+            // Calculate button
+            document.getElementById('calculate-btn').addEventListener('click', function() {
+                const income = parseFloat(document.getElementById('income').value);
+                const currency = document.getElementById('currency').value;
+                const age = document.getElementById('age').value;
+                const demographic = document.getElementById('demographic').value;
+                const city = document.getElementById('city').value;
+
+                if (!income || !age || !demographic || !currency || !city || income <= 0) {
+                    alert('Please fill in all fields with valid information! 🤔');
+                    return;
+                }
+
+                const allocations = getPersonalizedAllocation(age, demographic, city);
+                displayResults(allocations, income, currency, city);
+            });
+
+            // Test panel
+            document.getElementById('test-panel-toggle').addEventListener('click', function() {
+                document.getElementById('test-panel').style.display = 'block';
+                this.style.display = 'none';
+                updateTestPanel();
+            });
+
+            document.getElementById('close-test-panel').addEventListener('click', function() {
+                document.getElementById('test-panel').style.display = 'none';
+                document.getElementById('test-panel-toggle').style.display = 'block';
+            });
+
+            document.getElementById('refresh-test-data').addEventListener('click', updateTestPanel);
+
+            // Enter key support
+            document.getElementById('income').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    document.getElementById('calculate-btn').click();
+                }
+            });
+        });
+
+        function displayResults(allocations, income, currency, city) {
+            const resultsDiv = document.getElementById('results');
+            const allocationsDiv = document.getElementById('allocations');
+            const cityInfo = document.getElementById('city-info');
+            const currencySymbol = getCurrencySymbol(currency);
+            const cityName = getCityName(city);
+
+            if (cityName) {
+                cityInfo.textContent = `Optimized for ${cityName}`;
+            }
+
+            allocationsDiv.innerHTML = '';
+
+            Object.entries(allocations).forEach(([key, allocation], index) => {
+                const amount = (income * allocation.percentage / 100);
+                const suggestion = getSuggestion(key, document.getElementById('age').value);
+
+                const allocationDiv = document.createElement('div');
+                allocationDiv.className = 'allocation-item bg-white bg-opacity-20 backdrop-blur-lg p-6 rounded-2xl border border-white border-opacity-30 shadow-lg hover:bg-opacity-30 transition-all duration-300 transform hover:-translate-y-1';
+                allocationDiv.style.animationDelay = `${index * 150}ms`;
+
+                allocationDiv.innerHTML = `
+                    <div class="flex justify-between items-start mb-4">
+                        <h3 class="text-xl font-semibold flex items-center gap-3">
+                            <span class="text-2xl">${allocation.emoji}</span>
+                            ${allocation.name}
+                        </h3>
+                        <div class="bg-white bg-opacity-40 px-4 py-2 rounded-full">
+                            <span class="font-bold text-lg">${allocation.percentage}%</span>
+                        </div>
+                    </div>
+                    
+                    <div class="text-2xl font-bold text-yellow-300 mb-4">
+                        ${currencySymbol}${amount.toFixed(2)} per month
+                    </div>
+                    
+                    <div class="text-white text-opacity-90 italic leading-relaxed">
+                        ${suggestion}
+                    </div>
+                `;
+
+                allocationsDiv.appendChild(allocationDiv);
+            });
+
+            resultsDiv.style.display = 'block';
+            resultsDiv.classList.add('fade-in');
+            
+            // Scroll to results
+            setTimeout(() => {
+                resultsDiv.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }, 100);
+        }
+    </script>
+</body>
+</html>
