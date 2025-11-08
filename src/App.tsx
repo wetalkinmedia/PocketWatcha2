@@ -31,6 +31,7 @@ function App() {
   const [showCourseAuthoring, setShowCourseAuthoring] = useState(false);
   const [showDashboard, setShowDashboard] = useState(false);
   const [showAdminDashboard, setShowAdminDashboard] = useState(false);
+  const [errorLog, setErrorLog] = useState<string[]>([]);
 
   // Use authentication hook
   const { isAuthenticated, user, loading, login, register, logout } = useAuth();
@@ -64,52 +65,58 @@ function App() {
     }
   }, [isAuthenticated, user]);
 
+  const logError = (message: string) => {
+    console.error(message);
+    setErrorLog(prev => [...prev, `${new Date().toLocaleTimeString()}: ${message}`]);
+  };
+
   const handleCalculate = () => {
-    console.log('=== CALCULATE CLICKED ===');
-    console.log('Current values:', { income, age, demographic, city, currency });
+    setErrorLog([]); // Clear previous errors
+    logError('=== CALCULATE CLICKED ===');
+    logError(`Current values: income=${income}, age=${age}, demographic=${demographic}, city=${city}, currency=${currency}`);
 
     const incomeValue = parseFloat(income);
 
     // Validate income
     if (!income || income.trim() === '' || isNaN(incomeValue) || incomeValue <= 0) {
-      console.error('Validation failed: Invalid income');
+      logError('Validation failed: Invalid income');
       alert('Please enter a valid monthly income!');
       return;
     }
 
     // Validate age
     if (!age || age === '') {
-      console.error('Validation failed: No age selected');
+      logError('Validation failed: No age selected');
       alert('Please select your age group!');
       return;
     }
 
     // Validate demographic
     if (!demographic || demographic === '') {
-      console.error('Validation failed: No living situation selected');
+      logError('Validation failed: No living situation selected');
       alert('Please select your living situation!');
       return;
     }
 
     // Validate city
     if (!city || city === '') {
-      console.error('Validation failed: No city selected');
+      logError('Validation failed: No city selected');
       alert('Please select your city/location!');
       return;
     }
 
     // Validate currency (should always be set, but just in case)
     if (!currency) {
-      console.error('Validation failed: No currency');
+      logError('Validation failed: No currency');
       alert('Please select a currency!');
       return;
     }
 
-    console.log('All validations passed. Calculating...');
+    logError('All validations passed. Calculating...');
 
     try {
       const personalizedAllocations = getPersonalizedAllocation(age, demographic, city);
-      console.log('Generated allocations:', personalizedAllocations);
+      logError(`Generated allocations: ${JSON.stringify(personalizedAllocations)}`);
 
       setAllocations(personalizedAllocations);
 
@@ -117,26 +124,26 @@ function App() {
       const annualSalary = incomeValue * 12;
       const suggestions = getCareerSuggestions(annualSalary, age, demographic, city, currency);
       const advice = getCareerAdvice(annualSalary, age, city);
-      console.log('Career suggestions:', suggestions);
-      console.log('Career advice:', advice);
+      logError(`Career suggestions count: ${suggestions.length}`);
+      logError(`Career advice: ${advice}`);
 
       setCareerSuggestions(suggestions);
       setCareerAdvice(advice);
 
-      console.log('Setting showResults to true');
+      logError('Setting showResults to true');
       setShowResults(true);
 
       // Scroll to results after a short delay to ensure they're rendered
       setTimeout(() => {
         const resultsElement = document.querySelector('[data-results]');
-        console.log('Results element found:', !!resultsElement);
+        logError(`Results element found: ${!!resultsElement}`);
         if (resultsElement) {
           resultsElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
         }
       }, 100);
     } catch (error) {
-      console.error('Error during calculation:', error);
-      alert('An error occurred during calculation. Please check the console.');
+      logError(`Error during calculation: ${error}`);
+      alert('An error occurred during calculation. Please check the error log.');
     }
   };
 
@@ -254,6 +261,20 @@ function App() {
                 setCity={setCity}
                 onCalculate={handleCalculate}
               />
+
+              {errorLog.length > 0 && (
+                <div className="mx-8 mt-4 p-4 bg-red-50 border-2 border-red-500 rounded-lg">
+                  <h3 className="text-lg font-bold text-red-700 mb-2">Debug Log:</h3>
+                  <div className="bg-white p-3 rounded border border-red-300 max-h-96 overflow-y-auto">
+                    {errorLog.map((log, index) => (
+                      <div key={index} className="text-sm font-mono text-gray-800 mb-1">
+                        {log}
+                      </div>
+                    ))}
+                  </div>
+                  <p className="text-xs text-red-600 mt-2">Copy this entire log and paste it in your message</p>
+                </div>
+              )}
 
               {allocations && (
                 <Results
