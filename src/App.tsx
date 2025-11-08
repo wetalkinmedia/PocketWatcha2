@@ -65,61 +65,79 @@ function App() {
   }, [isAuthenticated, user]);
 
   const handleCalculate = () => {
+    console.log('=== CALCULATE CLICKED ===');
+    console.log('Current values:', { income, age, demographic, city, currency });
+
     const incomeValue = parseFloat(income);
-    
+
     // Validate income
     if (!income || income.trim() === '' || isNaN(incomeValue) || incomeValue <= 0) {
-      alert('Please enter a valid monthly income! 💰');
+      console.error('Validation failed: Invalid income');
+      alert('Please enter a valid monthly income!');
       return;
     }
 
     // Validate age
     if (!age || age === '') {
-      alert('Please select your age group! 🎂');
+      console.error('Validation failed: No age selected');
+      alert('Please select your age group!');
       return;
     }
 
     // Validate demographic
     if (!demographic || demographic === '') {
-      alert('Please select your living situation! 🏠');
+      console.error('Validation failed: No living situation selected');
+      alert('Please select your living situation!');
       return;
     }
 
     // Validate city
     if (!city || city === '') {
-      alert('Please select your city/location! 🌍');
+      console.error('Validation failed: No city selected');
+      alert('Please select your city/location!');
       return;
     }
 
     // Validate currency (should always be set, but just in case)
     if (!currency) {
-      alert('Please select a currency! 💱');
+      console.error('Validation failed: No currency');
+      alert('Please select a currency!');
       return;
     }
 
-    console.log('Calculating with:', { incomeValue, age, demographic, city, currency });
+    console.log('All validations passed. Calculating...');
 
-    const personalizedAllocations = getPersonalizedAllocation(age, demographic, city);
-    console.log('Generated allocations:', personalizedAllocations);
-    
-    setAllocations(personalizedAllocations);
-    
-    // Get career suggestions
-    const annualSalary = incomeValue * 12; // Convert monthly to annual for career suggestions
-    const suggestions = getCareerSuggestions(annualSalary, age, demographic, city, currency);
-    const advice = getCareerAdvice(annualSalary, age, city);
-    setCareerSuggestions(suggestions);
-    setCareerAdvice(advice);
-    
-    setShowResults(true);
-    
-    // Scroll to results after a short delay to ensure they're rendered
-    setTimeout(() => {
-      const resultsElement = document.querySelector('[data-results]');
-      if (resultsElement) {
-        resultsElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
-      }
-    }, 100);
+    try {
+      const personalizedAllocations = getPersonalizedAllocation(age, demographic, city);
+      console.log('Generated allocations:', personalizedAllocations);
+
+      setAllocations(personalizedAllocations);
+
+      // Get career suggestions
+      const annualSalary = incomeValue * 12;
+      const suggestions = getCareerSuggestions(annualSalary, age, demographic, city, currency);
+      const advice = getCareerAdvice(annualSalary, age, city);
+      console.log('Career suggestions:', suggestions);
+      console.log('Career advice:', advice);
+
+      setCareerSuggestions(suggestions);
+      setCareerAdvice(advice);
+
+      console.log('Setting showResults to true');
+      setShowResults(true);
+
+      // Scroll to results after a short delay to ensure they're rendered
+      setTimeout(() => {
+        const resultsElement = document.querySelector('[data-results]');
+        console.log('Results element found:', !!resultsElement);
+        if (resultsElement) {
+          resultsElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+      }, 100);
+    } catch (error) {
+      console.error('Error during calculation:', error);
+      alert('An error occurred during calculation. Please check the console.');
+    }
   };
 
   const handleLegacyLogin = (profile: UserProfileType) => {
