@@ -215,44 +215,48 @@ function App() {
             />
           )}
           
-          {isAuthenticated && user && (
-            <div className="px-8 pt-8">
-              <UserProfile profile={user} onEdit={handleEditProfile} />
-            </div>
-          )}
-          
-          <CalculatorForm
-            income={income}
-            setIncome={setIncome}
-            currency={currency}
-            setCurrency={setCurrency}
-            age={age}
-            setAge={setAge}
-            demographic={demographic}
-            setDemographic={setDemographic}
-            city={city}
-            setCity={setCity}
-            onCalculate={handleCalculate}
-          />
+          {!showDashboard && !showAdminDashboard && (
+            <>
+              {isAuthenticated && user && (
+                <div className="px-8 pt-8">
+                  <UserProfile profile={user} onEdit={handleEditProfile} />
+                </div>
+              )}
 
-          {allocations && (
-            <Results
-              allocations={allocations}
-              income={parseFloat(income)}
-              age={age as AgeGroup}
-              currency={currency}
-              city={city}
-              show={showResults}
-            />
-          )}
-          
-          {careerSuggestions.length > 0 && showResults && (
-            <CareerSuggestions
-              suggestions={careerSuggestions}
-              currentSalary={parseFloat(income)}
-              currency={currency}
-              advice={careerAdvice}
-            />
+              <CalculatorForm
+                income={income}
+                setIncome={setIncome}
+                currency={currency}
+                setCurrency={setCurrency}
+                age={age}
+                setAge={setAge}
+                demographic={demographic}
+                setDemographic={setDemographic}
+                city={city}
+                setCity={setCity}
+                onCalculate={handleCalculate}
+              />
+
+              {allocations && (
+                <Results
+                  allocations={allocations}
+                  income={parseFloat(income)}
+                  age={age as AgeGroup}
+                  currency={currency}
+                  city={city}
+                  show={showResults}
+                />
+              )}
+
+              {careerSuggestions.length > 0 && showResults && (
+                <CareerSuggestions
+                  suggestions={careerSuggestions}
+                  currentSalary={parseFloat(income)}
+                  currency={currency}
+                  advice={careerAdvice}
+                />
+              )}
+            </>
           )}
         </div>
         
