@@ -1,5 +1,4 @@
-import React from 'react';
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { TrendingUp, Clock, BookOpen, Target, ExternalLink, Star, Users, DollarSign } from 'lucide-react';
 import { CheckCircle } from 'lucide-react';
 import { CareerSuggestion, Course, getRelevantCourses } from '../utils/careerSuggestions';
