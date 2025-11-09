@@ -1,7 +1,7 @@
 {
   "name": "smart-money-calculator",
   "private": true,
-  "version": "1.0.0",
+  "version": "1.0.1",
   "type": "module",
   "description": "Smart Money Allocation Calculator - Personal finance planning tool",
   "keywords": [
