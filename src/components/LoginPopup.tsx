@@ -272,11 +272,13 @@ export function LoginPopup({ isOpen, onClose, onLogin, onAuthLogin, onAuthRegist
             /* Forgot Username/Password Form */
             <>
               <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-2">
+                <label htmlFor="credentialsEmail" className="block text-sm font-semibold text-gray-700 mb-2">
                   <Mail size={16} className="inline mr-2" />
                   Email Address
                 </label>
                 <input
+                  id="credentialsEmail"
+                  name="credentialsEmail"
                   type="email"
                   value={credentialsEmail}
                   onChange={(e) => setCredentialsEmail(e.target.value)}
@@ -322,11 +324,13 @@ export function LoginPopup({ isOpen, onClose, onLogin, onAuthLogin, onAuthRegist
             /* Forgot Password Form */
             <>
               <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-2">
+                <label htmlFor="resetEmail" className="block text-sm font-semibold text-gray-700 mb-2">
                   <Mail size={16} className="inline mr-2" />
                   Email Address
                 </label>
                 <input
+                  id="resetEmail"
+                  name="resetEmail"
                   type="email"
                   value={resetEmail}
                   onChange={(e) => setResetEmail(e.target.value)}
@@ -379,11 +383,13 @@ export function LoginPopup({ isOpen, onClose, onLogin, onAuthLogin, onAuthRegist
           {isSignUp && (
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-2">
+                <label htmlFor="firstName" className="block text-sm font-semibold text-gray-700 mb-2">
                   <User size={16} className="inline mr-2" />
                   First Name
                 </label>
                 <input
+                  id="firstName"
+                  name="firstName"
                   type="text"
                   value={profile.firstName}
                   onChange={(e) => handleInputChange('firstName', e.target.value)}
@@ -393,10 +399,12 @@ export function LoginPopup({ isOpen, onClose, onLogin, onAuthLogin, onAuthRegist
                 />
               </div>
               <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-2">
+                <label htmlFor="lastName" className="block text-sm font-semibold text-gray-700 mb-2">
                   Last Name
                 </label>
                 <input
+                  id="lastName"
+                  name="lastName"
                   type="text"
                   value={profile.lastName}
                   onChange={(e) => handleInputChange('lastName', e.target.value)}
@@ -409,11 +417,13 @@ export function LoginPopup({ isOpen, onClose, onLogin, onAuthLogin, onAuthRegist
           )}
 
           <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-2">
+            <label htmlFor="email" className="block text-sm font-semibold text-gray-700 mb-2">
               <Mail size={16} className="inline mr-2" />
               Email Address
             </label>
             <input
+              id="email"
+              name="email"
               type="email"
               value={profile.email}
               onChange={(e) => handleInputChange('email', e.target.value)}
@@ -424,11 +434,13 @@ export function LoginPopup({ isOpen, onClose, onLogin, onAuthLogin, onAuthRegist
           </div>
 
           <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-2">
+            <label htmlFor="password" className="block text-sm font-semibold text-gray-700 mb-2">
               <Lock size={16} className="inline mr-2" />
               Password
             </label>
             <input
+              id="password"
+              name="password"
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
@@ -441,11 +453,13 @@ export function LoginPopup({ isOpen, onClose, onLogin, onAuthLogin, onAuthRegist
 
           {isSignUp && (
             <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-2">
+              <label htmlFor="confirmPassword" className="block text-sm font-semibold text-gray-700 mb-2">
                 <Lock size={16} className="inline mr-2" />
                 Confirm Password
               </label>
               <input
+                id="confirmPassword"
+                name="confirmPassword"
                 type="password"
                 value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}
@@ -461,10 +475,12 @@ export function LoginPopup({ isOpen, onClose, onLogin, onAuthLogin, onAuthRegist
             <>
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-2">
+                  <label htmlFor="age" className="block text-sm font-semibold text-gray-700 mb-2">
                     🎂 Age
                   </label>
                   <input
+                    id="age"
+                    name="age"
                     type="number"
                     value={profile.age || ''}
                     onChange={(e) => handleInputChange('age', parseInt(e.target.value) || 0)}
@@ -476,11 +492,13 @@ export function LoginPopup({ isOpen, onClose, onLogin, onAuthLogin, onAuthRegist
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-2">
+                  <label htmlFor="salary" className="block text-sm font-semibold text-gray-700 mb-2">
                     <DollarSign size={16} className="inline mr-2" />
                     Annual Salary
                   </label>
                   <input
+                    id="salary"
+                    name="salary"
                     type="number"
                     value={profile.salary || ''}
                     onChange={(e) => handleInputChange('salary', parseInt(e.target.value) || 0)}
@@ -494,11 +512,13 @@ export function LoginPopup({ isOpen, onClose, onLogin, onAuthLogin, onAuthRegist
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-2">
+                  <label htmlFor="zipCode" className="block text-sm font-semibold text-gray-700 mb-2">
                     <MapPin size={16} className="inline mr-2" />
                     Zip Code
                   </label>
                   <input
+                    id="zipCode"
+                    name="zipCode"
                     type="text"
                     value={profile.zipCode}
                     onChange={(e) => handleInputChange('zipCode', e.target.value)}
@@ -508,11 +528,13 @@ export function LoginPopup({ isOpen, onClose, onLogin, onAuthLogin, onAuthRegist
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-2">
+                  <label htmlFor="phoneNumber" className="block text-sm font-semibold text-gray-700 mb-2">
                     <Phone size={16} className="inline mr-2" />
                     Phone Number
                   </label>
                   <input
+                    id="phoneNumber"
+                    name="phoneNumber"
                     type="tel"
                     value={profile.phoneNumber}
                     onChange={(e) => handleInputChange('phoneNumber', e.target.value)}
@@ -524,11 +546,13 @@ export function LoginPopup({ isOpen, onClose, onLogin, onAuthLogin, onAuthRegist
               </div>
 
               <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-2">
+                <label htmlFor="relationshipStatus" className="block text-sm font-semibold text-gray-700 mb-2">
                   <Heart size={16} className="inline mr-2" />
                   Relationship Status
                 </label>
                 <select
+                  id="relationshipStatus"
+                  name="relationshipStatus"
                   value={profile.relationshipStatus}
                   onChange={(e) => handleInputChange('relationshipStatus', e.target.value)}
                   className="w-full p-3 border-2 border-gray-200 rounded-lg focus:border-blue-400 focus:ring-2 focus:ring-blue-100 transition-all"
@@ -543,11 +567,13 @@ export function LoginPopup({ isOpen, onClose, onLogin, onAuthLogin, onAuthRegist
               </div>
 
               <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-2">
+                <label htmlFor="occupation" className="block text-sm font-semibold text-gray-700 mb-2">
                   <Briefcase size={16} className="inline mr-2" />
                   Occupation
                 </label>
                 <input
+                  id="occupation"
+                  name="occupation"
                   type="text"
                   value={profile.occupation}
                   onChange={(e) => handleInputChange('occupation', e.target.value)}
