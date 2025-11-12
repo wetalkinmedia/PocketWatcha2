@@ -117,8 +117,11 @@ function App() {
     try {
       const personalizedAllocations = getPersonalizedAllocation(age, demographic, city);
       logError(`Generated allocations: ${JSON.stringify(personalizedAllocations)}`);
+      logError(`Allocations object exists: ${!!personalizedAllocations}`);
+      logError(`Allocations keys: ${Object.keys(personalizedAllocations || {}).join(', ')}`);
 
       setAllocations(personalizedAllocations);
+      logError('setAllocations called');
 
       // Get career suggestions
       const annualSalary = incomeValue * 12;
@@ -132,13 +135,18 @@ function App() {
 
       logError('Setting showResults to true');
       setShowResults(true);
+      logError('setShowResults called with true');
 
       // Scroll to results after a short delay to ensure they're rendered
       setTimeout(() => {
         const resultsElement = document.querySelector('[data-results]');
         logError(`Results element found: ${!!resultsElement}`);
+        logError(`Allocations set: ${!!allocations}`);
+        logError(`showResults state: ${showResults}`);
         if (resultsElement) {
           resultsElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        } else {
+          logError('ERROR: Results element not in DOM! Check if allocations or showResults are false');
         }
       }, 100);
     } catch (error) {

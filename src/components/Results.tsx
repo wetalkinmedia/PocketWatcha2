@@ -19,12 +19,19 @@ export function Results({ allocations, income, age, currency, city, show }: Resu
   const currencySymbol = getCurrencySymbol(currency);
 
   useEffect(() => {
+    console.log('Results component mounted/updated', { show, allocations: !!allocations, income, age, city });
     if (show && resultsRef.current) {
+      console.log('Scrolling to results');
       resultsRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
-  }, [show]);
+  }, [show, allocations, income, age, city]);
 
-  if (!show) return null;
+  console.log('Results render - show:', show, 'allocations:', !!allocations);
+
+  if (!show) {
+    console.log('Results not showing because show is false');
+    return null;
+  }
 
   return (
     <div 
