@@ -158,14 +158,36 @@ export function useAuth() {
   const register = async (email: string, password: string, profile: Omit<UserProfile, 'email'>): Promise<{ success: boolean; message: string }> => {
     try {
       console.log('Starting registration for:', email);
+      console.log('Password length:', password.length);
+      console.log('Profile data:', profile);
+
+      // Validate email format
+      if (!email || !email.includes('@')) {
+        return { success: false, message: 'Please enter a valid email address' };
+      }
+
+      // Validate password length
+      if (!password || password.length < 6) {
+        return { success: false, message: 'Password must be at least 6 characters' };
+      }
 
       // First, create the auth user
       const { data: authData, error: authError } = await supabase.auth.signUp({
-        email,
-        password
+        email: email.trim().toLowerCase(),
+        password: password,
+        options: {
+          data: {
+            first_name: profile.firstName,
+            last_name: profile.lastName
+          }
+        }
       });
 
-      console.log('Auth signup result:', { authData, authError });
+      console.log('Auth signup result:', {
+        user: authData?.user?.id,
+        session: !!authData?.session,
+        error: authError
+      });
 
       if (authError) {
         console.error('Auth error:', authError);
@@ -184,14 +206,14 @@ export function useAuth() {
         .from('user_profiles')
         .insert({
           id: authData.user.id,
-          first_name: profile.firstName,
-          last_name: profile.lastName,
+          first_name: profile.firstName.trim(),
+          last_name: profile.lastName.trim(),
           age: profile.age,
           salary: profile.salary,
-          zip_code: profile.zipCode,
-          relationship_status: profile.relationshipStatus,
-          occupation: profile.occupation,
-          phone_number: profile.phoneNumber
+          zip_code: profile.zipCode.trim(),
+          relationship_status: profile.relationshipStatus.toLowerCase(),
+          occupation: profile.occupation.trim(),
+          phone_number: profile.phoneNumber.trim()
         });
 
       if (profileError) {
@@ -205,9 +227,9 @@ export function useAuth() {
       await loadUserProfile(authData.user);
 
       return { success: true, message: 'Account created successfully!' };
-    } catch (error) {
+    } catch (error: any) {
       console.error('Registration error:', error);
-      return { success: false, message: 'Registration failed. Please try again.' };
+      return { success: false, message: error?.message || 'Registration failed. Please try again.' };
     }
   };
 
