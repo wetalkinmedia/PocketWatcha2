@@ -157,19 +157,27 @@ export function useAuth() {
 
   const register = async (email: string, password: string, profile: Omit<UserProfile, 'email'>): Promise<{ success: boolean; message: string }> => {
     try {
+      console.log('Starting registration for:', email);
+
       // First, create the auth user
       const { data: authData, error: authError } = await supabase.auth.signUp({
         email,
         password
       });
 
+      console.log('Auth signup result:', { authData, authError });
+
       if (authError) {
+        console.error('Auth error:', authError);
         return { success: false, message: authError.message };
       }
 
       if (!authData.user) {
-        return { success: false, message: 'Registration failed' };
+        console.error('No user returned from signup');
+        return { success: false, message: 'Registration failed - no user created' };
       }
+
+      console.log('User created, now creating profile for user ID:', authData.user.id);
 
       // Create the user profile
       const { error: profileError } = await supabase
@@ -188,8 +196,13 @@ export function useAuth() {
 
       if (profileError) {
         console.error('Profile creation error:', profileError);
-        return { success: false, message: 'Failed to create profile' };
+        return { success: false, message: `Failed to create profile: ${profileError.message}` };
       }
+
+      console.log('Profile created successfully');
+
+      // Load the user profile into state immediately
+      await loadUserProfile(authData.user);
 
       return { success: true, message: 'Account created successfully!' };
     } catch (error) {
