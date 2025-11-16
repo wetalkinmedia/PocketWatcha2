@@ -3,6 +3,12 @@ import { createClient } from '@supabase/supabase-js';
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
 const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
 
+// Log configuration on load (helpful for deployment verification)
+console.log('🔍 Supabase Configuration Check:');
+console.log('Domain:', window.location.hostname);
+console.log('Supabase URL:', supabaseUrl ? '✅ Set' : '❌ Missing');
+console.log('Supabase Key:', supabaseAnonKey ? '✅ Set' : '❌ Missing');
+
 // Create a fallback client if environment variables are missing
 const createSupabaseClient = () => {
   if (!supabaseUrl || !supabaseAnonKey) {
