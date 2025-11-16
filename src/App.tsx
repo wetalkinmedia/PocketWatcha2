@@ -141,12 +141,8 @@ function App() {
       setTimeout(() => {
         const resultsElement = document.querySelector('[data-results]');
         logError(`Results element found: ${!!resultsElement}`);
-        logError(`Allocations set: ${!!allocations}`);
-        logError(`showResults state: ${showResults}`);
         if (resultsElement) {
           resultsElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
-        } else {
-          logError('ERROR: Results element not in DOM! Check if allocations or showResults are false');
         }
       }, 100);
     } catch (error) {
