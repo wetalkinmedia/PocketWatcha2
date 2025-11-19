@@ -235,13 +235,13 @@ export function CareerSuggestions({ suggestions, currentSalary, currency, advice
                   <strong>Certificate:</strong> {course.certificationType}
                 </div>
                 
-                <a
+                <button
                   onClick={() => handlePurchaseClick(course)}
-                  className="w-full bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white text-xs font-bold py-2 px-3 rounded-lg transition-all duration-300 transform hover:-translate-y-0.5 hover:shadow-lg flex items-center justify-center gap-2"
+                  className="w-full bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white text-xs font-bold py-2 px-3 rounded-lg transition-all duration-300 transform hover:-translate-y-0.5 hover:shadow-lg flex items-center justify-center gap-2 cursor-pointer"
                 >
                   {course.price === 0 ? 'Start Free Course' : `Purchase $${course.price}`}
                   {enrolledCourses.has(course.title) ? <CheckCircle size={12} /> : <ExternalLink size={12} />}
-                </a>
+                </button>
               </div>
             ))}
           </div>
