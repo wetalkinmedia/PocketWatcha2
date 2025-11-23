@@ -143,7 +143,6 @@ export function CalculatorForm({
 
       <button
         type="submit"
-        onClick={onCalculate}
         className="w-full py-5 px-6 bg-gradient-to-r from-purple-600 via-purple-700 to-violet-800 text-white text-xl font-bold rounded-xl hover:from-purple-700 hover:via-purple-800 hover:to-violet-900 transform hover:-translate-y-1 hover:shadow-2xl active:translate-y-0 transition-all duration-300 uppercase tracking-wider"
       >
         Calculate My Money Magic ✨
