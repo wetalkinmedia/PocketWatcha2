@@ -354,9 +354,6 @@ function App() {
                 setCity={setCity}
                 onCalculate={handleCalculate}
               />
-              {/* Debug: Confirm form is rendered */}
-              <div className="hidden">{logError('CalculatorForm component rendered')}</div>
-
 
               {allocations && (
                 <Results
