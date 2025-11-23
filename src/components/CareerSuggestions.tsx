@@ -18,6 +18,7 @@ export function CareerSuggestions({ suggestions, currentSalary, currency, advice
   const [showCheckout, setShowCheckout] = useState(false);
   const [checkoutCourse, setCheckoutCourse] = useState<Course | null>(null);
   const [enrolledCourses, setEnrolledCourses] = useState<Set<string>>(new Set());
+  const [popupBlocked, setPopupBlocked] = useState<string | null>(null);
 
   if (suggestions.length === 0) {
     return null;
@@ -26,7 +27,10 @@ export function CareerSuggestions({ suggestions, currentSalary, currency, advice
   const handlePurchaseClick = (course: Course) => {
     if (course.price === 0) {
       setEnrolledCourses(prev => new Set([...prev, course.title]));
-      window.open(course.url, '_blank', 'noopener,noreferrer');
+      const newWindow = window.open(course.url, '_blank', 'noopener,noreferrer');
+      if (!newWindow || newWindow.closed || typeof newWindow.closed === 'undefined') {
+        setPopupBlocked(course.url);
+      }
     } else {
       const fullCourse = {
         id: course.title.toLowerCase().replace(/\s+/g, '-'),
@@ -62,7 +66,10 @@ export function CareerSuggestions({ suggestions, currentSalary, currency, advice
     setEnrolledCourses(prev => new Set([...prev, courseId]));
     setShowCheckout(false);
     if (checkoutCourse?.website) {
-      window.open(checkoutCourse.website, '_blank', 'noopener,noreferrer');
+      const newWindow = window.open(checkoutCourse.website, '_blank', 'noopener,noreferrer');
+      if (!newWindow || newWindow.closed || typeof newWindow.closed === 'undefined') {
+        setPopupBlocked(checkoutCourse.website);
+      }
     }
     setCheckoutCourse(null);
   };
@@ -272,7 +279,32 @@ export function CareerSuggestions({ suggestions, currentSalary, currency, advice
           onPurchaseComplete={handlePurchaseComplete}
         />
       )}
-      
+
+      {popupBlocked && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full p-6">
+            <h3 className="text-xl font-bold text-gray-800 mb-3">Popup Blocked</h3>
+            <p className="text-gray-600 mb-4">
+              Your browser blocked the popup. Please click the button below to access the course:
+            </p>
+            <a
+              href={popupBlocked}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="block w-full bg-gradient-to-r from-blue-600 to-purple-600 text-white text-center py-3 rounded-lg font-bold hover:from-blue-700 hover:to-purple-700 transition-all mb-3"
+            >
+              Open Course Website
+            </a>
+            <button
+              onClick={() => setPopupBlocked(null)}
+              className="w-full bg-gray-200 text-gray-700 py-2 rounded-lg font-semibold hover:bg-gray-300 transition-all"
+            >
+              Close
+            </button>
+          </div>
+        </div>
+      )}
+
       {/* Decorative elements */}
       <div className="absolute -top-8 -right-8 w-32 h-32 bg-white bg-opacity-10 rounded-full blur-2xl"></div>
       <div className="absolute -bottom-12 -left-12 w-40 h-40 bg-white bg-opacity-5 rounded-full blur-3xl"></div>
