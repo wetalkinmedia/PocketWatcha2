@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { LoginPopup } from './components/LoginPopup';
 import { UserProfile } from './components/UserProfile';
 import { TestPanel } from './components/TestPanel';
@@ -37,6 +37,12 @@ function App() {
   // Use authentication hook
   const { isAuthenticated, user, loading, login, register, logout } = useAuth();
 
+  // Define logError early so it can be used in useEffects
+  const logError = useCallback((message: string) => {
+    console.error(message);
+    setErrorLog(prev => [...prev, `${new Date().toLocaleTimeString()}: ${message}`]);
+  }, []);
+
   // Timer for showing login popup after 5 minutes (300,000 ms)
   useTimer(300000, () => {
     if (!isAuthenticated && !loading) {
@@ -66,11 +72,6 @@ function App() {
     }
   }, [isAuthenticated, user]);
 
-  const logError = (message: string) => {
-    console.error(message);
-    setErrorLog(prev => [...prev, `${new Date().toLocaleTimeString()}: ${message}`]);
-  };
-
   // Log component mount and state changes
   useEffect(() => {
     logError('=== APP COMPONENT MOUNTED ===');
@@ -83,32 +84,32 @@ function App() {
     logError(`loading: ${loading}`);
     logError(`User: ${user ? JSON.stringify({email: user.email, firstName: user.firstName}) : 'null'}`);
     logError('=== INITIAL STATE LOGGED ===');
-  }, []);
+  }, [logError]);
 
   useEffect(() => {
     logError(`STATE CHANGE - showDashboard: ${showDashboard}, showAdminDashboard: ${showAdminDashboard}`);
-  }, [showDashboard, showAdminDashboard]);
+  }, [showDashboard, showAdminDashboard, logError]);
 
   useEffect(() => {
     logError(`CALCULATOR FORM VISIBILITY - Should show: ${!showDashboard && !showAdminDashboard}`);
-  }, [showDashboard, showAdminDashboard]);
+  }, [showDashboard, showAdminDashboard, logError]);
 
   // Debug: Log form input changes
   useEffect(() => {
     if (income) logError(`Income changed: ${income}`);
-  }, [income]);
+  }, [income, logError]);
 
   useEffect(() => {
     if (age) logError(`Age changed: ${age}`);
-  }, [age]);
+  }, [age, logError]);
 
   useEffect(() => {
     if (demographic) logError(`Demographic changed: ${demographic}`);
-  }, [demographic]);
+  }, [demographic, logError]);
 
   useEffect(() => {
     if (city) logError(`City changed: ${city}`);
-  }, [city]);
+  }, [city, logError]);
 
   const handleCalculate = () => {
     setErrorLog([]); // Clear previous errors
