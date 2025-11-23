@@ -26,8 +26,8 @@ export function CareerSuggestions({ suggestions, currentSalary, currency, advice
   const handlePurchaseClick = (course: Course) => {
     if (course.price === 0) {
       setEnrolledCourses(prev => new Set([...prev, course.title]));
+      window.open(course.url, '_blank', 'noopener,noreferrer');
     } else {
-      // Convert course to match expected Course interface
       const fullCourse = {
         id: course.title.toLowerCase().replace(/\s+/g, '-'),
         title: course.title,
@@ -61,6 +61,9 @@ export function CareerSuggestions({ suggestions, currentSalary, currency, advice
   const handlePurchaseComplete = (courseId: string) => {
     setEnrolledCourses(prev => new Set([...prev, courseId]));
     setShowCheckout(false);
+    if (checkoutCourse?.website) {
+      window.open(checkoutCourse.website, '_blank', 'noopener,noreferrer');
+    }
     setCheckoutCourse(null);
   };
 
