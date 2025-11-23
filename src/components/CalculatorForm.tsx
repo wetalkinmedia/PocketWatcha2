@@ -30,6 +30,10 @@ export function CalculatorForm({
   setCity,
   onCalculate
 }: CalculatorFormProps) {
+  console.log('🔴 CalculatorForm RENDERED');
+  console.log('🔴 onCalculate prop:', onCalculate);
+  console.log('🔴 Form props:', { income, currency, age, demographic, city });
+
   const handleKeyPress = (e: React.KeyboardEvent) => {
     if (e.key === 'Enter') {
       e.preventDefault();
@@ -38,11 +42,16 @@ export function CalculatorForm({
   };
 
   const handleSubmit = (e: React.FormEvent) => {
-    console.log('Form submit triggered');
+    debugger;
+    console.log('🔵 FORM SUBMIT TRIGGERED');
+    console.log('🔵 Event:', e);
+    console.log('🔵 Event type:', e.type);
     e.preventDefault();
-    console.log('About to call onCalculate');
+    console.log('🔵 preventDefault called');
+    console.log('🔵 onCalculate function:', onCalculate);
+    console.log('🔵 About to call onCalculate');
     onCalculate();
-    console.log('onCalculate called');
+    console.log('🔵 onCalculate called successfully');
   };
 
   return (
@@ -147,7 +156,9 @@ export function CalculatorForm({
       <button
         type="submit"
         onClick={(e) => {
-          console.log('Button clicked!');
+          console.log('🟢 BUTTON CLICKED');
+          console.log('🟢 Button event:', e);
+          console.log('🟢 Button type:', e.currentTarget.type);
         }}
         className="w-full py-5 px-6 bg-gradient-to-r from-purple-600 via-purple-700 to-violet-800 text-white text-xl font-bold rounded-xl hover:from-purple-700 hover:via-purple-800 hover:to-violet-900 transform hover:-translate-y-1 hover:shadow-2xl active:translate-y-0 transition-all duration-300 uppercase tracking-wider"
       >
