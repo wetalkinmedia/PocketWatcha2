@@ -32,6 +32,7 @@ function App() {
   const [showDashboard, setShowDashboard] = useState(false);
   const [showAdminDashboard, setShowAdminDashboard] = useState(false);
   const [errorLog, setErrorLog] = useState<string[]>([]);
+  const [debugVisible, setDebugVisible] = useState(true);
 
   // Use authentication hook
   const { isAuthenticated, user, loading, login, register, logout } = useAuth();
@@ -69,6 +70,45 @@ function App() {
     console.error(message);
     setErrorLog(prev => [...prev, `${new Date().toLocaleTimeString()}: ${message}`]);
   };
+
+  // Log component mount and state changes
+  useEffect(() => {
+    logError('=== APP COMPONENT MOUNTED ===');
+    logError(`Window location: ${window.location.href}`);
+    logError(`showDashboard: ${showDashboard}`);
+    logError(`showAdminDashboard: ${showAdminDashboard}`);
+    logError(`showCoursePlatform: ${showCoursePlatform}`);
+    logError(`showCourseAuthoring: ${showCourseAuthoring}`)
+    logError(`isAuthenticated: ${isAuthenticated}`);
+    logError(`loading: ${loading}`);
+    logError(`User: ${user ? JSON.stringify({email: user.email, firstName: user.firstName}) : 'null'}`);
+    logError('=== INITIAL STATE LOGGED ===');
+  }, []);
+
+  useEffect(() => {
+    logError(`STATE CHANGE - showDashboard: ${showDashboard}, showAdminDashboard: ${showAdminDashboard}`);
+  }, [showDashboard, showAdminDashboard]);
+
+  useEffect(() => {
+    logError(`CALCULATOR FORM VISIBILITY - Should show: ${!showDashboard && !showAdminDashboard}`);
+  }, [showDashboard, showAdminDashboard]);
+
+  // Debug: Log form input changes
+  useEffect(() => {
+    if (income) logError(`Income changed: ${income}`);
+  }, [income]);
+
+  useEffect(() => {
+    if (age) logError(`Age changed: ${age}`);
+  }, [age]);
+
+  useEffect(() => {
+    if (demographic) logError(`Demographic changed: ${demographic}`);
+  }, [demographic]);
+
+  useEffect(() => {
+    if (city) logError(`City changed: ${city}`);
+  }, [city]);
 
   const handleCalculate = () => {
     setErrorLog([]); // Clear previous errors
@@ -229,6 +269,54 @@ function App() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-600 via-purple-700 to-purple-900">
+      {/* Floating Debug Panel */}
+      {debugVisible && (
+        <div className="fixed top-4 right-4 z-50 bg-yellow-100 border-4 border-yellow-500 rounded-lg shadow-2xl max-w-md max-h-96 overflow-hidden">
+          <div className="bg-yellow-500 px-4 py-2 flex justify-between items-center">
+            <h3 className="text-sm font-bold text-white">🔍 DEBUG LOG</h3>
+            <button
+              onClick={() => setDebugVisible(false)}
+              className="text-white hover:text-yellow-900 font-bold"
+            >
+              ✕
+            </button>
+          </div>
+          <div className="p-4 bg-white max-h-80 overflow-y-auto">
+            {errorLog.length === 0 ? (
+              <p className="text-sm text-gray-500">No logs yet...</p>
+            ) : (
+              errorLog.map((log, index) => (
+                <div key={index} className="text-xs font-mono text-gray-800 mb-1 border-b border-gray-200 pb-1">
+                  {log}
+                </div>
+              ))
+            )}
+          </div>
+          <div className="bg-yellow-100 px-4 py-2 border-t-2 border-yellow-500">
+            <button
+              onClick={() => {
+                const logText = errorLog.join('\n');
+                navigator.clipboard.writeText(logText);
+                alert('Debug log copied to clipboard!');
+              }}
+              className="text-xs bg-yellow-500 hover:bg-yellow-600 text-white px-3 py-1 rounded font-bold"
+            >
+              📋 Copy All Logs
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* Toggle Debug Button (when hidden) */}
+      {!debugVisible && (
+        <button
+          onClick={() => setDebugVisible(true)}
+          className="fixed bottom-4 right-4 z-50 bg-yellow-500 hover:bg-yellow-600 text-white px-4 py-2 rounded-full shadow-2xl font-bold text-sm"
+        >
+          🔍 Show Debug Log
+        </button>
+      )}
+
       <div className="min-h-screen p-4">
         <div className="max-w-4xl mx-auto bg-white bg-opacity-95 backdrop-blur-sm rounded-3xl shadow-2xl overflow-hidden">
           {!showDashboard && !showAdminDashboard && (
@@ -265,20 +353,9 @@ function App() {
                 setCity={setCity}
                 onCalculate={handleCalculate}
               />
+              {/* Debug: Confirm form is rendered */}
+              <div className="hidden">{logError('CalculatorForm component rendered')}</div>
 
-              {errorLog.length > 0 && (
-                <div className="mx-8 mt-4 p-4 bg-red-50 border-2 border-red-500 rounded-lg">
-                  <h3 className="text-lg font-bold text-red-700 mb-2">Debug Log:</h3>
-                  <div className="bg-white p-3 rounded border border-red-300 max-h-96 overflow-y-auto">
-                    {errorLog.map((log, index) => (
-                      <div key={index} className="text-sm font-mono text-gray-800 mb-1">
-                        {log}
-                      </div>
-                    ))}
-                  </div>
-                  <p className="text-xs text-red-600 mt-2">Copy this entire log and paste it in your message</p>
-                </div>
-              )}
 
               {allocations && (
                 <Results
