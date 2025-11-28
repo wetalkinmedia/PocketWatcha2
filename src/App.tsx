@@ -32,7 +32,7 @@ function App() {
   const [showDashboard, setShowDashboard] = useState(false);
   const [showAdminDashboard, setShowAdminDashboard] = useState(false);
   const [errorLog, setErrorLog] = useState<string[]>([]);
-  const [debugVisible, setDebugVisible] = useState(true);
+  const [debugVisible, setDebugVisible] = useState(false);
 
   // Use authentication hook
   const { isAuthenticated, user, loading, login, register, logout } = useAuth();
