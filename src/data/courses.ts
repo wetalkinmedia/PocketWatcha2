@@ -468,9 +468,9 @@ export const allCourses: Course[] = [
                 content: {
                   html: `<h2>Master AI-Powered Communication</h2>
                   <p>Communication is the foundation of professional success. AI tools can transform how you write, present, and connect with others.</p>
-                  
+
                   <h3>Essential Communication AI Tools</h3>
-                  
+
                   <h4>1. ChatGPT & Claude (Writing Assistants)</h4>
                   <ul>
                     <li><strong>Email Automation:</strong> Draft professional emails in seconds</li>
@@ -478,14 +478,14 @@ export const allCourses: Course[] = [
                     <li><strong>Presentation Content:</strong> Generate compelling slide content and speaker notes</li>
                     <li><strong>Meeting Summaries:</strong> Transform meeting notes into actionable summaries</li>
                   </ul>
-                  
+
                   <h4>2. Grammarly Business (Advanced Writing)</h4>
                   <ul>
                     <li><strong>Tone Detection:</strong> Ensure your writing matches your intended tone</li>
                     <li><strong>Clarity Enhancement:</strong> Make complex ideas simple and clear</li>
                     <li><strong>Professional Polish:</strong> Eliminate errors and improve readability</li>
                   </ul>
-                  
+
                   <h4>3. Otter.ai (Meeting Intelligence)</h4>
                   <ul>
                     <li><strong>Real-time Transcription:</strong> Never miss important details</li>
@@ -497,6 +497,224 @@ export const allCourses: Course[] = [
                 settings: {
                   fullWidth: false,
                   backgroundColor: '#ffffff',
+                  padding: '24px',
+                  margin: '16px 0'
+                }
+              }
+            ],
+            completed: false,
+            locked: false,
+            createdAt: '2024-01-01T00:00:00Z',
+            updatedAt: '2024-01-01T00:00:00Z'
+          },
+          {
+            id: 'lesson-2-2',
+            title: 'Professional Coding & AI Development',
+            description: 'Learn professional coding practices with AI-assisted development tools',
+            duration: 90,
+            contentBlocks: [
+              {
+                id: 'video-2-2-1',
+                type: 'video',
+                content: {
+                  title: 'Modern Coding Fundamentals with AI Tools',
+                  description: 'A comprehensive professional coding tutorial featuring VS Code, syntax highlighting, animated diagrams, and real-world programming concepts',
+                  url: 'https://sample-videos.com/zip/10/mp4/SampleVideo_1280x720_1mb.mp4',
+                  chapters: [
+                    {
+                      id: 'coding-chapter-1',
+                      title: 'Introduction to Modern Development',
+                      startTime: 0,
+                      endTime: 180,
+                      description: 'Professional workspace setup with VS Code, dark themes, and developer tools. Overview of AI-assisted coding with GitHub Copilot and ChatGPT integration.'
+                    },
+                    {
+                      id: 'coding-chapter-2',
+                      title: 'Variables & Data Types',
+                      startTime: 180,
+                      endTime: 360,
+                      description: 'Line-by-line code demonstration with syntax highlighting. Animated diagrams showing variable storage in memory, type systems, and data flow with arrows and labels.'
+                    },
+                    {
+                      id: 'coding-chapter-3',
+                      title: 'Functions & Control Flow',
+                      startTime: 360,
+                      endTime: 540,
+                      description: 'Over-the-shoulder coding sessions showing function creation, loops, and conditional statements. Visual diagrams with arrows showing program execution flow.'
+                    },
+                    {
+                      id: 'coding-chapter-4',
+                      title: 'Working with APIs',
+                      startTime: 540,
+                      endTime: 720,
+                      description: 'Real-world API integration examples with highlighted code blocks. Animated infographics showing request/response cycles, authentication, and data transformation.'
+                    },
+                    {
+                      id: 'coding-chapter-5',
+                      title: 'Code Optimization with AI',
+                      startTime: 720,
+                      endTime: 900,
+                      description: 'AI-assisted refactoring, debugging techniques, and code quality improvements. Side-by-side comparisons with smooth transitions showing before/after optimizations.'
+                    },
+                    {
+                      id: 'coding-chapter-6',
+                      title: 'Best Practices & Next Steps',
+                      startTime: 900,
+                      endTime: 1080,
+                      description: 'Professional coding standards, documentation, version control with Git. Simple step-by-step visual guides and your personalized learning roadmap.'
+                    }
+                  ],
+                  autoplay: false,
+                  controls: true
+                },
+                order: 0,
+                settings: {
+                  fullWidth: true,
+                  backgroundColor: '#1e1e1e',
+                  padding: '0px',
+                  margin: '24px 0'
+                }
+              },
+              {
+                id: 'text-2-2-1',
+                type: 'text',
+                content: {
+                  html: `<h2>Professional Coding Course Features</h2>
+                  <p>This comprehensive video tutorial includes everything you need to start coding professionally with AI assistance.</p>
+
+                  <h3>What You'll Experience</h3>
+
+                  <h4>🎨 Professional Visual Design</h4>
+                  <ul>
+                    <li><strong>Dark-Themed VS Code:</strong> Industry-standard development environment with syntax highlighting</li>
+                    <li><strong>Line-by-Line Animations:</strong> Smooth code appearance showing proper formatting and structure</li>
+                    <li><strong>Highlighted Syntax:</strong> Color-coded code for variables, functions, and commands</li>
+                    <li><strong>Zoom-In Details:</strong> Close-ups on important functions and code patterns</li>
+                  </ul>
+
+                  <h4>🎯 Instructional Approach</h4>
+                  <ul>
+                    <li><strong>Over-the-Shoulder Shots:</strong> Watch a professional developer work in real-time</li>
+                    <li><strong>Animated Diagrams:</strong> Visual explanations of variables, loops, data flow, and APIs</li>
+                    <li><strong>Infographics & Arrows:</strong> Clear labels and guides for complex concepts</li>
+                    <li><strong>Slow-Paced Steps:</strong> Easy-to-follow progression perfect for beginners</li>
+                  </ul>
+
+                  <h4>💡 Core Programming Concepts Covered</h4>
+                  <ul>
+                    <li><strong>Variables:</strong> How to store and manipulate data</li>
+                    <li><strong>Loops:</strong> Automating repetitive tasks efficiently</li>
+                    <li><strong>Functions:</strong> Creating reusable code blocks</li>
+                    <li><strong>APIs:</strong> Connecting to external services and data</li>
+                    <li><strong>Data Flow:</strong> Understanding how information moves through programs</li>
+                  </ul>
+
+                  <h4>🎬 Production Quality</h4>
+                  <ul>
+                    <li><strong>Coursera/Udemy Style:</strong> Professional course production standards</li>
+                    <li><strong>Polished Transitions:</strong> Smooth scene changes and visual effects</li>
+                    <li><strong>Background Music:</strong> Light, non-distracting audio ambiance</li>
+                    <li><strong>Clear Narration:</strong> Educational tone with step-by-step explanations</li>
+                  </ul>
+
+                  <h3>AI-Assisted Development Tools Featured</h3>
+                  <p>Learn how to leverage these cutting-edge AI coding assistants:</p>
+                  <ul>
+                    <li><strong>GitHub Copilot:</strong> AI pair programmer that suggests code as you type</li>
+                    <li><strong>ChatGPT Code Interpreter:</strong> Explain code, debug errors, and generate solutions</li>
+                    <li><strong>Tabnine:</strong> AI code completion across multiple languages</li>
+                    <li><strong>Replit AI:</strong> Cloud-based coding with AI assistance</li>
+                  </ul>
+
+                  <blockquote>
+                    <p>"This coding course combines professional development practices with modern AI tools, giving you the skills employers are actively seeking. Whether you're transitioning careers or upskilling, you'll learn to code like a professional."</p>
+                  </blockquote>
+
+                  <h3>Perfect For</h3>
+                  <ul>
+                    <li>Complete beginners with no coding experience</li>
+                    <li>White collar workers adding technical skills</li>
+                    <li>Career changers entering tech fields</li>
+                    <li>Professionals wanting to automate their work</li>
+                    <li>Anyone curious about AI-assisted development</li>
+                  </ul>`
+                },
+                order: 1,
+                settings: {
+                  fullWidth: false,
+                  backgroundColor: '#ffffff',
+                  padding: '24px',
+                  margin: '16px 0'
+                }
+              },
+              {
+                id: 'code-2-2-1',
+                type: 'code',
+                content: {
+                  title: 'Sample Code: Your First AI-Assisted Function',
+                  description: 'Practice code from the video - a simple function that demonstrates variables, loops, and APIs',
+                  code: `// Function to fetch and process AI tool recommendations
+async function getAIToolRecommendations(userRole, experienceLevel) {
+  // Define variables for API endpoint and configuration
+  const apiEndpoint = 'https://api.example.com/ai-tools';
+  const headers = {
+    'Content-Type': 'application/json',
+    'Authorization': 'Bearer YOUR_API_KEY'
+  };
+
+  // Create request payload with user parameters
+  const requestData = {
+    role: userRole,
+    experience: experienceLevel,
+    category: 'productivity'
+  };
+
+  try {
+    // Make API call to get recommendations
+    const response = await fetch(apiEndpoint, {
+      method: 'POST',
+      headers: headers,
+      body: JSON.stringify(requestData)
+    });
+
+    // Parse the JSON response
+    const data = await response.json();
+
+    // Process and filter recommendations
+    const recommendations = [];
+
+    // Loop through results and format them
+    for (let i = 0; i < data.tools.length; i++) {
+      const tool = data.tools[i];
+
+      recommendations.push({
+        name: tool.name,
+        description: tool.description,
+        difficulty: tool.learningCurve,
+        impact: tool.productivityGain
+      });
+    }
+
+    // Return formatted recommendations
+    return recommendations;
+
+  } catch (error) {
+    // Handle any errors gracefully
+    console.error('Error fetching AI tools:', error);
+    return [];
+  }
+}
+
+// Example usage
+const myRecommendations = await getAIToolRecommendations('office-worker', 'beginner');
+console.log('Recommended AI Tools:', myRecommendations);`,
+                  language: 'javascript',
+                  showLineNumbers: true
+                },
+                order: 2,
+                settings: {
+                  fullWidth: false,
+                  backgroundColor: '#1e1e1e',
                   padding: '24px',
                   margin: '16px 0'
                 }
