@@ -72,44 +72,6 @@ function App() {
     }
   }, [isAuthenticated, user]);
 
-  // Log component mount and state changes
-  useEffect(() => {
-    logError('=== APP COMPONENT MOUNTED ===');
-    logError(`Window location: ${window.location.href}`);
-    logError(`showDashboard: ${showDashboard}`);
-    logError(`showAdminDashboard: ${showAdminDashboard}`);
-    logError(`showCoursePlatform: ${showCoursePlatform}`);
-    logError(`showCourseAuthoring: ${showCourseAuthoring}`)
-    logError(`isAuthenticated: ${isAuthenticated}`);
-    logError(`loading: ${loading}`);
-    logError(`User: ${user ? JSON.stringify({email: user.email, firstName: user.firstName}) : 'null'}`);
-    logError('=== INITIAL STATE LOGGED ===');
-  }, [logError]);
-
-  useEffect(() => {
-    logError(`STATE CHANGE - showDashboard: ${showDashboard}, showAdminDashboard: ${showAdminDashboard}`);
-  }, [showDashboard, showAdminDashboard, logError]);
-
-  useEffect(() => {
-    logError(`CALCULATOR FORM VISIBILITY - Should show: ${!showDashboard && !showAdminDashboard}`);
-  }, [showDashboard, showAdminDashboard, logError]);
-
-  // Debug: Log form input changes
-  useEffect(() => {
-    if (income) logError(`Income changed: ${income}`);
-  }, [income, logError]);
-
-  useEffect(() => {
-    if (age) logError(`Age changed: ${age}`);
-  }, [age, logError]);
-
-  useEffect(() => {
-    if (demographic) logError(`Demographic changed: ${demographic}`);
-  }, [demographic, logError]);
-
-  useEffect(() => {
-    if (city) logError(`City changed: ${city}`);
-  }, [city, logError]);
 
   const handleCalculate = () => {
     setErrorLog([]); // Clear previous errors
