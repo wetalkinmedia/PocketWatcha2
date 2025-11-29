@@ -10,9 +10,6 @@
   to = "/index.html"
   status = 200
 
-[context.deploy-preview.environment]
-  NODE_ENV = "development"
-
 [[headers]]
   for = "/*"
   [headers.values]
