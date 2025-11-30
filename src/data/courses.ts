@@ -691,7 +691,7 @@ export const allCourses: Course[] = [
                 type: 'quiz',
                 content: {
                   title: 'Personal AI Readiness Assessment',
-                  description: 'Discover your AI readiness level and get personalized recommendations',
+                  description: 'This interactive assessment will help you understand your current AI readiness level and provide personalized recommendations for your career growth. Answer 3 questions about your role, current AI usage, and concerns. Your results will guide your learning path through the rest of this course.',
                   questions: [
                     {
                       id: 'q1-2-1',

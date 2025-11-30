@@ -669,7 +669,10 @@ export function CoursePlatform({ isOpen, onClose }: CoursePlatformProps) {
             <div className="space-y-4">
               <div className="flex items-center justify-between">
                 <div className="text-sm text-gray-600">
-                  Lesson {selectedModule?.lessons.findIndex(l => l.id === selectedLesson.id)! + 1} of {selectedModule?.lessons.length}
+                  {selectedLesson.contentBlocks?.some(block => block.type === 'quiz')
+                    ? `Assessment ${selectedModule?.lessons.findIndex(l => l.id === selectedLesson.id)! + 1} of ${selectedModule?.lessons.length}`
+                    : `Lesson ${selectedModule?.lessons.findIndex(l => l.id === selectedLesson.id)! + 1} of ${selectedModule?.lessons.length}`
+                  }
                 </div>
                 {!selectedLesson.completed && (
                   <button
@@ -693,7 +696,13 @@ export function CoursePlatform({ isOpen, onClose }: CoursePlatformProps) {
                   }}
                   className="w-full bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors flex items-center justify-center gap-2 font-semibold"
                 >
-                  Next Lesson
+                  {(() => {
+                    const currentIndex = selectedModule?.lessons.findIndex(l => l.id === selectedLesson.id) || 0;
+                    const nextLesson = selectedModule?.lessons[currentIndex + 1];
+                    return nextLesson?.contentBlocks?.some(block => block.type === 'quiz')
+                      ? 'Start Assessment'
+                      : 'Next Lesson';
+                  })()}
                   <ArrowRight size={16} />
                 </button>
               )}
