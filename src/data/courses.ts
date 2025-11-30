@@ -224,7 +224,7 @@ export const allCourses: Course[] = [
                 content: {
                   title: 'AI Tools Overview - Interactive Demo',
                   description: 'A comprehensive overview of essential AI tools for modern professionals',
-                  url: 'https://sample-videos.com/zip/10/mp4/SampleVideo_1280x720_1mb.mp4',
+                  url: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4',
                   chapters: [
                     {
                       id: 'chapter-1',
@@ -519,7 +519,7 @@ export const allCourses: Course[] = [
                 content: {
                   title: 'Modern Coding Fundamentals with AI Tools',
                   description: 'A comprehensive professional coding tutorial featuring VS Code, syntax highlighting, animated diagrams, and real-world programming concepts',
-                  url: 'https://sample-videos.com/zip/10/mp4/SampleVideo_1280x720_1mb.mp4',
+                  url: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4',
                   chapters: [
                     {
                       id: 'coding-chapter-1',
