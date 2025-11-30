@@ -222,19 +222,23 @@ export const allCourses: Course[] = [
                 id: 'text-intro-1',
                 type: 'text',
                 content: {
-                  html: `<h2>Welcome to Interactive Video Learning</h2>
+                  html: `<div style="background: #fef3c7; border-left: 4px solid #f59e0b; padding: 16px; margin-bottom: 24px; border-radius: 4px;">
+                    <p style="margin: 0; color: #92400e;"><strong>⚠️ Note:</strong> The video on the right is a placeholder demo. All learning content is provided in the written text below. Read through each chapter for the complete lesson material.</p>
+                  </div>
+
+                  <h2>Welcome to Interactive Video Learning</h2>
                   <p>In this lesson, you'll experience video learning with interactive chapter navigation. The video appears on the right side of your screen, while you can read along and take notes here on the left.</p>
 
                   <h3>How to Use This Lesson:</h3>
                   <ul>
-                    <li><strong>Watch the video</strong> on the right side of your screen</li>
-                    <li><strong>Click chapter buttons</strong> below the video to jump to specific sections</li>
-                    <li><strong>Read along</strong> with the content here on the left</li>
-                    <li><strong>Pause and rewind</strong> as needed to fully understand each concept</li>
+                    <li><strong>Read the content</strong> here on the left - this is your primary learning material</li>
+                    <li><strong>Video placeholder</strong> on the right demonstrates the chapter navigation feature</li>
+                    <li><strong>Click chapter buttons</strong> below the video to see how they jump to timestamps</li>
+                    <li><strong>Scroll through</strong> all written chapters below for complete lesson content</li>
                   </ul>
 
                   <h3>What You'll Learn:</h3>
-                  <p>This video covers essential AI tools that are transforming how professionals work across industries. You'll discover practical applications, see real examples, and learn how to get started with each tool.</p>`
+                  <p>This lesson covers essential AI tools that are transforming how professionals work across industries. You'll discover practical applications, real examples, and detailed step-by-step guidance to get started with each tool.</p>`
                 },
                 order: 0,
                 settings: {

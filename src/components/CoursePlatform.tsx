@@ -607,13 +607,18 @@ export function CoursePlatform({ isOpen, onClose }: CoursePlatformProps) {
             {/* Right Panel - Video */}
             <div className="w-1/2 bg-black flex flex-col">
               {selectedLesson.contentBlocks?.find(block => block.type === 'video') ? (
-                <div className="flex-1 flex items-center justify-center p-8">
-                  <video
-                    controls
-                    className="w-full h-full rounded-lg"
-                    src={selectedLesson.contentBlocks.find(block => block.type === 'video')?.content.url}
-                  />
-                </div>
+                <>
+                  <div className="bg-yellow-600 text-white px-4 py-2 text-sm font-semibold text-center">
+                    📹 Demo Video - Replace with actual course video URL
+                  </div>
+                  <div className="flex-1 flex items-center justify-center p-8">
+                    <video
+                      controls
+                      className="w-full h-full rounded-lg"
+                      src={selectedLesson.contentBlocks.find(block => block.type === 'video')?.content.url}
+                    />
+                  </div>
+                </>
               ) : (
                 <div className="flex-1 flex items-center justify-center text-gray-400 p-8">
                   <div className="text-center">
