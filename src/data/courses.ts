@@ -219,6 +219,32 @@ export const allCourses: Course[] = [
             duration: 30,
             contentBlocks: [
               {
+                id: 'text-intro-1',
+                type: 'text',
+                content: {
+                  html: `<h2>Welcome to Interactive Video Learning</h2>
+                  <p>In this lesson, you'll experience video learning with interactive chapter navigation. The video appears on the right side of your screen, while you can read along and take notes here on the left.</p>
+
+                  <h3>How to Use This Lesson:</h3>
+                  <ul>
+                    <li><strong>Watch the video</strong> on the right side of your screen</li>
+                    <li><strong>Click chapter buttons</strong> below the video to jump to specific sections</li>
+                    <li><strong>Read along</strong> with the content here on the left</li>
+                    <li><strong>Pause and rewind</strong> as needed to fully understand each concept</li>
+                  </ul>
+
+                  <h3>What You'll Learn:</h3>
+                  <p>This video covers essential AI tools that are transforming how professionals work across industries. You'll discover practical applications, see real examples, and learn how to get started with each tool.</p>`
+                },
+                order: 0,
+                settings: {
+                  fullWidth: false,
+                  backgroundColor: '#ffffff',
+                  padding: '24px',
+                  margin: '16px 0'
+                }
+              },
+              {
                 id: 'video-demo-1',
                 type: 'video',
                 content: {
@@ -265,12 +291,279 @@ export const allCourses: Course[] = [
                   autoplay: false,
                   controls: true
                 },
-                order: 0,
+                order: 1,
                 settings: {
                   fullWidth: true,
                   backgroundColor: '#000000',
                   padding: '0px',
                   margin: '24px 0'
+                }
+              },
+              {
+                id: 'text-chapter-1',
+                type: 'text',
+                content: {
+                  html: `<h2>Chapter 1: Introduction to AI Tools</h2>
+                  <p><em>Watch from 0:00 - 2:00 in the video →</em></p>
+
+                  <p>Artificial Intelligence is no longer just science fiction—it's a practical set of tools that professionals across all industries are using every single day. In this introduction, we'll explore:</p>
+
+                  <h3>Key Concepts:</h3>
+                  <ul>
+                    <li><strong>What is AI?</strong> - Machine learning systems that can perform tasks that typically require human intelligence</li>
+                    <li><strong>Why Now?</strong> - Recent breakthroughs have made AI accessible to everyone, not just tech companies</li>
+                    <li><strong>Real Impact</strong> - Companies using AI report 30-40% time savings on routine tasks</li>
+                  </ul>
+
+                  <h3>The AI Revolution:</h3>
+                  <p>We're living through a fundamental shift in how work gets done. AI tools are:</p>
+                  <ul>
+                    <li>Automating repetitive tasks so you can focus on creative work</li>
+                    <li>Analyzing data faster than any human could</li>
+                    <li>Generating content, designs, and code in seconds</li>
+                    <li>Available 24/7 as virtual assistants</li>
+                  </ul>
+
+                  <blockquote style="border-left: 4px solid #3b82f6; padding-left: 16px; color: #1e40af; background: #eff6ff; padding: 16px; margin: 16px 0;">
+                    💡 <strong>Did You Know?</strong> 80% of professionals who use AI tools say they've significantly increased their productivity within the first month of adoption.
+                  </blockquote>`
+                },
+                order: 2,
+                settings: {
+                  fullWidth: false,
+                  backgroundColor: '#ffffff',
+                  padding: '24px',
+                  margin: '16px 0'
+                }
+              },
+              {
+                id: 'text-chapter-2',
+                type: 'text',
+                content: {
+                  html: `<h2>Chapter 2: Communication AI Tools</h2>
+                  <p><em>Watch from 2:00 - 4:00 in the video →</em></p>
+
+                  <p>Communication tools powered by AI are transforming how we write, edit, and communicate. These tools don't replace your voice—they enhance it.</p>
+
+                  <h3>Featured Tools:</h3>
+
+                  <h4>1. ChatGPT (Conversational AI)</h4>
+                  <ul>
+                    <li><strong>What it does:</strong> Answers questions, writes content, brainstorms ideas, and helps solve problems</li>
+                    <li><strong>Use cases:</strong> Draft emails, create presentations, research topics, write code</li>
+                    <li><strong>Best for:</strong> Anyone who writes or problem-solves as part of their job</li>
+                    <li><strong>Pro tip:</strong> The more specific your prompt, the better the output. Instead of "write an email," try "write a professional follow-up email to a client about project delays, maintaining a positive tone"</li>
+                  </ul>
+
+                  <h4>2. Grammarly (Writing Assistant)</h4>
+                  <ul>
+                    <li><strong>What it does:</strong> Real-time grammar, spelling, and tone suggestions</li>
+                    <li><strong>Use cases:</strong> Polish emails, reports, and documents; ensure professional tone</li>
+                    <li><strong>Best for:</strong> Anyone who writes professionally</li>
+                    <li><strong>Pro tip:</strong> Use the tone detector to match your writing style to your audience</li>
+                  </ul>
+
+                  <h4>3. Jasper AI (Content Creation)</h4>
+                  <ul>
+                    <li><strong>What it does:</strong> Generates marketing copy, blog posts, and social media content</li>
+                    <li><strong>Use cases:</strong> Marketing campaigns, product descriptions, ad copy</li>
+                    <li><strong>Best for:</strong> Marketers, content creators, and business owners</li>
+                  </ul>
+
+                  <blockquote style="border-left: 4px solid #10b981; padding-left: 16px; color: #065f46; background: #d1fae5; padding: 16px; margin: 16px 0;">
+                    ✅ <strong>Quick Win:</strong> Start using ChatGPT today for free at chat.openai.com. Try asking it to help you draft your next email or summarize a long document.
+                  </blockquote>`
+                },
+                order: 3,
+                settings: {
+                  fullWidth: false,
+                  backgroundColor: '#ffffff',
+                  padding: '24px',
+                  margin: '16px 0'
+                }
+              },
+              {
+                id: 'text-chapter-3',
+                type: 'text',
+                content: {
+                  html: `<h2>Chapter 3: Design and Creative AI</h2>
+                  <p><em>Watch from 4:00 - 6:00 in the video →</em></p>
+
+                  <p>You don't need to be a designer anymore to create professional visual content. AI design tools democratize creativity, allowing anyone to produce stunning visuals.</p>
+
+                  <h3>Featured Tools:</h3>
+
+                  <h4>1. Canva AI (Graphic Design)</h4>
+                  <ul>
+                    <li><strong>What it does:</strong> Text-to-image generation, background removal, design suggestions</li>
+                    <li><strong>Use cases:</strong> Social media graphics, presentations, logos, marketing materials</li>
+                    <li><strong>Best for:</strong> Small business owners, marketers, non-designers</li>
+                    <li><strong>Pro tip:</strong> Use the "Magic Design" feature—just describe what you need, and it generates multiple design options</li>
+                  </ul>
+
+                  <h4>2. DALL-E / Midjourney (AI Image Generation)</h4>
+                  <ul>
+                    <li><strong>What it does:</strong> Creates unique images from text descriptions</li>
+                    <li><strong>Use cases:</strong> Custom illustrations, concept art, unique visuals for content</li>
+                    <li><strong>Best for:</strong> Content creators who need original imagery</li>
+                    <li><strong>Example prompt:</strong> "A professional business team collaborating around a table, modern office, bright natural lighting, photorealistic style"</li>
+                  </ul>
+
+                  <h4>3. Adobe Firefly (Creative Suite AI)</h4>
+                  <ul>
+                    <li><strong>What it does:</strong> AI-powered editing in Photoshop and Illustrator</li>
+                    <li><strong>Use cases:</strong> Photo editing, object removal, style transfer</li>
+                    <li><strong>Best for:</strong> Professional designers and photographers</li>
+                  </ul>
+
+                  <h3>Real-World Example:</h3>
+                  <div style="background: #fef3c7; border: 2px solid #f59e0b; padding: 16px; border-radius: 8px; margin: 16px 0;">
+                    <strong>Case Study:</strong> A small bakery owner with no design experience used Canva AI to create:
+                    <ul>
+                      <li>A complete social media presence in 2 hours</li>
+                      <li>Professional menu designs</li>
+                      <li>Promotional flyers and posters</li>
+                    </ul>
+                    <strong>Result:</strong> Saved $2,000 in designer fees and launched marketing in a single weekend.
+                  </div>`
+                },
+                order: 4,
+                settings: {
+                  fullWidth: false,
+                  backgroundColor: '#ffffff',
+                  padding: '24px',
+                  margin: '16px 0'
+                }
+              },
+              {
+                id: 'text-chapter-4',
+                type: 'text',
+                content: {
+                  html: `<h2>Chapter 4: Data and Analytics AI</h2>
+                  <p><em>Watch from 6:00 - 8:00 in the video →</em></p>
+
+                  <p>Data analysis used to require advanced technical skills. Now, AI tools can analyze patterns, create visualizations, and generate insights automatically.</p>
+
+                  <h3>Featured Tools:</h3>
+
+                  <h4>1. Microsoft Copilot in Excel</h4>
+                  <ul>
+                    <li><strong>What it does:</strong> Natural language data analysis—just ask questions about your data</li>
+                    <li><strong>Use cases:</strong> Sales analysis, budget tracking, trend identification</li>
+                    <li><strong>Example:</strong> Type "Show me which products had the highest sales last quarter" and get instant visualizations</li>
+                    <li><strong>Best for:</strong> Business professionals who work with data regularly</li>
+                  </ul>
+
+                  <h4>2. Tableau AI</h4>
+                  <ul>
+                    <li><strong>What it does:</strong> Automatic dashboard creation and insight generation</li>
+                    <li><strong>Use cases:</strong> Business intelligence, reporting, data visualization</li>
+                    <li><strong>Best for:</strong> Analysts and managers who need to present data</li>
+                  </ul>
+
+                  <h4>3. Power BI AI Features</h4>
+                  <ul>
+                    <li><strong>What it does:</strong> AI-powered insights and anomaly detection</li>
+                    <li><strong>Use cases:</strong> Identifying trends, forecasting, automated reporting</li>
+                    <li><strong>Best for:</strong> Organizations using Microsoft ecosystem</li>
+                  </ul>
+
+                  <h3>Why This Matters:</h3>
+                  <p>Before AI:</p>
+                  <ul>
+                    <li>Hours spent manually creating charts and reports</li>
+                    <li>Easy to miss important patterns in data</li>
+                    <li>Required specialized training to use analytics tools</li>
+                  </ul>
+
+                  <p>With AI:</p>
+                  <ul>
+                    <li>Ask questions in plain English, get instant answers</li>
+                    <li>AI automatically highlights anomalies and trends</li>
+                    <li>Anyone can become data-literate</li>
+                  </ul>
+
+                  <blockquote style="border-left: 4px solid #8b5cf6; padding-left: 16px; color: #5b21b6; background: #f5f3ff; padding: 16px; margin: 16px 0;">
+                    📊 <strong>Pro Insight:</strong> Companies that use AI analytics tools make data-driven decisions 3x faster than those using traditional methods.
+                  </blockquote>`
+                },
+                order: 5,
+                settings: {
+                  fullWidth: false,
+                  backgroundColor: '#ffffff',
+                  padding: '24px',
+                  margin: '16px 0'
+                }
+              },
+              {
+                id: 'text-chapter-5',
+                type: 'text',
+                content: {
+                  html: `<h2>Chapter 5: Your Action Plan</h2>
+                  <p><em>Watch from 8:00 - 10:00 in the video →</em></p>
+
+                  <p>Now that you understand the landscape of AI tools, here's your step-by-step plan to start using them effectively.</p>
+
+                  <h3>Week 1: Communication Tools</h3>
+                  <ol>
+                    <li><strong>Day 1-2:</strong> Create a free ChatGPT account and use it for 3 tasks each day</li>
+                    <li><strong>Day 3-4:</strong> Install Grammarly browser extension and use it for all email</li>
+                    <li><strong>Day 5:</strong> Compare your work with and without AI assistance</li>
+                  </ol>
+
+                  <h3>Week 2: Creative Tools</h3>
+                  <ol>
+                    <li><strong>Day 1-2:</strong> Sign up for Canva and create 3 social media posts using AI</li>
+                    <li><strong>Day 3-4:</strong> Design a presentation using AI-generated graphics</li>
+                    <li><strong>Day 5:</strong> Create a complete visual brand identity for a project</li>
+                  </ol>
+
+                  <h3>Week 3: Data Tools</h3>
+                  <ol>
+                    <li><strong>Day 1-2:</strong> Enable Copilot in Microsoft 365 (if available)</li>
+                    <li><strong>Day 3-4:</strong> Use natural language queries to analyze your data</li>
+                    <li><strong>Day 5:</strong> Create an automated dashboard for regular reporting</li>
+                  </ol>
+
+                  <h3>Essential Tips for Success:</h3>
+                  <div style="background: #dbeafe; border-left: 4px solid #3b82f6; padding: 20px; margin: 20px 0;">
+                    <h4 style="color: #1e40af; margin-top: 0;">🚀 Remember These Key Points:</h4>
+                    <ul style="margin-bottom: 0;">
+                      <li><strong>Start small:</strong> Pick one tool and master it before adding more</li>
+                      <li><strong>Be specific:</strong> The better your prompts, the better the AI output</li>
+                      <li><strong>Iterate:</strong> If the first result isn't perfect, refine and try again</li>
+                      <li><strong>Stay curious:</strong> New AI tools launch every week—explore regularly</li>
+                      <li><strong>Practice daily:</strong> Make AI tools part of your daily workflow</li>
+                    </ul>
+                  </div>
+
+                  <h3>Measuring Your Progress:</h3>
+                  <p>After 30 days of using AI tools, evaluate:</p>
+                  <ul>
+                    <li>How much time are you saving weekly?</li>
+                    <li>What tasks have become easier or more enjoyable?</li>
+                    <li>Which tools have become indispensable?</li>
+                    <li>What new capabilities have you gained?</li>
+                  </ul>
+
+                  <div style="background: #dcfce7; border: 2px solid #10b981; padding: 20px; border-radius: 8px; margin: 24px 0;">
+                    <h4 style="color: #065f46; margin-top: 0;">🎯 Your Next Steps:</h4>
+                    <ol style="margin-bottom: 0;">
+                      <li>Mark this lesson as complete</li>
+                      <li>Choose ONE AI tool to start with this week</li>
+                      <li>Set a reminder to practice with it daily for 7 days</li>
+                      <li>Come back to reference this guide as you explore more tools</li>
+                    </ol>
+                  </div>
+
+                  <p style="font-size: 1.1em; color: #1f2937; margin-top: 24px;"><strong>Congratulations!</strong> You now have a comprehensive understanding of essential AI tools and a concrete plan to integrate them into your workflow. The future of work is here—and you're ready to embrace it.</p>`
+                },
+                order: 6,
+                settings: {
+                  fullWidth: false,
+                  backgroundColor: '#ffffff',
+                  padding: '24px',
+                  margin: '16px 0'
                 }
               }
             ],
