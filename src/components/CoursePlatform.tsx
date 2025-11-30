@@ -666,11 +666,11 @@ export function CoursePlatform({ isOpen, onClose }: CoursePlatformProps) {
           </div>
 
           <div className="bg-gray-50 p-6 border-t border-gray-200">
-            <div className="flex items-center justify-between">
-              <div className="text-sm text-gray-600">
-                Lesson {selectedModule?.lessons.findIndex(l => l.id === selectedLesson.id)! + 1} of {selectedModule?.lessons.length}
-              </div>
-              <div className="flex gap-3">
+            <div className="space-y-4">
+              <div className="flex items-center justify-between">
+                <div className="text-sm text-gray-600">
+                  Lesson {selectedModule?.lessons.findIndex(l => l.id === selectedLesson.id)! + 1} of {selectedModule?.lessons.length}
+                </div>
                 {!selectedLesson.completed && (
                   <button
                     onClick={() => handleLessonComplete(selectedLesson.id)}
@@ -680,6 +680,9 @@ export function CoursePlatform({ isOpen, onClose }: CoursePlatformProps) {
                     Mark Complete
                   </button>
                 )}
+              </div>
+
+              {selectedModule?.lessons.find((_, index) => index > selectedModule.lessons.findIndex(l => l.id === selectedLesson.id)) && (
                 <button
                   onClick={() => {
                     const currentIndex = selectedModule?.lessons.findIndex(l => l.id === selectedLesson.id) || 0;
@@ -688,13 +691,12 @@ export function CoursePlatform({ isOpen, onClose }: CoursePlatformProps) {
                       setSelectedLesson(nextLesson);
                     }
                   }}
-                  className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors flex items-center gap-2"
-                  disabled={!selectedModule?.lessons.find((_, index) => index > selectedModule.lessons.findIndex(l => l.id === selectedLesson.id))}
+                  className="w-full bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors flex items-center justify-center gap-2 font-semibold"
                 >
                   Next Lesson
                   <ArrowRight size={16} />
                 </button>
-              </div>
+              )}
             </div>
           </div>
         </div>
