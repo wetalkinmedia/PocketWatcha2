@@ -539,73 +539,124 @@ export function CoursePlatform({ isOpen, onClose }: CoursePlatformProps) {
         </div>
 
         <div className="bg-white rounded-xl shadow-lg border border-gray-200 overflow-hidden">
-          <div className="p-8">
-            <div className="prose prose-lg max-w-none">
-              {selectedLesson.contentBlocks?.map((block, index) => (
-                <div key={block.id || index} className="mb-6">
-                  {block.type === 'text' && block.content.html && (
-                    <div 
-                      dangerouslySetInnerHTML={{ 
-                        __html: block.content.html.replace(/\n/g, '<br>').replace(/```([^`]+)```/g, '<pre class="bg-gray-100 p-4 rounded-lg overflow-x-auto"><code>$1</code></pre>').replace(/`([^`]+)`/g, '<code class="bg-gray-100 px-2 py-1 rounded">$1</code>') 
-                      }}
-                    />
-                  )}
-                  {block.type === 'video' && block.content.videoUrl && (
-                    <video 
-                      controls 
-                      className="w-full rounded-lg"
-                      src={block.content.videoUrl}
-                    />
-                  )}
-                  {block.type === 'image' && block.content.imageUrl && (
-                    <img 
-                      src={block.content.imageUrl} 
-                      alt={block.content.alt || 'Course content'} 
-                      className="w-full rounded-lg"
-                    />
-                  )}
-                  {block.type === 'code' && block.content.code && (
-                    <div className="bg-gray-50 border border-gray-200 rounded-lg overflow-hidden">
-                      {block.content.title && (
-                        <div className="bg-gray-800 text-white px-4 py-2 text-sm font-semibold">
-                          {block.content.title}
-                        </div>
-                      )}
-                      {block.content.description && (
-                        <div className="px-4 py-2 text-sm text-gray-600 border-b border-gray-200">
-                          {block.content.description}
-                        </div>
-                      )}
-                      <pre className="p-4 overflow-x-auto">
-                        <code className="text-sm">{block.content.code}</code>
-                      </pre>
-                    </div>
-                  )}
-                  {(block.type === 'quiz' || block.type === 'interactive-image' || block.type === 'drag-drop') && (
-                    <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-                      {block.type === 'interactive-image' && (
-                        <InteractiveHotspot
-                          imageUrl={block.content.imageUrl || ''}
-                          title={block.content.title || 'Interactive Image'}
-                          description={block.content.description || ''}
-                          hotspots={block.content.hotspots || []}
-                        />
-                      )}
-                      {block.type === 'drag-drop' && (
-                        <DragDropActivity
-                          title={block.content.title || 'Drag & Drop Activity'}
-                          instructions={block.content.instructions || ''}
-                          items={block.content.items || []}
-                          feedback={block.content.feedback || { correct: 'Correct!', incorrect: 'Try again!' }}
-                        />
-                      )}
-                      {block.type === 'quiz' && (
-                        <InteractiveQuiz {...block.content} lessonId={selectedLesson.id} />
-                      )}
-                    </div>
-                  )}
+          <div className="flex h-[calc(100vh-250px)]">
+            {/* Left Panel - Content */}
+            <div className="w-1/2 overflow-y-auto border-r border-gray-200 p-8">
+              <div className="prose prose-lg max-w-none">
+                {selectedLesson.contentBlocks?.map((block, index) => (
+                  <div key={block.id || index} className="mb-6">
+                    {block.type === 'text' && block.content.html && (
+                      <div
+                        dangerouslySetInnerHTML={{
+                          __html: block.content.html.replace(/\n/g, '<br>').replace(/```([^`]+)```/g, '<pre class="bg-gray-100 p-4 rounded-lg overflow-x-auto"><code>$1</code></pre>').replace(/`([^`]+)`/g, '<code class="bg-gray-100 px-2 py-1 rounded">$1</code>')
+                        }}
+                      />
+                    )}
+                    {block.type === 'image' && block.content.imageUrl && (
+                      <img
+                        src={block.content.imageUrl}
+                        alt={block.content.alt || 'Course content'}
+                        className="w-full rounded-lg"
+                      />
+                    )}
+                    {block.type === 'code' && block.content.code && (
+                      <div className="bg-gray-50 border border-gray-200 rounded-lg overflow-hidden">
+                        {block.content.title && (
+                          <div className="bg-gray-800 text-white px-4 py-2 text-sm font-semibold">
+                            {block.content.title}
+                          </div>
+                        )}
+                        {block.content.description && (
+                          <div className="px-4 py-2 text-sm text-gray-600 border-b border-gray-200">
+                            {block.content.description}
+                          </div>
+                        )}
+                        <pre className="p-4 overflow-x-auto">
+                          <code className="text-sm">{block.content.code}</code>
+                        </pre>
+                      </div>
+                    )}
+                    {(block.type === 'quiz' || block.type === 'interactive-image' || block.type === 'drag-drop') && (
+                      <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                        {block.type === 'interactive-image' && (
+                          <InteractiveHotspot
+                            imageUrl={block.content.imageUrl || ''}
+                            title={block.content.title || 'Interactive Image'}
+                            description={block.content.description || ''}
+                            hotspots={block.content.hotspots || []}
+                          />
+                        )}
+                        {block.type === 'drag-drop' && (
+                          <DragDropActivity
+                            title={block.content.title || 'Drag & Drop Activity'}
+                            instructions={block.content.instructions || ''}
+                            items={block.content.items || []}
+                            feedback={block.content.feedback || { correct: 'Correct!', incorrect: 'Try again!' }}
+                          />
+                        )}
+                        {block.type === 'quiz' && (
+                          <InteractiveQuiz {...block.content} lessonId={selectedLesson.id} />
+                        )}
+                      </div>
+                    )}
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Right Panel - Video */}
+            <div className="w-1/2 bg-black flex flex-col">
+              {selectedLesson.contentBlocks?.find(block => block.type === 'video') ? (
+                <div className="flex-1 flex items-center justify-center p-8">
+                  <video
+                    controls
+                    className="w-full h-full rounded-lg"
+                    src={selectedLesson.contentBlocks.find(block => block.type === 'video')?.content.url}
+                  />
                 </div>
-              ))}
+              ) : (
+                <div className="flex-1 flex items-center justify-center text-gray-400 p-8">
+                  <div className="text-center">
+                    <Play size={64} className="mx-auto mb-4 opacity-50" />
+                    <p>No video available for this lesson</p>
+                  </div>
+                </div>
+              )}
+
+              {/* Video Chapters */}
+              {selectedLesson.contentBlocks?.find(block => block.type === 'video' && block.content.chapters) && (
+                <div className="bg-gray-900 p-4 max-h-48 overflow-y-auto">
+                  <h4 className="text-white font-semibold mb-3 text-sm">Chapters</h4>
+                  <div className="space-y-2">
+                    {selectedLesson.contentBlocks
+                      .find(block => block.type === 'video')
+                      ?.content.chapters?.map((chapter: any, idx: number) => (
+                        <button
+                          key={chapter.id}
+                          onClick={() => {
+                            const video = document.querySelector('video');
+                            if (video) video.currentTime = chapter.startTime;
+                          }}
+                          className="w-full text-left px-3 py-2 rounded bg-gray-800 hover:bg-gray-700 transition-colors"
+                        >
+                          <div className="flex items-start gap-2">
+                            <span className="text-blue-400 text-xs font-semibold mt-0.5">
+                              {idx + 1}
+                            </span>
+                            <div className="flex-1 min-w-0">
+                              <div className="text-white text-sm font-medium truncate">
+                                {chapter.title}
+                              </div>
+                              <div className="text-gray-400 text-xs mt-1">
+                                {Math.floor(chapter.startTime / 60)}:{String(chapter.startTime % 60).padStart(2, '0')}
+                              </div>
+                            </div>
+                          </div>
+                        </button>
+                      ))}
+                  </div>
+                </div>
+              )}
             </div>
           </div>
 
