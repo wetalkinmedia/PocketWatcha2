@@ -38,6 +38,13 @@ export function CalculatorForm({
     }
   };
 
+  const handleIncomeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    if (value === '' || /^\d*\.?\d*$/.test(value)) {
+      setIncome(value);
+    }
+  };
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     onCalculate();
@@ -57,14 +64,13 @@ export function CalculatorForm({
           💰 Monthly Income
         </label>
         <input
-          type="number"
+          type="text"
+          inputMode="decimal"
           id="income"
           value={income}
-          onChange={(e) => setIncome(e.target.value)}
+          onChange={handleIncomeChange}
           onKeyPress={handleKeyPress}
           placeholder="Enter your monthly income (e.g., 5000)"
-          min="0"
-          step="0.01"
           className="w-full p-4 border-2 border-gray-200 rounded-xl text-lg bg-white focus:border-blue-400 focus:ring-4 focus:ring-blue-100 transition-all duration-300 transform focus:-translate-y-1 focus:shadow-lg"
         />
       </div>
