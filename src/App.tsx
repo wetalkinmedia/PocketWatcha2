@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
+import { Routes, Route } from 'react-router-dom';
 import { LoginPopup } from './components/LoginPopup';
 import { UserProfile } from './components/UserProfile';
 import { TestPanel } from './components/TestPanel';
@@ -10,6 +11,7 @@ import { CoursePlatform } from './components/CoursePlatform';
 import { CourseAuthoringDashboard } from './components/course-authoring/CourseAuthoringDashboard';
 import { Dashboard } from './components/Dashboard';
 import { AdminDashboard } from './components/AdminDashboard';
+import { ResetPassword } from './components/ResetPassword';
 import { useTimer } from './hooks/useTimer';
 import { useAuth } from './hooks/useAuth';
 import { getPersonalizedAllocation } from './utils/allocationLogic';
@@ -230,7 +232,7 @@ function App() {
   };
 
 
-  return (
+  const MainApp = () => (
     <div className="min-h-screen bg-gradient-to-br from-blue-600 via-purple-700 to-purple-900">
       {/* Floating Debug Panel */}
       {debugVisible && (
@@ -387,6 +389,13 @@ function App() {
         <TestPanel />
       </div>
     </div>
+  );
+
+  return (
+    <Routes>
+      <Route path="/" element={<MainApp />} />
+      <Route path="/reset-password" element={<ResetPassword />} />
+    </Routes>
   );
 }
 
