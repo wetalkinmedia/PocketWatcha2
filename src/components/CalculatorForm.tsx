@@ -1,7 +1,7 @@
 import React from 'react';
 import { AgeGroup, LivingSituation } from '../types';
-import { currencies } from '../utils/currencyData';
 import { cityGroups } from '../utils/cityData';
+import { CurrencySelector } from './CurrencySelector';
 
 interface CalculatorFormProps {
   income: string;
@@ -46,21 +46,10 @@ export function CalculatorForm({
   return (
     <form onSubmit={handleSubmit} className="p-8 space-y-6">
       <div className="space-y-2">
-        <label htmlFor="currency" className="block text-lg font-semibold text-gray-800">
+        <label className="block text-lg font-semibold text-gray-800">
           💱 Currency
         </label>
-        <select
-          id="currency"
-          value={currency}
-          onChange={(e) => setCurrency(e.target.value)}
-          className="w-full p-4 border-2 border-gray-200 rounded-xl text-lg bg-white focus:border-blue-400 focus:ring-4 focus:ring-blue-100 transition-all duration-300 transform focus:-translate-y-1 focus:shadow-lg cursor-pointer"
-        >
-          {currencies.map((curr) => (
-            <option key={curr.code} value={curr.code}>
-              {curr.flag} {curr.code} - {curr.name}
-            </option>
-          ))}
-        </select>
+        <CurrencySelector value={currency} onChange={setCurrency} />
       </div>
 
       <div className="space-y-2">
@@ -73,9 +62,9 @@ export function CalculatorForm({
           value={income}
           onChange={(e) => setIncome(e.target.value)}
           onKeyPress={handleKeyPress}
-          placeholder="Enter your monthly income"
+          placeholder="Enter your monthly income (e.g., 5000)"
           min="0"
-          step="any"
+          step="0.01"
           className="w-full p-4 border-2 border-gray-200 rounded-xl text-lg bg-white focus:border-blue-400 focus:ring-4 focus:ring-blue-100 transition-all duration-300 transform focus:-translate-y-1 focus:shadow-lg"
         />
       </div>
