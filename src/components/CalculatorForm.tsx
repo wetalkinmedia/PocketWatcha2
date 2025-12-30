@@ -30,6 +30,11 @@ export function CalculatorForm({
   setCity,
   onCalculate
 }: CalculatorFormProps) {
+  const [localIncome, setLocalIncome] = React.useState(income);
+
+  React.useEffect(() => {
+    setLocalIncome(income);
+  }, [income]);
 
   const handleKeyPress = (e: React.KeyboardEvent) => {
     if (e.key === 'Enter') {
@@ -41,6 +46,7 @@ export function CalculatorForm({
   const handleIncomeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
     if (value === '' || /^\d*\.?\d*$/.test(value)) {
+      setLocalIncome(value);
       setIncome(value);
     }
   };
@@ -67,7 +73,7 @@ export function CalculatorForm({
           type="text"
           inputMode="decimal"
           id="income"
-          value={income}
+          value={localIncome}
           onChange={handleIncomeChange}
           onKeyPress={handleKeyPress}
           placeholder="Enter your monthly income (e.g., 5000)"
