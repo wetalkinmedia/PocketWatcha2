@@ -23,20 +23,24 @@ export function CurrencySelector({ value, onChange }: CurrencySelectorProps) {
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
       if (containerRef.current && !containerRef.current.contains(event.target as Node)) {
-        setIsOpen(false);
-        setSearchTerm('');
+        // Add a small delay to prevent accidental closes
+        setTimeout(() => {
+          setIsOpen(false);
+          setSearchTerm('');
+        }, 150);
       }
     }
 
     if (isOpen) {
-      document.addEventListener('mousedown', handleClickOutside);
+      // Use 'click' instead of 'mousedown' to give more time for selection
+      document.addEventListener('click', handleClickOutside);
       setTimeout(() => searchInputRef.current?.focus(), 100);
     } else {
-      document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener('click', handleClickOutside);
     }
 
     return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener('click', handleClickOutside);
     };
   }, [isOpen]);
 
@@ -48,8 +52,11 @@ export function CurrencySelector({ value, onChange }: CurrencySelectorProps) {
 
   const handleSelect = (currencyCode: string) => {
     onChange(currencyCode);
-    setIsOpen(false);
-    setSearchTerm('');
+    // Add a brief delay before closing to give visual feedback
+    setTimeout(() => {
+      setIsOpen(false);
+      setSearchTerm('');
+    }, 200);
   };
 
   return (
@@ -91,7 +98,8 @@ export function CurrencySelector({ value, onChange }: CurrencySelectorProps) {
                   key={curr.code}
                   type="button"
                   onClick={() => handleSelect(curr.code)}
-                  className={`w-full px-4 py-3 text-left hover:bg-blue-50 transition-colors border-b border-gray-100 last:border-b-0 ${
+                  onMouseDown={(e) => e.preventDefault()}
+                  className={`w-full px-5 py-4 text-left hover:bg-blue-50 active:bg-blue-100 transition-colors border-b border-gray-100 last:border-b-0 ${
                     curr.code === value ? 'bg-blue-100 font-semibold' : ''
                   }`}
                 >

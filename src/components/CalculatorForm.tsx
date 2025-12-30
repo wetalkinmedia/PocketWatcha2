@@ -93,8 +93,9 @@ export function CalculatorForm({
           value={age}
           onChange={(e) => setAge(e.target.value as AgeGroup | '')}
           className="w-full p-4 border-2 border-gray-200 rounded-xl text-lg bg-white focus:border-blue-400 focus:ring-2 focus:ring-blue-100 transition-colors cursor-pointer hover:border-blue-300"
+          style={{ minHeight: '56px' }}
         >
-          <option value="">Select your age group</option>
+          <option value="" className="py-2">Select your age group</option>
           <option value="18-25">18-25 (Young Adult)</option>
           <option value="26-35">26-35 (Early Career)</option>
           <option value="36-45">36-45 (Mid Career)</option>
@@ -112,8 +113,9 @@ export function CalculatorForm({
           value={demographic}
           onChange={(e) => setDemographic(e.target.value as LivingSituation | '')}
           className="w-full p-4 border-2 border-gray-200 rounded-xl text-lg bg-white focus:border-blue-400 focus:ring-2 focus:ring-blue-100 transition-colors cursor-pointer hover:border-blue-300"
+          style={{ minHeight: '56px' }}
         >
-          <option value="">Select your situation</option>
+          <option value="" className="py-2">Select your situation</option>
           <option value="student">Student</option>
           <option value="single">Single Professional</option>
           <option value="couple">Couple (No Kids)</option>
@@ -131,8 +133,9 @@ export function CalculatorForm({
           value={city}
           onChange={(e) => setCity(e.target.value)}
           className="w-full p-4 border-2 border-gray-200 rounded-xl text-lg bg-white focus:border-blue-400 focus:ring-2 focus:ring-blue-100 transition-colors cursor-pointer hover:border-blue-300"
+          style={{ minHeight: '56px' }}
         >
-          <option value="">Select your location</option>
+          <option value="" className="py-2">Select your location</option>
           {cityGroups.map((group) => (
             <optgroup key={group.label} label={group.label}>
               {group.cities.map((cityOption) => (
