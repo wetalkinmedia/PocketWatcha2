@@ -75,8 +75,7 @@ export function CalculatorForm({
           onKeyPress={handleKeyPress}
           placeholder="Enter your monthly income"
           min="0"
-          max="999999999"
-          step="0.01"
+          step="any"
           className="w-full p-4 border-2 border-gray-200 rounded-xl text-lg bg-white focus:border-blue-400 focus:ring-4 focus:ring-blue-100 transition-all duration-300 transform focus:-translate-y-1 focus:shadow-lg"
         />
       </div>
