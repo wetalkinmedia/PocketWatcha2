@@ -59,7 +59,9 @@ function App() {
   useEffect(() => {
     console.log('Auth state changed:', { isAuthenticated, user: user ? `${user.firstName} ${user.lastName}` : null });
     if (isAuthenticated && user && !hasPopulated.current) {
-      setIncome((user.salary / 12).toString());
+      // Round to 2 decimal places and remove trailing zeros
+      const monthlyIncome = Math.round((user.salary / 12) * 100) / 100;
+      setIncome(monthlyIncome.toString());
 
       // Map age to age group
       if (user.age >= 18 && user.age <= 25) setAge('18-25');
@@ -167,9 +169,10 @@ function App() {
   const handleLegacyLogin = (profile: UserProfileType) => {
     // Legacy login for backward compatibility
     setShowLoginPopup(false);
-    
+
     // Auto-populate form with profile data
-    setIncome((profile.salary / 12).toString());
+    const monthlyIncome = Math.round((profile.salary / 12) * 100) / 100;
+    setIncome(monthlyIncome.toString());
     
     // Map age to age group
     if (profile.age >= 18 && profile.age <= 25) setAge('18-25');

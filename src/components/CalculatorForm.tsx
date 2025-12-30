@@ -45,9 +45,19 @@ export function CalculatorForm({
 
   const handleIncomeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
+    // Allow numbers and one decimal point, but clean up trailing dots on blur
     if (value === '' || /^\d*\.?\d*$/.test(value)) {
       setLocalIncome(value);
       setIncome(value);
+    }
+  };
+
+  const handleIncomeBlur = () => {
+    // Remove trailing decimal point when user leaves the field
+    const cleaned = localIncome.replace(/\.$/, '');
+    if (cleaned !== localIncome) {
+      setLocalIncome(cleaned);
+      setIncome(cleaned);
     }
   };
 
@@ -75,6 +85,7 @@ export function CalculatorForm({
           id="income"
           value={localIncome}
           onChange={handleIncomeChange}
+          onBlur={handleIncomeBlur}
           onKeyPress={handleKeyPress}
           placeholder="Enter your monthly income (e.g., 5000)"
           className="w-full p-4 border-2 border-gray-200 rounded-xl text-lg bg-white focus:border-blue-400 focus:ring-4 focus:ring-blue-100 transition-all duration-300 transform focus:-translate-y-1 focus:shadow-lg"
