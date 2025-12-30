@@ -30,12 +30,6 @@ export function CalculatorForm({
   setCity,
   onCalculate
 }: CalculatorFormProps) {
-  const [localIncome, setLocalIncome] = React.useState(income);
-
-  React.useEffect(() => {
-    setLocalIncome(income);
-  }, [income]);
-
   const handleKeyPress = (e: React.KeyboardEvent) => {
     if (e.key === 'Enter') {
       e.preventDefault();
@@ -45,18 +39,16 @@ export function CalculatorForm({
 
   const handleIncomeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
-    // Allow numbers and one decimal point, but clean up trailing dots on blur
+    // Allow numbers and one decimal point
     if (value === '' || /^\d*\.?\d*$/.test(value)) {
-      setLocalIncome(value);
       setIncome(value);
     }
   };
 
   const handleIncomeBlur = () => {
     // Remove trailing decimal point when user leaves the field
-    const cleaned = localIncome.replace(/\.$/, '');
-    if (cleaned !== localIncome) {
-      setLocalIncome(cleaned);
+    const cleaned = income.replace(/\.$/, '');
+    if (cleaned !== income) {
       setIncome(cleaned);
     }
   };
@@ -83,7 +75,7 @@ export function CalculatorForm({
           type="text"
           inputMode="decimal"
           id="income"
-          value={localIncome}
+          value={income}
           onChange={handleIncomeChange}
           onBlur={handleIncomeBlur}
           onKeyPress={handleKeyPress}
