@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { Routes, Route } from 'react-router-dom';
 import { LoginPopup } from './components/LoginPopup';
 import { UserProfile } from './components/UserProfile';
@@ -53,9 +53,12 @@ function App() {
   });
 
   // Auto-populate form when user data becomes available after login
+  // Use a ref to track if we've already populated to prevent overwriting user edits
+  const hasPopulated = useRef(false);
+
   useEffect(() => {
     console.log('Auth state changed:', { isAuthenticated, user: user ? `${user.firstName} ${user.lastName}` : null });
-    if (isAuthenticated && user) {
+    if (isAuthenticated && user && !hasPopulated.current) {
       setIncome((user.salary / 12).toString());
 
       // Map age to age group
@@ -71,6 +74,11 @@ function App() {
       } else if (user.relationshipStatus === 'single') {
         setDemographic('single');
       }
+
+      hasPopulated.current = true;
+    } else if (!isAuthenticated) {
+      // Reset flag when user logs out
+      hasPopulated.current = false;
     }
   }, [isAuthenticated, user]);
 
