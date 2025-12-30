@@ -57,7 +57,7 @@ export function CurrencySelector({ value, onChange }: CurrencySelectorProps) {
       <button
         type="button"
         onClick={handleToggle}
-        className="w-full p-4 border-2 border-gray-200 rounded-xl text-lg bg-white focus:border-blue-400 focus:ring-4 focus:ring-blue-100 transition-all duration-300 transform focus:-translate-y-1 focus:shadow-lg cursor-pointer flex items-center justify-between hover:border-blue-300"
+        className="w-full p-4 border-2 border-gray-200 rounded-xl text-lg bg-white focus:border-blue-400 focus:ring-2 focus:ring-blue-100 transition-colors cursor-pointer flex items-center justify-between hover:border-blue-300"
       >
         <span>
           {selectedCurrency.flag} {selectedCurrency.code} - {selectedCurrency.name}
@@ -68,7 +68,7 @@ export function CurrencySelector({ value, onChange }: CurrencySelectorProps) {
       </button>
 
       {isOpen && (
-        <div className="absolute z-50 w-full mt-2 bg-white border-2 border-gray-200 rounded-xl shadow-2xl max-h-96 overflow-hidden animate-in fade-in slide-in-from-top-2 duration-200">
+        <div className="absolute z-50 w-full mt-2 bg-white border-2 border-gray-200 rounded-xl shadow-2xl max-h-96 overflow-hidden">
           <div className="p-3 border-b border-gray-200 bg-gray-50">
             <div className="relative">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
@@ -91,7 +91,7 @@ export function CurrencySelector({ value, onChange }: CurrencySelectorProps) {
                   key={curr.code}
                   type="button"
                   onClick={() => handleSelect(curr.code)}
-                  className={`w-full px-4 py-3 text-left hover:bg-blue-50 transition-colors duration-150 border-b border-gray-100 last:border-b-0 ${
+                  className={`w-full px-4 py-3 text-left hover:bg-blue-50 transition-colors border-b border-gray-100 last:border-b-0 ${
                     curr.code === value ? 'bg-blue-100 font-semibold' : ''
                   }`}
                 >

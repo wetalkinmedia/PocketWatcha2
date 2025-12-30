@@ -80,7 +80,7 @@ export function CalculatorForm({
           onBlur={handleIncomeBlur}
           onKeyPress={handleKeyPress}
           placeholder="Enter your monthly income (e.g., 5000)"
-          className="w-full p-4 border-2 border-gray-200 rounded-xl text-lg bg-white focus:border-blue-400 focus:ring-4 focus:ring-blue-100 transition-all duration-300 transform focus:-translate-y-1 focus:shadow-lg"
+          className="w-full p-4 border-2 border-gray-200 rounded-xl text-lg bg-white focus:border-blue-400 focus:ring-2 focus:ring-blue-100 transition-colors hover:border-blue-300"
         />
       </div>
 
@@ -92,7 +92,7 @@ export function CalculatorForm({
           id="age"
           value={age}
           onChange={(e) => setAge(e.target.value as AgeGroup | '')}
-          className="w-full p-4 border-2 border-gray-200 rounded-xl text-lg bg-white focus:border-blue-400 focus:ring-4 focus:ring-blue-100 transition-all duration-300 transform focus:-translate-y-1 focus:shadow-lg cursor-pointer"
+          className="w-full p-4 border-2 border-gray-200 rounded-xl text-lg bg-white focus:border-blue-400 focus:ring-2 focus:ring-blue-100 transition-colors cursor-pointer hover:border-blue-300"
         >
           <option value="">Select your age group</option>
           <option value="18-25">18-25 (Young Adult)</option>
@@ -111,7 +111,7 @@ export function CalculatorForm({
           id="demographic"
           value={demographic}
           onChange={(e) => setDemographic(e.target.value as LivingSituation | '')}
-          className="w-full p-4 border-2 border-gray-200 rounded-xl text-lg bg-white focus:border-blue-400 focus:ring-4 focus:ring-blue-100 transition-all duration-300 transform focus:-translate-y-1 focus:shadow-lg cursor-pointer"
+          className="w-full p-4 border-2 border-gray-200 rounded-xl text-lg bg-white focus:border-blue-400 focus:ring-2 focus:ring-blue-100 transition-colors cursor-pointer hover:border-blue-300"
         >
           <option value="">Select your situation</option>
           <option value="student">Student</option>
@@ -130,7 +130,7 @@ export function CalculatorForm({
           id="city"
           value={city}
           onChange={(e) => setCity(e.target.value)}
-          className="w-full p-4 border-2 border-gray-200 rounded-xl text-lg bg-white focus:border-blue-400 focus:ring-4 focus:ring-blue-100 transition-all duration-300 transform focus:-translate-y-1 focus:shadow-lg cursor-pointer"
+          className="w-full p-4 border-2 border-gray-200 rounded-xl text-lg bg-white focus:border-blue-400 focus:ring-2 focus:ring-blue-100 transition-colors cursor-pointer hover:border-blue-300"
         >
           <option value="">Select your location</option>
           {cityGroups.map((group) => (
