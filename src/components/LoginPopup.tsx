@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { X, User, Mail, Phone, MapPin, Heart, Briefcase, DollarSign, Lock } from 'lucide-react';
 import { UserProfile } from '../types';
 import { supabase } from '../lib/supabase';
+import { formatPhoneNumber } from '../utils/phoneFormat';
 
 interface LoginPopupProps {
   isOpen: boolean;
@@ -537,9 +538,9 @@ export function LoginPopup({ isOpen, onClose, onLogin, onAuthLogin, onAuthRegist
                     name="phoneNumber"
                     type="tel"
                     value={profile.phoneNumber}
-                    onChange={(e) => handleInputChange('phoneNumber', e.target.value)}
+                    onChange={(e) => handleInputChange('phoneNumber', formatPhoneNumber(e.target.value))}
                     className="w-full p-3 border-2 border-gray-200 rounded-lg focus:border-blue-400 focus:ring-2 focus:ring-blue-100 transition-all"
-                    placeholder="(555) 123-4567"
+                    placeholder="555-123-4567"
                     required
                   />
                 </div>
