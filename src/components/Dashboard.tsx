@@ -1,9 +1,14 @@
 import React, { useState, useEffect } from 'react';
-import { BookOpen, Award, TrendingUp, Clock, CheckCircle, Play, Calendar } from 'lucide-react';
+import { BookOpen, Award, TrendingUp, Clock, CheckCircle, Play, Calendar, DollarSign, PieChart, Receipt, Lightbulb, BarChart3 } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../hooks/useAuth';
 import { ProgressBar } from './ProgressBar';
 import { allCourses } from '../data/courses';
+import { BudgetOverview } from './budget/BudgetOverview';
+import { BudgetAllocator } from './budget/BudgetAllocator';
+import { ExpenseTracker } from './budget/ExpenseTracker';
+import { DailyAdvice } from './budget/DailyAdvice';
+import { AnalyticsView } from './budget/AnalyticsView';
 
 interface CourseProgress {
   course_id: string;
@@ -31,6 +36,8 @@ interface DashboardStats {
 
 export function Dashboard() {
   const { supabaseUser } = useAuth();
+  const [activeTab, setActiveTab] = useState<'learning' | 'finances'>('finances');
+  const [financeView, setFinanceView] = useState<'overview' | 'allocator' | 'expenses' | 'advice' | 'analytics'>('overview');
   const [enrolledCourses, setEnrolledCourses] = useState<CourseProgress[]>([]);
   const [lessonProgress, setLessonProgress] = useState<LessonProgressData[]>([]);
   const [stats, setStats] = useState<DashboardStats>({
@@ -111,9 +118,109 @@ export function Dashboard() {
     <div className="min-h-screen bg-gray-50 p-6">
       <div className="max-w-7xl mx-auto">
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">My Learning Dashboard</h1>
-          <p className="text-gray-600">Track your progress and continue learning</p>
+          <h1 className="text-3xl font-bold text-gray-900 mb-2">My Dashboard</h1>
+          <p className="text-gray-600">Manage your learning and finances in one place</p>
         </div>
+
+        <div className="mb-6">
+          <div className="flex gap-2 bg-white rounded-lg p-1 shadow-sm border border-gray-200 w-fit">
+            <button
+              onClick={() => setActiveTab('finances')}
+              className={`px-6 py-3 rounded-lg transition-all flex items-center gap-2 font-semibold ${
+                activeTab === 'finances'
+                  ? 'bg-blue-600 text-white shadow-md'
+                  : 'text-gray-600 hover:bg-gray-100'
+              }`}
+            >
+              <DollarSign size={20} />
+              Finances
+            </button>
+            <button
+              onClick={() => setActiveTab('learning')}
+              className={`px-6 py-3 rounded-lg transition-all flex items-center gap-2 font-semibold ${
+                activeTab === 'learning'
+                  ? 'bg-blue-600 text-white shadow-md'
+                  : 'text-gray-600 hover:bg-gray-100'
+              }`}
+            >
+              <BookOpen size={20} />
+              Learning
+            </button>
+          </div>
+        </div>
+
+        {activeTab === 'finances' && (
+          <div>
+            <div className="mb-6 overflow-x-auto">
+              <div className="flex gap-2 bg-white rounded-lg p-1 shadow-sm border border-gray-200 w-fit">
+                <button
+                  onClick={() => setFinanceView('overview')}
+                  className={`px-4 py-2 rounded-lg transition-all flex items-center gap-2 text-sm font-medium whitespace-nowrap ${
+                    financeView === 'overview'
+                      ? 'bg-blue-100 text-blue-700'
+                      : 'text-gray-600 hover:bg-gray-100'
+                  }`}
+                >
+                  <TrendingUp size={16} />
+                  Overview
+                </button>
+                <button
+                  onClick={() => setFinanceView('allocator')}
+                  className={`px-4 py-2 rounded-lg transition-all flex items-center gap-2 text-sm font-medium whitespace-nowrap ${
+                    financeView === 'allocator'
+                      ? 'bg-blue-100 text-blue-700'
+                      : 'text-gray-600 hover:bg-gray-100'
+                  }`}
+                >
+                  <PieChart size={16} />
+                  Budget Allocator
+                </button>
+                <button
+                  onClick={() => setFinanceView('expenses')}
+                  className={`px-4 py-2 rounded-lg transition-all flex items-center gap-2 text-sm font-medium whitespace-nowrap ${
+                    financeView === 'expenses'
+                      ? 'bg-blue-100 text-blue-700'
+                      : 'text-gray-600 hover:bg-gray-100'
+                  }`}
+                >
+                  <Receipt size={16} />
+                  Expenses
+                </button>
+                <button
+                  onClick={() => setFinanceView('advice')}
+                  className={`px-4 py-2 rounded-lg transition-all flex items-center gap-2 text-sm font-medium whitespace-nowrap ${
+                    financeView === 'advice'
+                      ? 'bg-blue-100 text-blue-700'
+                      : 'text-gray-600 hover:bg-gray-100'
+                  }`}
+                >
+                  <Lightbulb size={16} />
+                  Daily Advice
+                </button>
+                <button
+                  onClick={() => setFinanceView('analytics')}
+                  className={`px-4 py-2 rounded-lg transition-all flex items-center gap-2 text-sm font-medium whitespace-nowrap ${
+                    financeView === 'analytics'
+                      ? 'bg-blue-100 text-blue-700'
+                      : 'text-gray-600 hover:bg-gray-100'
+                  }`}
+                >
+                  <BarChart3 size={16} />
+                  Analytics
+                </button>
+              </div>
+            </div>
+
+            {financeView === 'overview' && <BudgetOverview onNavigate={(view) => setFinanceView(view as any)} />}
+            {financeView === 'allocator' && <BudgetAllocator />}
+            {financeView === 'expenses' && <ExpenseTracker />}
+            {financeView === 'advice' && <DailyAdvice />}
+            {financeView === 'analytics' && <AnalyticsView />}
+          </div>
+        )}
+
+        {activeTab === 'learning' && (
+          <div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
           <div className="bg-white rounded-xl shadow-md p-6 border-l-4 border-blue-500">
@@ -299,6 +406,8 @@ export function Dashboard() {
             </div>
           </div>
         </div>
+          </div>
+        )}
       </div>
     </div>
   );
