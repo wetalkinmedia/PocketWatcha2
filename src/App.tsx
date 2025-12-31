@@ -90,7 +90,9 @@ function App() {
     logError('=== CALCULATE CLICKED ===');
     logError(`Current values: income=${income}, age=${age}, demographic=${demographic}, city=${city}, currency=${currency}`);
 
-    const incomeValue = parseFloat(income);
+    // Clean the income value by removing commas and other non-numeric chars except decimal
+    const cleanedIncome = income.replace(/[^\d.]/g, '');
+    const incomeValue = parseFloat(cleanedIncome);
 
     // Validate income
     if (!income || income.trim() === '' || isNaN(incomeValue) || incomeValue <= 0) {
@@ -333,7 +335,7 @@ function App() {
               {allocations && (
                 <Results
                   allocations={allocations}
-                  income={parseFloat(income)}
+                  income={parseFloat(income.replace(/[^\d.]/g, ''))}
                   age={age as AgeGroup}
                   currency={currency}
                   city={city}
@@ -344,7 +346,7 @@ function App() {
               {careerSuggestions.length > 0 && showResults && (
                 <CareerSuggestions
                   suggestions={careerSuggestions}
-                  currentSalary={parseFloat(income)}
+                  currentSalary={parseFloat(income.replace(/[^\d.]/g, ''))}
                   currency={currency}
                   advice={careerAdvice}
                 />

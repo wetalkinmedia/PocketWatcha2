@@ -38,13 +38,7 @@ export function CalculatorForm({
   };
 
   const handleIncomeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value;
-    // Remove any non-numeric characters except decimal point and comma
-    const filtered = value.replace(/[^\d.,]/g, '');
-    // Only allow one decimal point
-    const parts = filtered.split('.');
-    const cleanValue = parts.length > 2 ? parts[0] + '.' + parts.slice(1).join('') : filtered;
-    setIncome(cleanValue);
+    setIncome(e.target.value);
   };
 
   const handleIncomeBlur = () => {
