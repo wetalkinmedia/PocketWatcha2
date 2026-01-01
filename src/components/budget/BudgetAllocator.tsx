@@ -25,6 +25,7 @@ export function BudgetAllocator() {
   const { supabaseUser } = useAuth();
   const [categories, setCategories] = useState<BudgetCategory[]>([]);
   const [totalIncome, setTotalIncome] = useState<number>(0);
+  const [incomeInputValue, setIncomeInputValue] = useState<string>('0');
   const [allocations, setAllocations] = useState<BudgetAllocation[]>([]);
   const [saving, setSaving] = useState(false);
   const [saveMessage, setSaveMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
@@ -35,6 +36,10 @@ export function BudgetAllocator() {
       loadData();
     }
   }, [supabaseUser]);
+
+  useEffect(() => {
+    setIncomeInputValue(totalIncome.toString());
+  }, [totalIncome]);
 
   const loadData = async () => {
     if (!supabaseUser) return;
@@ -93,7 +98,8 @@ export function BudgetAllocator() {
     }
   };
 
-  const handleIncomeChange = (value: number) => {
+  const handleIncomeBlur = () => {
+    const value = parseFloat(incomeInputValue) || 0;
     setTotalIncome(value);
     const newAllocations = allocations.map(alloc => ({
       ...alloc,
@@ -229,8 +235,9 @@ export function BudgetAllocator() {
             <DollarSign className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={20} />
             <input
               type="number"
-              value={totalIncome || ''}
-              onChange={(e) => handleIncomeChange(parseFloat(e.target.value) || 0)}
+              value={incomeInputValue}
+              onChange={(e) => setIncomeInputValue(e.target.value)}
+              onBlur={handleIncomeBlur}
               className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-lg font-semibold"
               placeholder="0.00"
               min="0"

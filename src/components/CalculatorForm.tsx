@@ -100,6 +100,8 @@ export function CalculatorForm({
           id="age"
           value={age}
           onChange={(e) => setAge(e.target.value as AgeGroup | '')}
+          onClick={(e) => e.stopPropagation()}
+          onMouseDown={(e) => e.stopPropagation()}
           className="w-full p-4 border-2 border-gray-200 rounded-xl text-lg bg-white focus:border-blue-400 focus:ring-2 focus:ring-blue-100 transition-colors cursor-pointer hover:border-blue-300"
           style={{ minHeight: '56px' }}
         >
@@ -120,6 +122,8 @@ export function CalculatorForm({
           id="demographic"
           value={demographic}
           onChange={(e) => setDemographic(e.target.value as LivingSituation | '')}
+          onClick={(e) => e.stopPropagation()}
+          onMouseDown={(e) => e.stopPropagation()}
           className="w-full p-4 border-2 border-gray-200 rounded-xl text-lg bg-white focus:border-blue-400 focus:ring-2 focus:ring-blue-100 transition-colors cursor-pointer hover:border-blue-300"
           style={{ minHeight: '56px' }}
         >
@@ -140,6 +144,8 @@ export function CalculatorForm({
           id="city"
           value={city}
           onChange={(e) => setCity(e.target.value)}
+          onClick={(e) => e.stopPropagation()}
+          onMouseDown={(e) => e.stopPropagation()}
           className="w-full p-4 border-2 border-gray-200 rounded-xl text-lg bg-white focus:border-blue-400 focus:ring-2 focus:ring-blue-100 transition-colors cursor-pointer hover:border-blue-300"
           style={{ minHeight: '56px' }}
         >
