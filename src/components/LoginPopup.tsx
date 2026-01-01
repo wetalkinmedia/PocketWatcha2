@@ -218,9 +218,9 @@ export function LoginPopup({ isOpen, onClose, onLogin, onAuthLogin, onAuthRegist
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full max-h-[90vh] overflow-y-auto">
-        <div className="bg-gradient-to-r from-blue-500 to-purple-600 p-6 text-white relative">
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-start justify-center z-50 p-4 overflow-y-auto">
+      <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full my-8">
+        <div className="bg-gradient-to-r from-blue-600 to-blue-700 p-6 text-white relative">
           <button
             onClick={onClose}
             className="absolute top-4 right-4 text-white hover:text-gray-200 transition-colors"
