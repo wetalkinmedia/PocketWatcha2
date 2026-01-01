@@ -35,26 +35,6 @@ export function LoginPopup({ isOpen, onClose, onLogin, onAuthLogin, onAuthRegist
   });
 
   const modalRef = useRef<HTMLDivElement>(null);
-  const backgroundRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    if (!isOpen) return;
-
-    const handleClickOutside = (e: MouseEvent) => {
-      if (backgroundRef.current === e.target) {
-        onClose();
-      }
-    };
-
-    const timer = setTimeout(() => {
-      document.addEventListener('mousedown', handleClickOutside);
-    }, 1000);
-
-    return () => {
-      clearTimeout(timer);
-      document.removeEventListener('mousedown', handleClickOutside);
-    };
-  }, [isOpen, onClose]);
 
   const handleForgotCredentials = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -240,14 +220,10 @@ export function LoginPopup({ isOpen, onClose, onLogin, onAuthLogin, onAuthRegist
   if (!isOpen) return null;
 
   return (
-    <div
-      ref={backgroundRef}
-      className="fixed inset-0 bg-black bg-opacity-50 flex items-start justify-center z-50 p-4 overflow-y-auto"
-    >
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-start justify-center z-50 p-4 overflow-y-auto">
       <div
         ref={modalRef}
         className="bg-white rounded-2xl shadow-2xl max-w-md w-full my-8"
-        onClick={(e) => e.stopPropagation()}
       >
         <div className="bg-gradient-to-r from-blue-600 to-blue-700 p-6 text-white relative">
           <button
@@ -314,8 +290,6 @@ export function LoginPopup({ isOpen, onClose, onLogin, onAuthLogin, onAuthRegist
                   type="email"
                   value={credentialsEmail}
                   onChange={(e) => setCredentialsEmail(e.target.value)}
-                  onMouseDown={(e) => e.stopPropagation()}
-                  onClick={(e) => e.stopPropagation()}
                   className="w-full p-3 border-2 border-gray-200 rounded-lg focus:border-blue-400 focus:ring-2 focus:ring-blue-100 transition-all"
                   placeholder="Enter your email address"
                   required
@@ -368,8 +342,6 @@ export function LoginPopup({ isOpen, onClose, onLogin, onAuthLogin, onAuthRegist
                   type="email"
                   value={resetEmail}
                   onChange={(e) => setResetEmail(e.target.value)}
-                  onMouseDown={(e) => e.stopPropagation()}
-                  onClick={(e) => e.stopPropagation()}
                   className="w-full p-3 border-2 border-gray-200 rounded-lg focus:border-blue-400 focus:ring-2 focus:ring-blue-100 transition-all"
                   placeholder="Enter your email address"
                   required
@@ -429,8 +401,6 @@ export function LoginPopup({ isOpen, onClose, onLogin, onAuthLogin, onAuthRegist
                   type="text"
                   value={profile.firstName}
                   onChange={(e) => handleInputChange('firstName', e.target.value)}
-                  onMouseDown={(e) => e.stopPropagation()}
-                  onClick={(e) => e.stopPropagation()}
                   className="w-full p-3 border-2 border-gray-200 rounded-lg focus:border-blue-400 focus:ring-2 focus:ring-blue-100 transition-all"
                   placeholder="John"
                   autoComplete="given-name"
@@ -447,8 +417,6 @@ export function LoginPopup({ isOpen, onClose, onLogin, onAuthLogin, onAuthRegist
                   type="text"
                   value={profile.lastName}
                   onChange={(e) => handleInputChange('lastName', e.target.value)}
-                  onMouseDown={(e) => e.stopPropagation()}
-                  onClick={(e) => e.stopPropagation()}
                   className="w-full p-3 border-2 border-gray-200 rounded-lg focus:border-blue-400 focus:ring-2 focus:ring-blue-100 transition-all"
                   placeholder="Doe"
                   autoComplete="family-name"
@@ -469,8 +437,6 @@ export function LoginPopup({ isOpen, onClose, onLogin, onAuthLogin, onAuthRegist
               type="email"
               value={profile.email}
               onChange={(e) => handleInputChange('email', e.target.value)}
-              onMouseDown={(e) => e.stopPropagation()}
-              onClick={(e) => e.stopPropagation()}
               className="w-full p-3 border-2 border-gray-200 rounded-lg focus:border-blue-400 focus:ring-2 focus:ring-blue-100 transition-all"
               placeholder="john.doe@example.com"
               autoComplete="email"
@@ -489,8 +455,6 @@ export function LoginPopup({ isOpen, onClose, onLogin, onAuthLogin, onAuthRegist
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              onMouseDown={(e) => e.stopPropagation()}
-              onClick={(e) => e.stopPropagation()}
               className="w-full p-3 border-2 border-gray-200 rounded-lg focus:border-blue-400 focus:ring-2 focus:ring-blue-100 transition-all"
               placeholder={isSignUp ? "Create a secure password" : "Enter your password"}
               autoComplete={isSignUp ? "new-password" : "current-password"}
@@ -511,8 +475,6 @@ export function LoginPopup({ isOpen, onClose, onLogin, onAuthLogin, onAuthRegist
                 type="password"
                 value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}
-                onMouseDown={(e) => e.stopPropagation()}
-                onClick={(e) => e.stopPropagation()}
                 className="w-full p-3 border-2 border-gray-200 rounded-lg focus:border-blue-400 focus:ring-2 focus:ring-blue-100 transition-all"
                 placeholder="Confirm your password"
                 required
@@ -534,8 +496,6 @@ export function LoginPopup({ isOpen, onClose, onLogin, onAuthLogin, onAuthRegist
                     type="number"
                     value={profile.age || ''}
                     onChange={(e) => handleInputChange('age', parseInt(e.target.value) || 0)}
-                    onMouseDown={(e) => e.stopPropagation()}
-                    onClick={(e) => e.stopPropagation()}
                     className="w-full p-3 border-2 border-gray-200 rounded-lg focus:border-blue-400 focus:ring-2 focus:ring-blue-100 transition-all"
                     placeholder="30"
                     min="18"
@@ -554,8 +514,6 @@ export function LoginPopup({ isOpen, onClose, onLogin, onAuthLogin, onAuthRegist
                     type="number"
                     value={profile.salary || ''}
                     onChange={(e) => handleInputChange('salary', parseInt(e.target.value) || 0)}
-                    onMouseDown={(e) => e.stopPropagation()}
-                    onClick={(e) => e.stopPropagation()}
                     className="w-full p-3 border-2 border-gray-200 rounded-lg focus:border-blue-400 focus:ring-2 focus:ring-blue-100 transition-all"
                     placeholder="75000"
                     min="0"
@@ -576,8 +534,6 @@ export function LoginPopup({ isOpen, onClose, onLogin, onAuthLogin, onAuthRegist
                     type="text"
                     value={profile.zipCode}
                     onChange={(e) => handleInputChange('zipCode', e.target.value)}
-                    onMouseDown={(e) => e.stopPropagation()}
-                    onClick={(e) => e.stopPropagation()}
                     className="w-full p-3 border-2 border-gray-200 rounded-lg focus:border-blue-400 focus:ring-2 focus:ring-blue-100 transition-all"
                     placeholder="12345"
                     required
@@ -594,8 +550,6 @@ export function LoginPopup({ isOpen, onClose, onLogin, onAuthLogin, onAuthRegist
                     type="tel"
                     value={profile.phoneNumber}
                     onChange={(e) => handleInputChange('phoneNumber', formatPhoneNumber(e.target.value))}
-                    onMouseDown={(e) => e.stopPropagation()}
-                    onClick={(e) => e.stopPropagation()}
                     className="w-full p-3 border-2 border-gray-200 rounded-lg focus:border-blue-400 focus:ring-2 focus:ring-blue-100 transition-all"
                     placeholder="555-123-4567"
                     required
@@ -613,8 +567,6 @@ export function LoginPopup({ isOpen, onClose, onLogin, onAuthLogin, onAuthRegist
                   name="relationshipStatus"
                   value={profile.relationshipStatus}
                   onChange={(e) => handleInputChange('relationshipStatus', e.target.value)}
-                  onMouseDown={(e) => e.stopPropagation()}
-                  onClick={(e) => e.stopPropagation()}
                   className="w-full p-3 border-2 border-gray-200 rounded-lg focus:border-blue-400 focus:ring-2 focus:ring-blue-100 transition-all"
                   required
                 >
@@ -637,8 +589,6 @@ export function LoginPopup({ isOpen, onClose, onLogin, onAuthLogin, onAuthRegist
                   type="text"
                   value={profile.occupation}
                   onChange={(e) => handleInputChange('occupation', e.target.value)}
-                  onMouseDown={(e) => e.stopPropagation()}
-                  onClick={(e) => e.stopPropagation()}
                   className="w-full p-3 border-2 border-gray-200 rounded-lg focus:border-blue-400 focus:ring-2 focus:ring-blue-100 transition-all"
                   placeholder="Software Engineer"
                   required
