@@ -1,7 +1,9 @@
 import React from 'react';
 import { AgeGroup, LivingSituation } from '../types';
-import { cityGroups } from '../utils/cityData';
 import { CurrencySelector } from './CurrencySelector';
+import { AgeGroupSelector } from './AgeGroupSelector';
+import { LivingSituationSelector } from './LivingSituationSelector';
+import { CitySelector } from './CitySelector';
 
 interface CalculatorFormProps {
   income: string;
@@ -93,67 +95,24 @@ export function CalculatorForm({
       </div>
 
       <div className="space-y-2">
-        <label htmlFor="age" className="block text-lg font-semibold text-gray-800">
+        <label className="block text-lg font-semibold text-gray-800">
           🎂 Age Group
         </label>
-        <select
-          id="age"
-          value={age}
-          onChange={(e) => setAge(e.target.value as AgeGroup | '')}
-          className="w-full p-4 border-2 border-gray-200 rounded-xl text-lg bg-white focus:border-blue-400 focus:ring-2 focus:ring-blue-100 cursor-pointer hover:border-blue-300"
-          style={{ minHeight: '56px', touchAction: 'manipulation' }}
-        >
-          <option value="" className="py-2">Select your age group</option>
-          <option value="18-25">18-25 (Young Adult)</option>
-          <option value="26-35">26-35 (Early Career)</option>
-          <option value="36-45">36-45 (Mid Career)</option>
-          <option value="46-55">46-55 (Pre-Retirement)</option>
-          <option value="56+">56+ (Near/In Retirement)</option>
-        </select>
+        <AgeGroupSelector value={age} onChange={setAge} />
       </div>
 
       <div className="space-y-2">
-        <label htmlFor="demographic" className="block text-lg font-semibold text-gray-800">
+        <label className="block text-lg font-semibold text-gray-800">
           🏠 Living Situation
         </label>
-        <select
-          id="demographic"
-          value={demographic}
-          onChange={(e) => setDemographic(e.target.value as LivingSituation | '')}
-          className="w-full p-4 border-2 border-gray-200 rounded-xl text-lg bg-white focus:border-blue-400 focus:ring-2 focus:ring-blue-100 cursor-pointer hover:border-blue-300"
-          style={{ minHeight: '56px', touchAction: 'manipulation' }}
-        >
-          <option value="" className="py-2">Select your situation</option>
-          <option value="student">Student</option>
-          <option value="single">Single Professional</option>
-          <option value="couple">Couple (No Kids)</option>
-          <option value="family">Family (With Kids)</option>
-          <option value="retiree">Retiree</option>
-        </select>
+        <LivingSituationSelector value={demographic} onChange={setDemographic} />
       </div>
 
       <div className="space-y-2">
-        <label htmlFor="city" className="block text-lg font-semibold text-gray-800">
+        <label className="block text-lg font-semibold text-gray-800">
           🌍 Current City/Location
         </label>
-        <select
-          id="city"
-          value={city}
-          onChange={(e) => setCity(e.target.value)}
-          className="w-full p-4 border-2 border-gray-200 rounded-xl text-lg bg-white focus:border-blue-400 focus:ring-2 focus:ring-blue-100 cursor-pointer hover:border-blue-300"
-          style={{ minHeight: '56px', touchAction: 'manipulation' }}
-        >
-          <option value="" className="py-2">Select your location</option>
-          {cityGroups.map((group) => (
-            <optgroup key={group.label} label={group.label}>
-              {group.cities.map((cityOption) => (
-                <option key={cityOption.value} value={cityOption.value}>
-                  {cityOption.name}
-                </option>
-              ))}
-            </optgroup>
-          ))}
-        </select>
+        <CitySelector value={city} onChange={setCity} />
       </div>
 
       <button
