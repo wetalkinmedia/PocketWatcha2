@@ -18,11 +18,13 @@ const situations = [
 export function LivingSituationSelector({ value, onChange }: LivingSituationSelectorProps) {
   const [isOpen, setIsOpen] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
+  const canCloseRef = useRef(false);
 
   const selectedSituation = situations.find(s => s.value === value);
 
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
+      if (!canCloseRef.current) return;
       if (containerRef.current && !containerRef.current.contains(event.target as Node)) {
         setIsOpen(false);
       }
@@ -32,16 +34,23 @@ export function LivingSituationSelector({ value, onChange }: LivingSituationSele
       if (event.key === 'Escape') {
         setIsOpen(false);
       }
+      if (event.key === 'Enter' && !canCloseRef.current) {
+        canCloseRef.current = true;
+      }
     }
 
     if (isOpen) {
+      canCloseRef.current = false;
       const timer = setTimeout(() => {
-        document.addEventListener('mousedown', handleClickOutside);
-        document.addEventListener('keydown', handleKeyDown);
-      }, 500);
+        canCloseRef.current = true;
+      }, 300);
+
+      document.addEventListener('mousedown', handleClickOutside);
+      document.addEventListener('keydown', handleKeyDown);
 
       return () => {
         clearTimeout(timer);
+        canCloseRef.current = false;
         document.removeEventListener('mousedown', handleClickOutside);
         document.removeEventListener('keydown', handleKeyDown);
       };
@@ -54,17 +63,9 @@ export function LivingSituationSelector({ value, onChange }: LivingSituationSele
     setIsOpen(!isOpen);
   };
 
-  const handleSelect = (situationValue: LivingSituation, event?: React.MouseEvent | React.KeyboardEvent) => {
-    event?.preventDefault();
-    event?.stopPropagation();
+  const handleSelect = (situationValue: LivingSituation) => {
     onChange(situationValue);
     setIsOpen(false);
-  };
-
-  const handleKeyPress = (event: React.KeyboardEvent, situationValue: LivingSituation) => {
-    if (event.key === 'Enter' || event.key === ' ') {
-      handleSelect(situationValue, event);
-    }
   };
 
   return (
@@ -89,9 +90,7 @@ export function LivingSituationSelector({ value, onChange }: LivingSituationSele
               <button
                 key={situation.value}
                 type="button"
-                onClick={(e) => handleSelect(situation.value, e)}
-                onKeyDown={(e) => handleKeyPress(e, situation.value)}
-                onMouseDown={(e) => e.preventDefault()}
+                onClick={() => handleSelect(situation.value)}
                 className={`w-full px-5 py-4 text-left hover:bg-blue-50 active:bg-blue-100 transition-colors border-b border-gray-100 last:border-b-0 ${
                   situation.value === value ? 'bg-blue-100 font-semibold' : ''
                 }`}

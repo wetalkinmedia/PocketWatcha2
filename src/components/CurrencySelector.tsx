@@ -12,6 +12,7 @@ export function CurrencySelector({ value, onChange }: CurrencySelectorProps) {
   const [searchTerm, setSearchTerm] = useState('');
   const containerRef = useRef<HTMLDivElement>(null);
   const searchInputRef = useRef<HTMLInputElement>(null);
+  const canCloseRef = useRef(false);
 
   const selectedCurrency = currencies.find(c => c.code === value) || currencies[0];
 
@@ -22,6 +23,7 @@ export function CurrencySelector({ value, onChange }: CurrencySelectorProps) {
 
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
+      if (!canCloseRef.current) return;
       if (containerRef.current && !containerRef.current.contains(event.target as Node)) {
         setIsOpen(false);
         setSearchTerm('');
@@ -33,18 +35,24 @@ export function CurrencySelector({ value, onChange }: CurrencySelectorProps) {
         setIsOpen(false);
         setSearchTerm('');
       }
+      if (event.key === 'Enter' && !canCloseRef.current) {
+        canCloseRef.current = true;
+      }
     }
 
     if (isOpen) {
+      canCloseRef.current = false;
       const timer = setTimeout(() => {
-        document.addEventListener('mousedown', handleClickOutside);
-        document.addEventListener('keydown', handleKeyDown);
-      }, 500);
+        canCloseRef.current = true;
+      }, 300);
 
+      document.addEventListener('mousedown', handleClickOutside);
+      document.addEventListener('keydown', handleKeyDown);
       setTimeout(() => searchInputRef.current?.focus(), 100);
 
       return () => {
         clearTimeout(timer);
+        canCloseRef.current = false;
         document.removeEventListener('mousedown', handleClickOutside);
         document.removeEventListener('keydown', handleKeyDown);
       };
@@ -57,18 +65,10 @@ export function CurrencySelector({ value, onChange }: CurrencySelectorProps) {
     setIsOpen(!isOpen);
   };
 
-  const handleSelect = (currencyCode: string, event?: React.MouseEvent | React.KeyboardEvent) => {
-    event?.preventDefault();
-    event?.stopPropagation();
+  const handleSelect = (currencyCode: string) => {
     onChange(currencyCode);
     setIsOpen(false);
     setSearchTerm('');
-  };
-
-  const handleKeyPress = (event: React.KeyboardEvent, currencyCode: string) => {
-    if (event.key === 'Enter' || event.key === ' ') {
-      handleSelect(currencyCode, event);
-    }
   };
 
   return (
@@ -109,9 +109,7 @@ export function CurrencySelector({ value, onChange }: CurrencySelectorProps) {
                 <button
                   key={curr.code}
                   type="button"
-                  onClick={(e) => handleSelect(curr.code, e)}
-                  onKeyDown={(e) => handleKeyPress(e, curr.code)}
-                  onMouseDown={(e) => e.preventDefault()}
+                  onClick={() => handleSelect(curr.code)}
                   className={`w-full px-5 py-4 text-left hover:bg-blue-50 active:bg-blue-100 transition-colors border-b border-gray-100 last:border-b-0 ${
                     curr.code === value ? 'bg-blue-100 font-semibold' : ''
                   }`}

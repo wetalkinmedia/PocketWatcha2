@@ -18,11 +18,13 @@ const ageGroups = [
 export function AgeGroupSelector({ value, onChange }: AgeGroupSelectorProps) {
   const [isOpen, setIsOpen] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
+  const canCloseRef = useRef(false);
 
   const selectedAge = ageGroups.find(a => a.value === value);
 
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
+      if (!canCloseRef.current) return;
       if (containerRef.current && !containerRef.current.contains(event.target as Node)) {
         setIsOpen(false);
       }
@@ -32,16 +34,23 @@ export function AgeGroupSelector({ value, onChange }: AgeGroupSelectorProps) {
       if (event.key === 'Escape') {
         setIsOpen(false);
       }
+      if (event.key === 'Enter' && !canCloseRef.current) {
+        canCloseRef.current = true;
+      }
     }
 
     if (isOpen) {
+      canCloseRef.current = false;
       const timer = setTimeout(() => {
-        document.addEventListener('mousedown', handleClickOutside);
-        document.addEventListener('keydown', handleKeyDown);
-      }, 500);
+        canCloseRef.current = true;
+      }, 300);
+
+      document.addEventListener('mousedown', handleClickOutside);
+      document.addEventListener('keydown', handleKeyDown);
 
       return () => {
         clearTimeout(timer);
+        canCloseRef.current = false;
         document.removeEventListener('mousedown', handleClickOutside);
         document.removeEventListener('keydown', handleKeyDown);
       };
@@ -54,17 +63,9 @@ export function AgeGroupSelector({ value, onChange }: AgeGroupSelectorProps) {
     setIsOpen(!isOpen);
   };
 
-  const handleSelect = (ageValue: AgeGroup, event?: React.MouseEvent | React.KeyboardEvent) => {
-    event?.preventDefault();
-    event?.stopPropagation();
+  const handleSelect = (ageValue: AgeGroup) => {
     onChange(ageValue);
     setIsOpen(false);
-  };
-
-  const handleKeyPress = (event: React.KeyboardEvent, ageValue: AgeGroup) => {
-    if (event.key === 'Enter' || event.key === ' ') {
-      handleSelect(ageValue, event);
-    }
   };
 
   return (
@@ -89,9 +90,7 @@ export function AgeGroupSelector({ value, onChange }: AgeGroupSelectorProps) {
               <button
                 key={age.value}
                 type="button"
-                onClick={(e) => handleSelect(age.value, e)}
-                onKeyDown={(e) => handleKeyPress(e, age.value)}
-                onMouseDown={(e) => e.preventDefault()}
+                onClick={() => handleSelect(age.value)}
                 className={`w-full px-5 py-4 text-left hover:bg-blue-50 active:bg-blue-100 transition-colors border-b border-gray-100 last:border-b-0 ${
                   age.value === value ? 'bg-blue-100 font-semibold' : ''
                 }`}
