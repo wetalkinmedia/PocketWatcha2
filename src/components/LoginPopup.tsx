@@ -210,6 +210,11 @@ export function LoginPopup({ isOpen, onClose, onLogin, onAuthLogin, onAuthRegist
     <div
       className="fixed inset-0 bg-black bg-opacity-50 flex items-start justify-center z-50 overflow-y-auto"
       style={{ padding: '20px 16px' }}
+      onClick={(e) => {
+        if (e.target === e.currentTarget) {
+          onClose();
+        }
+      }}
     >
       <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full my-auto">
         <div className="bg-gradient-to-r from-blue-600 to-blue-700 p-6 text-white relative">
