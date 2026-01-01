@@ -201,6 +201,14 @@ export function useAuth() {
 
       console.log('User created, now creating profile for user ID:', authData.user.id);
 
+      // Wait a brief moment to ensure session is fully established in the database context
+      // This prevents RLS policy violations due to race conditions
+      await new Promise(resolve => setTimeout(resolve, 100));
+
+      // Verify we have a session before creating profile
+      const { data: sessionData } = await supabase.auth.getSession();
+      console.log('Session check before profile creation:', !!sessionData.session);
+
       // Create the user profile
       const { error: profileError } = await supabase
         .from('user_profiles')
@@ -218,6 +226,7 @@ export function useAuth() {
 
       if (profileError) {
         console.error('Profile creation error:', profileError);
+        console.error('Profile creation error details:', JSON.stringify(profileError, null, 2));
         return { success: false, message: `Failed to create profile: ${profileError.message}` };
       }
 
