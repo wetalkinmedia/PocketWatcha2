@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, useRef } from 'react';
+import { useState, useEffect, useCallback, useRef, useMemo } from 'react';
 
 export function useTimer(duration: number, onComplete: () => void) {
   const [timeLeft, setTimeLeft] = useState(duration);
@@ -53,5 +53,8 @@ export function useTimer(duration: number, onComplete: () => void) {
     setIsActive(true);
   }, [duration]);
 
-  return { timeLeft, isActive, pause, resume, reset };
+  return useMemo(
+    () => ({ timeLeft, isActive, pause, resume, reset }),
+    [timeLeft, isActive, pause, resume, reset]
+  );
 }

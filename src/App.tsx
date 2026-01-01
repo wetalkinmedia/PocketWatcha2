@@ -52,17 +52,21 @@ function App() {
     }
   });
 
+  // Extract stable functions from timer
+  const timerPause = timer.pause;
+  const timerResume = timer.resume;
+
   // Pause timer when user focuses on income field
-  const handleIncomeFocus = () => {
+  const handleIncomeFocus = useCallback(() => {
     console.log('Income field focused - pausing timer');
-    timer.pause();
-  };
+    timerPause();
+  }, [timerPause]);
 
   // Resume timer when user leaves income field
-  const handleIncomeBlur = () => {
+  const handleIncomeBlur = useCallback(() => {
     console.log('Income field blurred - resuming timer');
-    timer.resume();
-  };
+    timerResume();
+  }, [timerResume]);
 
   // Auto-populate form when user data becomes available after login
   // Use a ref to track if we've already populated to prevent overwriting user edits
