@@ -195,10 +195,8 @@ export function ExpenseTracker() {
                 <select
                   value={newExpense.category_id}
                   onChange={(e) => setNewExpense({ ...newExpense, category_id: e.target.value })}
-                  onClick={(e) => e.stopPropagation()}
-                  onMouseDown={(e) => e.stopPropagation()}
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent cursor-pointer"
-                  style={{ minHeight: '42px' }}
+                  style={{ minHeight: '42px', touchAction: 'manipulation' }}
                   required
                 >
                   <option value="">Select category</option>
@@ -292,10 +290,8 @@ export function ExpenseTracker() {
             <select
               value={filterCategory}
               onChange={(e) => setFilterCategory(e.target.value)}
-              onClick={(e) => e.stopPropagation()}
-              onMouseDown={(e) => e.stopPropagation()}
               className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent appearance-none bg-white cursor-pointer"
-              style={{ minHeight: '42px' }}
+              style={{ minHeight: '42px', touchAction: 'manipulation' }}
             >
               <option value="all">All Categories</option>
               {categories.map((cat) => (
