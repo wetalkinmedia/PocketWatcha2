@@ -231,9 +231,8 @@ export function BudgetAllocator() {
               type="number"
               value={totalIncome || ''}
               onChange={(e) => handleIncomeChange(parseFloat(e.target.value) || 0)}
-              className="w-full pl-10 pr-4 py-3 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:outline-none text-lg font-semibold touch-manipulation transition-all"
+              className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-lg font-semibold"
               placeholder="0.00"
-              autoComplete="off"
               min="0"
               step="0.01"
             />

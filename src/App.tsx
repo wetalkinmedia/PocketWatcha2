@@ -390,24 +390,14 @@ function App() {
         )}
 
         {showDashboard && (
-          <div
-            className="fixed inset-0 bg-black bg-opacity-40 z-50 overflow-y-auto p-4 md:p-8"
-            onClick={() => setShowDashboard(false)}
-          >
-            <div
-              className="max-w-7xl mx-auto my-4"
-              onClick={(e) => e.stopPropagation()}
+          <div className="fixed inset-0 bg-white z-50 overflow-y-auto">
+            <Dashboard />
+            <button
+              onClick={() => setShowDashboard(false)}
+              className="fixed top-4 right-4 bg-white px-4 py-2 rounded-lg shadow-lg hover:bg-gray-100 transition-colors"
             >
-              <Dashboard />
-              <button
-                type="button"
-                onClick={() => setShowDashboard(false)}
-                className="fixed top-4 right-4 bg-white px-6 py-3 rounded-lg shadow-lg hover:bg-gray-100 transition-colors z-10 font-semibold touch-manipulation"
-                aria-label="Close dashboard"
-              >
-                ← Back to Calculator
-              </button>
-            </div>
+              ← Back to Calculator
+            </button>
           </div>
         )}
 
