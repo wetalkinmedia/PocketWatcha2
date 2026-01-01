@@ -1,4 +1,4 @@
-import React, { useCallback, memo } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { AgeGroup, LivingSituation } from '../types';
 import { CurrencySelector } from './CurrencySelector';
 import { AgeGroupSelector } from './AgeGroupSelector';
@@ -21,7 +21,7 @@ interface CalculatorFormProps {
   onIncomeBlur?: () => void;
 }
 
-const CalculatorFormComponent = ({
+export function CalculatorForm({
   income,
   setIncome,
   currency,
@@ -35,37 +35,46 @@ const CalculatorFormComponent = ({
   onCalculate,
   onIncomeFocus,
   onIncomeBlur
-}: CalculatorFormProps) => {
-  const handleKeyPress = useCallback((e: React.KeyboardEvent) => {
+}: CalculatorFormProps) {
+  const [localIncome, setLocalIncome] = useState(income);
+  const isUserTyping = useRef(false);
+
+  useEffect(() => {
+    if (!isUserTyping.current) {
+      setLocalIncome(income);
+    }
+  }, [income]);
+
+  const handleKeyPress = (e: React.KeyboardEvent) => {
     if (e.key === 'Enter') {
       e.preventDefault();
       onCalculate();
     }
-  }, [onCalculate]);
+  };
 
-  const handleIncomeChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-    setIncome(e.target.value);
-  }, [setIncome]);
+  const handleIncomeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setLocalIncome(e.target.value);
+  };
 
-  const handleIncomeFocusEvent = useCallback(() => {
+  const handleIncomeFocusEvent = () => {
     console.log('CalculatorForm: Income focus event');
+    isUserTyping.current = true;
     onIncomeFocus?.();
-  }, [onIncomeFocus]);
+  };
 
-  const handleIncomeBlurEvent = useCallback(() => {
+  const handleIncomeBlurEvent = () => {
     console.log('CalculatorForm: Income blur event');
-    // Remove trailing decimal point when user leaves the field
-    const cleaned = income.replace(/\.$/, '');
-    if (cleaned !== income) {
-      setIncome(cleaned);
-    }
+    isUserTyping.current = false;
+    const cleaned = localIncome.replace(/\.$/, '');
+    setIncome(cleaned);
     onIncomeBlur?.();
-  }, [income, setIncome, onIncomeBlur]);
+  };
 
-  const handleSubmit = useCallback((e: React.FormEvent) => {
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    setIncome(localIncome);
     onCalculate();
-  }, [onCalculate]);
+  };
 
   return (
     <form onSubmit={handleSubmit} className="p-8 space-y-6">
@@ -84,7 +93,7 @@ const CalculatorFormComponent = ({
           type="text"
           inputMode="decimal"
           id="income"
-          value={income}
+          value={localIncome}
           onChange={handleIncomeChange}
           onFocus={handleIncomeFocusEvent}
           onBlur={handleIncomeBlurEvent}
@@ -123,6 +132,4 @@ const CalculatorFormComponent = ({
       </button>
     </form>
   );
-};
-
-export const CalculatorForm = memo(CalculatorFormComponent);
+}
