@@ -15,6 +15,7 @@ interface CalculatorFormProps {
   city: string;
   setCity: (city: string) => void;
   onCalculate: () => void;
+  onFormInteraction?: () => void;
 }
 
 export function CalculatorForm({
@@ -28,7 +29,8 @@ export function CalculatorForm({
   setDemographic,
   city,
   setCity,
-  onCalculate
+  onCalculate,
+  onFormInteraction
 }: CalculatorFormProps) {
   const handleKeyPress = (e: React.KeyboardEvent) => {
     if (e.key === 'Enter') {
@@ -39,6 +41,11 @@ export function CalculatorForm({
 
   const handleIncomeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setIncome(e.target.value);
+    onFormInteraction?.();
+  };
+
+  const handleIncomeFocus = () => {
+    onFormInteraction?.();
   };
 
   const handleIncomeBlur = () => {
@@ -73,6 +80,7 @@ export function CalculatorForm({
           id="income"
           value={income}
           onChange={handleIncomeChange}
+          onFocus={handleIncomeFocus}
           onBlur={handleIncomeBlur}
           onKeyPress={handleKeyPress}
           placeholder="Enter your monthly income (e.g., 5000)"

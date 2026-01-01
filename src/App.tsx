@@ -46,11 +46,29 @@ function App() {
   }, []);
 
   // Timer for showing login popup after 5 minutes (300,000 ms)
-  useTimer(300000, () => {
+  const timer = useTimer(300000, () => {
     if (!isAuthenticated && !loading) {
       setShowLoginPopup(true);
     }
   });
+
+  // Track timeout for resuming timer
+  const resumeTimerRef = useRef<NodeJS.Timeout | null>(null);
+
+  // Pause timer when user is actively using the form
+  const handleFormInteraction = useCallback(() => {
+    timer.pause();
+
+    // Clear any existing timeout
+    if (resumeTimerRef.current) {
+      clearTimeout(resumeTimerRef.current);
+    }
+
+    // Resume timer after 20 seconds of inactivity
+    resumeTimerRef.current = setTimeout(() => {
+      timer.resume();
+    }, 20000);
+  }, [timer]);
 
   // Auto-populate form when user data becomes available after login
   // Use a ref to track if we've already populated to prevent overwriting user edits
@@ -330,6 +348,7 @@ function App() {
                 city={city}
                 setCity={setCity}
                 onCalculate={handleCalculate}
+                onFormInteraction={handleFormInteraction}
               />
 
               {allocations && (
