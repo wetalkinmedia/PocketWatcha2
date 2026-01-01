@@ -218,14 +218,22 @@ export function LoginPopup({ isOpen, onClose, onLogin, onAuthLogin, onAuthRegist
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-start justify-center z-50 p-4 overflow-y-auto">
-      <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full my-8">
+    <div
+      className="fixed inset-0 bg-black bg-opacity-50 flex items-start justify-center z-50 p-4 overflow-y-auto"
+      onClick={onClose}
+    >
+      <div
+        className="bg-white rounded-2xl shadow-2xl max-w-md w-full my-8"
+        onClick={(e) => e.stopPropagation()}
+      >
         <div className="bg-gradient-to-r from-blue-600 to-blue-700 p-6 text-white relative">
           <button
+            type="button"
             onClick={onClose}
-            className="absolute top-4 right-4 text-white hover:text-gray-200 transition-colors"
+            className="absolute top-4 right-4 text-white hover:text-gray-200 transition-colors p-2 touch-manipulation"
+            aria-label="Close"
           >
-            <X size={24} />
+            <X size={28} />
           </button>
           <h2 className="text-2xl font-bold mb-2">
             {isForgotCredentials ? '🔍 Forgot Username/Password' : isForgotPassword ? '🔐 Reset Password' : isSignUp ? '🚀 Create Your Profile' : '👋 Welcome Back!'}
@@ -394,8 +402,9 @@ export function LoginPopup({ isOpen, onClose, onLogin, onAuthLogin, onAuthRegist
                   type="text"
                   value={profile.firstName}
                   onChange={(e) => handleInputChange('firstName', e.target.value)}
-                  className="w-full p-3 border-2 border-gray-200 rounded-lg focus:border-blue-400 focus:ring-2 focus:ring-blue-100 transition-all"
+                  className="w-full p-3 border-2 border-gray-200 rounded-lg focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-300 transition-all touch-manipulation"
                   placeholder="John"
+                  autoComplete="given-name"
                   required
                 />
               </div>
@@ -409,8 +418,9 @@ export function LoginPopup({ isOpen, onClose, onLogin, onAuthLogin, onAuthRegist
                   type="text"
                   value={profile.lastName}
                   onChange={(e) => handleInputChange('lastName', e.target.value)}
-                  className="w-full p-3 border-2 border-gray-200 rounded-lg focus:border-blue-400 focus:ring-2 focus:ring-blue-100 transition-all"
+                  className="w-full p-3 border-2 border-gray-200 rounded-lg focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-300 transition-all touch-manipulation"
                   placeholder="Doe"
+                  autoComplete="family-name"
                   required
                 />
               </div>
@@ -428,8 +438,9 @@ export function LoginPopup({ isOpen, onClose, onLogin, onAuthLogin, onAuthRegist
               type="email"
               value={profile.email}
               onChange={(e) => handleInputChange('email', e.target.value)}
-              className="w-full p-3 border-2 border-gray-200 rounded-lg focus:border-blue-400 focus:ring-2 focus:ring-blue-100 transition-all"
+              className="w-full p-3 border-2 border-gray-200 rounded-lg focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-300 transition-all touch-manipulation"
               placeholder="john.doe@example.com"
+              autoComplete="email"
               required
             />
           </div>
@@ -445,8 +456,9 @@ export function LoginPopup({ isOpen, onClose, onLogin, onAuthLogin, onAuthRegist
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="w-full p-3 border-2 border-gray-200 rounded-lg focus:border-blue-400 focus:ring-2 focus:ring-blue-100 transition-all"
+              className="w-full p-3 border-2 border-gray-200 rounded-lg focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-300 transition-all touch-manipulation"
               placeholder={isSignUp ? "Create a secure password" : "Enter your password"}
+              autoComplete={isSignUp ? "new-password" : "current-password"}
               required
               minLength={isSignUp ? 6 : undefined}
             />
@@ -589,11 +601,11 @@ export function LoginPopup({ isOpen, onClose, onLogin, onAuthLogin, onAuthRegist
           <button
             type="submit"
             disabled={loading}
-            className="w-full py-3 bg-gradient-to-r from-blue-500 to-purple-600 text-white font-bold rounded-lg hover:from-blue-600 hover:to-purple-700 transform hover:-translate-y-1 hover:shadow-lg transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
+            className="w-full py-4 bg-gradient-to-r from-blue-600 to-blue-700 text-white font-bold rounded-lg active:scale-95 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed touch-manipulation text-lg"
           >
-            {loading 
-              ? (isSignUp ? '⏳ Creating Account...' : '⏳ Signing In...') 
-              : (isSignUp ? '🎯 Create My Profile' : '🚀 Sign In')
+            {loading
+              ? (isSignUp ? 'Creating Account...' : 'Signing In...')
+              : (isSignUp ? 'Create My Profile' : 'Sign In')
             }
           </button>
 
@@ -631,10 +643,10 @@ export function LoginPopup({ isOpen, onClose, onLogin, onAuthLogin, onAuthRegist
                   setIsSignUp(!isSignUp);
                   setMessage('');
                 }}
-              className="text-blue-600 hover:text-blue-800 font-semibold transition-colors"
+              className="text-blue-600 hover:text-blue-800 font-semibold transition-colors py-2 px-4 touch-manipulation"
             >
-              {isSignUp 
-                ? 'Already have an account? Sign In' 
+              {isSignUp
+                ? 'Already have an account? Sign In'
                 : "Don't have an account? Sign Up"
               }
             </button>
