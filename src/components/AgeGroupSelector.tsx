@@ -28,15 +28,24 @@ export function AgeGroupSelector({ value, onChange }: AgeGroupSelectorProps) {
       }
     }
 
-    if (isOpen) {
-      setTimeout(() => {
-        document.addEventListener('mousedown', handleClickOutside);
-      }, 300);
+    function handleKeyDown(event: KeyboardEvent) {
+      if (event.key === 'Escape') {
+        setIsOpen(false);
+      }
     }
 
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
-    };
+    if (isOpen) {
+      const timer = setTimeout(() => {
+        document.addEventListener('mousedown', handleClickOutside);
+        document.addEventListener('keydown', handleKeyDown);
+      }, 500);
+
+      return () => {
+        clearTimeout(timer);
+        document.removeEventListener('mousedown', handleClickOutside);
+        document.removeEventListener('keydown', handleKeyDown);
+      };
+    }
   }, [isOpen]);
 
   const handleToggle = (e: React.MouseEvent) => {
@@ -45,9 +54,17 @@ export function AgeGroupSelector({ value, onChange }: AgeGroupSelectorProps) {
     setIsOpen(!isOpen);
   };
 
-  const handleSelect = (ageValue: AgeGroup) => {
+  const handleSelect = (ageValue: AgeGroup, event?: React.MouseEvent | React.KeyboardEvent) => {
+    event?.preventDefault();
+    event?.stopPropagation();
     onChange(ageValue);
     setIsOpen(false);
+  };
+
+  const handleKeyPress = (event: React.KeyboardEvent, ageValue: AgeGroup) => {
+    if (event.key === 'Enter' || event.key === ' ') {
+      handleSelect(ageValue, event);
+    }
   };
 
   return (
@@ -72,7 +89,8 @@ export function AgeGroupSelector({ value, onChange }: AgeGroupSelectorProps) {
               <button
                 key={age.value}
                 type="button"
-                onClick={() => handleSelect(age.value)}
+                onClick={(e) => handleSelect(age.value, e)}
+                onKeyDown={(e) => handleKeyPress(e, age.value)}
                 onMouseDown={(e) => e.preventDefault()}
                 className={`w-full px-5 py-4 text-left hover:bg-blue-50 active:bg-blue-100 transition-colors border-b border-gray-100 last:border-b-0 ${
                   age.value === value ? 'bg-blue-100 font-semibold' : ''
