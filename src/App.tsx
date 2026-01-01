@@ -101,7 +101,7 @@ function App() {
   }, [isAuthenticated, user]);
 
 
-  const handleCalculate = () => {
+  const handleCalculate = useCallback(() => {
     setErrorLog([]); // Clear previous errors
     logError('=== CALCULATE CLICKED ===');
     logError(`Current values: income=${income}, age=${age}, demographic=${demographic}, city=${city}, currency=${currency}`);
@@ -182,7 +182,7 @@ function App() {
       logError(`Error during calculation: ${error}`);
       alert('An error occurred during calculation. Please check the error log.');
     }
-  };
+  }, [logError, income, age, demographic, city, currency]);
 
   const handleLegacyLogin = (profile: UserProfileType) => {
     // Legacy login for backward compatibility

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useCallback, memo } from 'react';
 import { AgeGroup, LivingSituation } from '../types';
 import { CurrencySelector } from './CurrencySelector';
 import { AgeGroupSelector } from './AgeGroupSelector';
@@ -21,7 +21,7 @@ interface CalculatorFormProps {
   onIncomeBlur?: () => void;
 }
 
-export function CalculatorForm({
+const CalculatorFormComponent = ({
   income,
   setIncome,
   currency,
@@ -35,24 +35,24 @@ export function CalculatorForm({
   onCalculate,
   onIncomeFocus,
   onIncomeBlur
-}: CalculatorFormProps) {
-  const handleKeyPress = (e: React.KeyboardEvent) => {
+}: CalculatorFormProps) => {
+  const handleKeyPress = useCallback((e: React.KeyboardEvent) => {
     if (e.key === 'Enter') {
       e.preventDefault();
       onCalculate();
     }
-  };
+  }, [onCalculate]);
 
-  const handleIncomeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleIncomeChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     setIncome(e.target.value);
-  };
+  }, [setIncome]);
 
-  const handleIncomeFocusEvent = () => {
+  const handleIncomeFocusEvent = useCallback(() => {
     console.log('CalculatorForm: Income focus event');
     onIncomeFocus?.();
-  };
+  }, [onIncomeFocus]);
 
-  const handleIncomeBlurEvent = () => {
+  const handleIncomeBlurEvent = useCallback(() => {
     console.log('CalculatorForm: Income blur event');
     // Remove trailing decimal point when user leaves the field
     const cleaned = income.replace(/\.$/, '');
@@ -60,12 +60,12 @@ export function CalculatorForm({
       setIncome(cleaned);
     }
     onIncomeBlur?.();
-  };
+  }, [income, setIncome, onIncomeBlur]);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = useCallback((e: React.FormEvent) => {
     e.preventDefault();
     onCalculate();
-  };
+  }, [onCalculate]);
 
   return (
     <form onSubmit={handleSubmit} className="p-8 space-y-6">
@@ -123,4 +123,6 @@ export function CalculatorForm({
       </button>
     </form>
   );
-}
+};
+
+export const CalculatorForm = memo(CalculatorFormComponent);
