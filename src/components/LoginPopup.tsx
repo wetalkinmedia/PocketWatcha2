@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState } from 'react';
 import { X, User, Mail, Phone, MapPin, Heart, Briefcase, DollarSign, Lock } from 'lucide-react';
 import { UserProfile } from '../types';
 import { supabase } from '../lib/supabase';
@@ -34,13 +34,11 @@ export function LoginPopup({ isOpen, onClose, onLogin, onAuthLogin, onAuthRegist
     email: ''
   });
 
-  const modalRef = useRef<HTMLDivElement>(null);
-
   const handleForgotCredentials = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
     setMessage('');
-    
+
     if (!credentialsEmail || !credentialsEmail.includes('@')) {
       setMessage('Please enter a valid email address! 📧');
       setLoading(false);
@@ -48,39 +46,33 @@ export function LoginPopup({ isOpen, onClose, onLogin, onAuthLogin, onAuthRegist
     }
 
     try {
-      // Check if user exists in our system
-      const { data: profiles, error: profileError } = await supabase
-        .from('user_profiles')
-        .select('first_name, last_name')
-        .eq('id', '(SELECT id FROM auth.users WHERE email = $1)')
-        .limit(1);
-
       // Always send a password reset email for security (don't reveal if email exists)
       const { error: resetError } = await supabase.auth.resetPasswordForEmail(credentialsEmail, {
         redirectTo: `${window.location.origin}/reset-password`
       });
 
       if (resetError) {
-        setMessage(`Reset failed: ${resetError.message} ❌`);
+        setMessage('Failed to send email. Please try again! ❌');
       } else {
-        setMessage(`📧 If an account exists with ${credentialsEmail}, you'll receive an email with:\n\n✅ Your username (email address)\n✅ A secure password reset link\n\nCheck your inbox and spam folder!`);
+        setMessage('📧 Recovery email sent! Check your inbox for your username and password reset instructions. The link expires in 1 hour. ✅');
         setTimeout(() => {
           setIsForgotCredentials(false);
           setCredentialsEmail('');
           setMessage('');
-        }, 5000);
+        }, 3000);
       }
     } catch (error) {
-      setMessage('Failed to process request. Please try again! ❌');
+      setMessage('Failed to send email. Please try again! ❌');
     }
-    
+
     setLoading(false);
   };
+
   const handleForgotPassword = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
     setMessage('');
-    
+
     if (!resetEmail || !resetEmail.includes('@')) {
       setMessage('Please enter a valid email address! 📧');
       setLoading(false);
@@ -93,9 +85,9 @@ export function LoginPopup({ isOpen, onClose, onLogin, onAuthLogin, onAuthRegist
       });
 
       if (error) {
-        setMessage(`Reset failed: ${error.message} ❌`);
+        setMessage('Failed to send reset email. Please try again! ❌');
       } else {
-        setMessage('Password reset email sent! Check your inbox and spam folder. 📧✅');
+        setMessage('📧 Password reset email sent! Check your inbox for the reset link. ✅');
         setTimeout(() => {
           setIsForgotPassword(false);
           setResetEmail('');
@@ -105,24 +97,24 @@ export function LoginPopup({ isOpen, onClose, onLogin, onAuthLogin, onAuthRegist
     } catch (error) {
       setMessage('Failed to send reset email. Please try again! ❌');
     }
-    
+
     setLoading(false);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (isForgotCredentials) {
       return handleForgotCredentials(e);
     }
-    
+
     if (isForgotPassword) {
       return handleForgotPassword(e);
     }
-    
+
     setLoading(true);
     setMessage('');
-    
+
     if (isSignUp) {
       // Sign up validation
       if (!password || password.length < 6) {
@@ -141,13 +133,13 @@ export function LoginPopup({ isOpen, onClose, onLogin, onAuthLogin, onAuthRegist
         if (key === 'age' || key === 'salary') return value <= 0;
         return !value || value.toString().trim() === '';
       });
-      
+
       if (requiredFields.length > 0) {
         setMessage('Please fill in all fields! 📝');
         setLoading(false);
         return;
       }
-      
+
       if (onAuthRegister) {
         try {
           const result = await onAuthRegister(profile.email, password, {
@@ -160,7 +152,7 @@ export function LoginPopup({ isOpen, onClose, onLogin, onAuthLogin, onAuthRegist
             occupation: profile.occupation,
             phoneNumber: profile.phoneNumber
           });
-          
+
           if (result.success) {
             setMessage('Account created successfully! Check your email for a welcome message! 🎉📧');
             setTimeout(() => {
@@ -183,11 +175,11 @@ export function LoginPopup({ isOpen, onClose, onLogin, onAuthLogin, onAuthRegist
         setLoading(false);
         return;
       }
-      
+
       if (onAuthLogin) {
         try {
           const result = await onAuthLogin(profile.email, password);
-          
+
           if (result.success) {
             setMessage('Login successful! Welcome back! 🎉');
             setTimeout(() => {
@@ -201,15 +193,10 @@ export function LoginPopup({ isOpen, onClose, onLogin, onAuthLogin, onAuthRegist
         }
       } else {
         // Fallback to old method
-        if (!profile.firstName) {
-          setMessage('Please enter your name to continue! 👤');
-          setLoading(false);
-          return;
-        }
         onLogin(profile);
       }
     }
-    
+
     setLoading(false);
   };
 
@@ -220,16 +207,16 @@ export function LoginPopup({ isOpen, onClose, onLogin, onAuthLogin, onAuthRegist
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-start justify-center z-50 p-4 overflow-y-auto">
-      <div
-        ref={modalRef}
-        className="bg-white rounded-2xl shadow-2xl max-w-md w-full my-8"
-      >
+    <div
+      className="fixed inset-0 bg-black bg-opacity-50 flex items-start justify-center z-50 overflow-y-auto"
+      style={{ padding: '20px 16px' }}
+    >
+      <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full my-auto">
         <div className="bg-gradient-to-r from-blue-600 to-blue-700 p-6 text-white relative">
           <button
             type="button"
             onClick={onClose}
-            className="absolute top-4 right-4 text-white hover:text-gray-200 transition-colors p-2 touch-manipulation"
+            className="absolute top-4 right-4 text-white hover:text-gray-200 transition-colors p-2"
             aria-label="Close"
           >
             <X size={28} />
@@ -242,12 +229,11 @@ export function LoginPopup({ isOpen, onClose, onLogin, onAuthLogin, onAuthRegist
               ? 'Enter your email to receive your username and password reset link'
               : isForgotPassword
               ? 'Enter your email to receive a password reset link'
-              : isSignUp 
+              : isSignUp
                 ? 'Get personalized financial advice tailored just for you!'
                 : 'Sign in to access your personalized money plan'
             }
           </p>
-          {/* Test Credentials Info */}
           <div className="mt-4 p-3 bg-white bg-opacity-20 rounded-lg text-sm">
             <p className="font-semibold mb-1">
               {isForgotCredentials ? '🔍 Account Recovery:' : isForgotPassword ? '🔐 Password Reset:' : isSignUp ? '🚀 Create Your Account:' : '🔐 Sign In:'}
@@ -257,7 +243,7 @@ export function LoginPopup({ isOpen, onClose, onLogin, onAuthLogin, onAuthRegist
                 ? 'We\'ll send your username and a password reset link to your email'
                 : isForgotPassword
                 ? 'We\'ll send you a secure link to reset your password'
-                : isSignUp 
+                : isSignUp
                   ? 'Fill out the form to create your personalized profile'
                   : 'Use your email and password to access your account'
               }
@@ -267,17 +253,12 @@ export function LoginPopup({ isOpen, onClose, onLogin, onAuthLogin, onAuthRegist
 
         <form onSubmit={handleSubmit} className="p-6 space-y-4">
           {message && (
-            <div className={`p-3 rounded-lg text-center font-semibold ${
-              message.includes('successful') || message.includes('Welcome') 
-                ? 'bg-green-100 text-green-800' 
-                : 'bg-red-100 text-red-800'
-            }`}>
+            <div className={`p-3 rounded-lg ${message.includes('❌') || message.includes('match') || message.includes('failed') || message.includes('Failed') ? 'bg-red-50 text-red-700' : 'bg-green-50 text-green-700'}`}>
               {message}
             </div>
           )}
 
           {isForgotCredentials ? (
-            /* Forgot Username/Password Form */
             <>
               <div>
                 <label htmlFor="credentialsEmail" className="block text-sm font-semibold text-gray-700 mb-2">
@@ -329,7 +310,6 @@ export function LoginPopup({ isOpen, onClose, onLogin, onAuthLogin, onAuthRegist
               </div>
             </>
           ) : isForgotPassword ? (
-            /* Forgot Password Form */
             <>
               <div>
                 <label htmlFor="resetEmail" className="block text-sm font-semibold text-gray-700 mb-2">
@@ -368,27 +348,11 @@ export function LoginPopup({ isOpen, onClose, onLogin, onAuthLogin, onAuthRegist
                 >
                   ← Back to Sign In
                 </button>
-                <div>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setIsForgotPassword(false);
-                      setIsForgotCredentials(true);
-                      setResetEmail('');
-                      setMessage('');
-                    }}
-                    className="text-purple-600 hover:text-purple-800 text-sm transition-colors"
-                  >
-                    Forgot your username too?
-                  </button>
-                </div>
               </div>
             </>
           ) : (
-            /* Regular Login/Signup Form */
             <>
-          {/* Basic Info */}
-          {isSignUp && (
+              {isSignUp && (
             <div className="grid grid-cols-2 gap-4">
               <div>
                 <label htmlFor="firstName" className="block text-sm font-semibold text-gray-700 mb-2">
