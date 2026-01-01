@@ -15,7 +15,8 @@ interface CalculatorFormProps {
   city: string;
   setCity: (city: string) => void;
   onCalculate: () => void;
-  onFormInteraction?: () => void;
+  onIncomeFocus?: () => void;
+  onIncomeBlur?: () => void;
 }
 
 export function CalculatorForm({
@@ -30,7 +31,8 @@ export function CalculatorForm({
   city,
   setCity,
   onCalculate,
-  onFormInteraction
+  onIncomeFocus,
+  onIncomeBlur
 }: CalculatorFormProps) {
   const handleKeyPress = (e: React.KeyboardEvent) => {
     if (e.key === 'Enter') {
@@ -41,19 +43,19 @@ export function CalculatorForm({
 
   const handleIncomeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setIncome(e.target.value);
-    onFormInteraction?.();
   };
 
-  const handleIncomeFocus = () => {
-    onFormInteraction?.();
+  const handleIncomeFocusEvent = () => {
+    onIncomeFocus?.();
   };
 
-  const handleIncomeBlur = () => {
+  const handleIncomeBlurEvent = () => {
     // Remove trailing decimal point when user leaves the field
     const cleaned = income.replace(/\.$/, '');
     if (cleaned !== income) {
       setIncome(cleaned);
     }
+    onIncomeBlur?.();
   };
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -80,8 +82,8 @@ export function CalculatorForm({
           id="income"
           value={income}
           onChange={handleIncomeChange}
-          onFocus={handleIncomeFocus}
-          onBlur={handleIncomeBlur}
+          onFocus={handleIncomeFocusEvent}
+          onBlur={handleIncomeBlurEvent}
           onKeyPress={handleKeyPress}
           placeholder="Enter your monthly income (e.g., 5000)"
           className="w-full p-4 border-2 border-gray-200 rounded-xl text-lg bg-white focus:border-blue-400 focus:ring-2 focus:ring-blue-100 transition-colors hover:border-blue-300"

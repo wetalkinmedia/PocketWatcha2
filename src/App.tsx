@@ -52,22 +52,14 @@ function App() {
     }
   });
 
-  // Track timeout for resuming timer
-  const resumeTimerRef = useRef<NodeJS.Timeout | null>(null);
-
-  // Pause timer when user is actively using the form
-  const handleFormInteraction = useCallback(() => {
+  // Pause timer when user focuses on income field
+  const handleIncomeFocus = useCallback(() => {
     timer.pause();
+  }, [timer]);
 
-    // Clear any existing timeout
-    if (resumeTimerRef.current) {
-      clearTimeout(resumeTimerRef.current);
-    }
-
-    // Resume timer after 20 seconds of inactivity
-    resumeTimerRef.current = setTimeout(() => {
-      timer.resume();
-    }, 20000);
+  // Resume timer when user leaves income field
+  const handleIncomeBlur = useCallback(() => {
+    timer.resume();
   }, [timer]);
 
   // Auto-populate form when user data becomes available after login
@@ -348,7 +340,8 @@ function App() {
                 city={city}
                 setCity={setCity}
                 onCalculate={handleCalculate}
-                onFormInteraction={handleFormInteraction}
+                onIncomeFocus={handleIncomeFocus}
+                onIncomeBlur={handleIncomeBlur}
               />
 
               {allocations && (
