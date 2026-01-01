@@ -46,10 +46,12 @@ export function CalculatorForm({
   };
 
   const handleIncomeFocusEvent = () => {
+    console.log('CalculatorForm: Income focus event');
     onIncomeFocus?.();
   };
 
   const handleIncomeBlurEvent = () => {
+    console.log('CalculatorForm: Income blur event');
     // Remove trailing decimal point when user leaves the field
     const cleaned = income.replace(/\.$/, '');
     if (cleaned !== income) {
