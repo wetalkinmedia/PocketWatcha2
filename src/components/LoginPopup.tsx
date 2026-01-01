@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { X, User, Mail, Phone, MapPin, Heart, Briefcase, DollarSign, Lock } from 'lucide-react';
 import { UserProfile } from '../types';
 import { supabase } from '../lib/supabase';
@@ -33,6 +33,23 @@ export function LoginPopup({ isOpen, onClose, onLogin, onAuthLogin, onAuthRegist
     phoneNumber: '',
     email: ''
   });
+
+  const modalRef = useRef<HTMLDivElement>(null);
+  const canCloseRef = useRef(false);
+
+  useEffect(() => {
+    if (isOpen) {
+      canCloseRef.current = false;
+      const timer = setTimeout(() => {
+        canCloseRef.current = true;
+      }, 500);
+
+      return () => {
+        clearTimeout(timer);
+        canCloseRef.current = false;
+      };
+    }
+  }, [isOpen]);
 
   const handleForgotCredentials = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -215,14 +232,22 @@ export function LoginPopup({ isOpen, onClose, onLogin, onAuthLogin, onAuthRegist
     setProfile(prev => ({ ...prev, [field]: value }));
   };
 
+  const handleBackgroundClick = (e: React.MouseEvent) => {
+    if (!canCloseRef.current) return;
+    if (modalRef.current && !modalRef.current.contains(e.target as Node)) {
+      onClose();
+    }
+  };
+
   if (!isOpen) return null;
 
   return (
     <div
       className="fixed inset-0 bg-black bg-opacity-50 flex items-start justify-center z-50 p-4 overflow-y-auto"
-      onClick={onClose}
+      onClick={handleBackgroundClick}
     >
       <div
+        ref={modalRef}
         className="bg-white rounded-2xl shadow-2xl max-w-md w-full my-8"
         onClick={(e) => e.stopPropagation()}
       >
@@ -402,7 +427,7 @@ export function LoginPopup({ isOpen, onClose, onLogin, onAuthLogin, onAuthRegist
                   type="text"
                   value={profile.firstName}
                   onChange={(e) => handleInputChange('firstName', e.target.value)}
-                  className="w-full p-3 border-2 border-gray-200 rounded-lg focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-300 transition-all touch-manipulation"
+                  className="w-full p-3 border-2 border-gray-200 rounded-lg focus:border-blue-400 focus:ring-2 focus:ring-blue-100 transition-all"
                   placeholder="John"
                   autoComplete="given-name"
                   required
@@ -418,7 +443,7 @@ export function LoginPopup({ isOpen, onClose, onLogin, onAuthLogin, onAuthRegist
                   type="text"
                   value={profile.lastName}
                   onChange={(e) => handleInputChange('lastName', e.target.value)}
-                  className="w-full p-3 border-2 border-gray-200 rounded-lg focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-300 transition-all touch-manipulation"
+                  className="w-full p-3 border-2 border-gray-200 rounded-lg focus:border-blue-400 focus:ring-2 focus:ring-blue-100 transition-all"
                   placeholder="Doe"
                   autoComplete="family-name"
                   required
@@ -438,7 +463,7 @@ export function LoginPopup({ isOpen, onClose, onLogin, onAuthLogin, onAuthRegist
               type="email"
               value={profile.email}
               onChange={(e) => handleInputChange('email', e.target.value)}
-              className="w-full p-3 border-2 border-gray-200 rounded-lg focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-300 transition-all touch-manipulation"
+              className="w-full p-3 border-2 border-gray-200 rounded-lg focus:border-blue-400 focus:ring-2 focus:ring-blue-100 transition-all"
               placeholder="john.doe@example.com"
               autoComplete="email"
               required
@@ -456,7 +481,7 @@ export function LoginPopup({ isOpen, onClose, onLogin, onAuthLogin, onAuthRegist
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="w-full p-3 border-2 border-gray-200 rounded-lg focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-300 transition-all touch-manipulation"
+              className="w-full p-3 border-2 border-gray-200 rounded-lg focus:border-blue-400 focus:ring-2 focus:ring-blue-100 transition-all"
               placeholder={isSignUp ? "Create a secure password" : "Enter your password"}
               autoComplete={isSignUp ? "new-password" : "current-password"}
               required
@@ -601,7 +626,7 @@ export function LoginPopup({ isOpen, onClose, onLogin, onAuthLogin, onAuthRegist
           <button
             type="submit"
             disabled={loading}
-            className="w-full py-4 bg-gradient-to-r from-blue-600 to-blue-700 text-white font-bold rounded-lg active:scale-95 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed touch-manipulation text-lg"
+            className="w-full py-4 bg-gradient-to-r from-blue-600 to-blue-700 text-white font-bold rounded-lg hover:from-blue-700 hover:to-blue-800 active:scale-95 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed text-lg"
           >
             {loading
               ? (isSignUp ? 'Creating Account...' : 'Signing In...')
@@ -643,7 +668,7 @@ export function LoginPopup({ isOpen, onClose, onLogin, onAuthLogin, onAuthRegist
                   setIsSignUp(!isSignUp);
                   setMessage('');
                 }}
-              className="text-blue-600 hover:text-blue-800 font-semibold transition-colors py-2 px-4 touch-manipulation"
+              className="text-blue-600 hover:text-blue-800 font-semibold transition-colors py-2 px-4"
             >
               {isSignUp
                 ? 'Already have an account? Sign In'
