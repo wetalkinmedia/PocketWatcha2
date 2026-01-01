@@ -53,16 +53,16 @@ function App() {
   });
 
   // Pause timer when user focuses on income field
-  const handleIncomeFocus = useCallback(() => {
+  const handleIncomeFocus = () => {
     console.log('Income field focused - pausing timer');
     timer.pause();
-  }, [timer.pause]);
+  };
 
   // Resume timer when user leaves income field
-  const handleIncomeBlur = useCallback(() => {
+  const handleIncomeBlur = () => {
     console.log('Income field blurred - resuming timer');
     timer.resume();
-  }, [timer.resume]);
+  };
 
   // Auto-populate form when user data becomes available after login
   // Use a ref to track if we've already populated to prevent overwriting user edits
