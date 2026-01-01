@@ -24,20 +24,18 @@ export function LivingSituationSelector({ value, onChange }: LivingSituationSele
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
       if (containerRef.current && !containerRef.current.contains(event.target as Node)) {
-        setTimeout(() => {
-          setIsOpen(false);
-        }, 150);
+        setIsOpen(false);
       }
     }
 
     if (isOpen) {
-      document.addEventListener('click', handleClickOutside);
-    } else {
-      document.removeEventListener('click', handleClickOutside);
+      setTimeout(() => {
+        document.addEventListener('mousedown', handleClickOutside);
+      }, 300);
     }
 
     return () => {
-      document.removeEventListener('click', handleClickOutside);
+      document.removeEventListener('mousedown', handleClickOutside);
     };
   }, [isOpen]);
 
@@ -49,9 +47,7 @@ export function LivingSituationSelector({ value, onChange }: LivingSituationSele
 
   const handleSelect = (situationValue: LivingSituation) => {
     onChange(situationValue);
-    setTimeout(() => {
-      setIsOpen(false);
-    }, 200);
+    setIsOpen(false);
   };
 
   return (

@@ -33,22 +33,20 @@ export function CitySelector({ value, onChange }: CitySelectorProps) {
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
       if (containerRef.current && !containerRef.current.contains(event.target as Node)) {
-        setTimeout(() => {
-          setIsOpen(false);
-          setSearchTerm('');
-        }, 150);
+        setIsOpen(false);
+        setSearchTerm('');
       }
     }
 
     if (isOpen) {
-      document.addEventListener('click', handleClickOutside);
+      setTimeout(() => {
+        document.addEventListener('mousedown', handleClickOutside);
+      }, 300);
       setTimeout(() => searchInputRef.current?.focus(), 100);
-    } else {
-      document.removeEventListener('click', handleClickOutside);
     }
 
     return () => {
-      document.removeEventListener('click', handleClickOutside);
+      document.removeEventListener('mousedown', handleClickOutside);
     };
   }, [isOpen]);
 
@@ -60,10 +58,8 @@ export function CitySelector({ value, onChange }: CitySelectorProps) {
 
   const handleSelect = (cityValue: string) => {
     onChange(cityValue);
-    setTimeout(() => {
-      setIsOpen(false);
-      setSearchTerm('');
-    }, 200);
+    setIsOpen(false);
+    setSearchTerm('');
   };
 
   return (

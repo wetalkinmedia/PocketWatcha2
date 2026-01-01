@@ -23,24 +23,20 @@ export function CurrencySelector({ value, onChange }: CurrencySelectorProps) {
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
       if (containerRef.current && !containerRef.current.contains(event.target as Node)) {
-        // Add a small delay to prevent accidental closes
-        setTimeout(() => {
-          setIsOpen(false);
-          setSearchTerm('');
-        }, 150);
+        setIsOpen(false);
+        setSearchTerm('');
       }
     }
 
     if (isOpen) {
-      // Use 'click' instead of 'mousedown' to give more time for selection
-      document.addEventListener('click', handleClickOutside);
+      setTimeout(() => {
+        document.addEventListener('mousedown', handleClickOutside);
+      }, 300);
       setTimeout(() => searchInputRef.current?.focus(), 100);
-    } else {
-      document.removeEventListener('click', handleClickOutside);
     }
 
     return () => {
-      document.removeEventListener('click', handleClickOutside);
+      document.removeEventListener('mousedown', handleClickOutside);
     };
   }, [isOpen]);
 
@@ -52,11 +48,8 @@ export function CurrencySelector({ value, onChange }: CurrencySelectorProps) {
 
   const handleSelect = (currencyCode: string) => {
     onChange(currencyCode);
-    // Add a brief delay before closing to give visual feedback
-    setTimeout(() => {
-      setIsOpen(false);
-      setSearchTerm('');
-    }, 200);
+    setIsOpen(false);
+    setSearchTerm('');
   };
 
   return (
