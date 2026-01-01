@@ -70,8 +70,8 @@ export function AgeGroupSelector({ value, onChange }: AgeGroupSelectorProps) {
       </button>
 
       {isOpen && (
-        <div className="absolute z-50 w-full mt-2 bg-white border-2 border-gray-200 rounded-xl shadow-2xl max-h-96 overflow-hidden">
-          <div className="overflow-y-auto max-h-80">
+        <div className="absolute z-50 w-full mt-2 bg-white border-2 border-gray-200 rounded-xl shadow-2xl overflow-hidden">
+          <div className="overflow-y-auto overflow-x-hidden max-h-80" style={{ WebkitOverflowScrolling: 'touch' }}>
             {ageGroups.map((age) => (
               <button
                 key={age.value}
