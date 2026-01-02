@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { X, User, Mail, Phone, MapPin, Heart, Briefcase, DollarSign, Lock } from 'lucide-react';
 import { UserProfile } from '../types';
 import { supabase } from '../lib/supabase';
@@ -33,6 +33,15 @@ export function LoginPopup({ isOpen, onClose, onLogin, onAuthLogin, onAuthRegist
     phoneNumber: '',
     email: ''
   });
+
+  useEffect(() => {
+    if (isOpen) {
+      setPassword('');
+      setConfirmPassword('');
+      setMessage('');
+      setLoading(false);
+    }
+  }, [isOpen]);
 
   const handleForgotCredentials = async (e: React.FormEvent) => {
     e.preventDefault();
