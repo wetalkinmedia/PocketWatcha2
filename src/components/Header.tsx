@@ -14,12 +14,22 @@ interface HeaderProps {
 
 export function Header({ isAuthenticated = false, user, onLoginClick, onLogoutClick, onCoursesClick, onAuthoringClick, onDashboardClick, onAdminClick }: HeaderProps) {
   return (
-    <div className="bg-gradient-to-br from-blue-400 via-blue-500 to-cyan-400 py-4 px-6 text-white relative overflow-hidden">
+    <div className="bg-gradient-to-br from-blue-400 via-blue-500 to-cyan-400 text-white relative overflow-hidden">
       <div className="absolute inset-0 bg-black bg-opacity-10"></div>
 
-      {/* Login/Logout Button */}
-      <div className="absolute top-3 right-4 z-20">
-        <div className="flex items-center gap-2">
+      {/* Title at the top */}
+      <div className="relative z-10 text-center pt-6 pb-3">
+        <h1 className="text-2xl md:text-3xl font-bold mb-1 drop-shadow-lg">
+          💰 Smart Money Allocator
+        </h1>
+        <p className="text-sm md:text-base opacity-90 font-medium">
+          Turn your money into a well-balanced financial smoothie!
+        </p>
+      </div>
+
+      {/* Buttons below title */}
+      <div className="relative z-20 pb-4 px-4">
+        <div className="flex items-center justify-center flex-wrap gap-2">
           {isAuthenticated && onDashboardClick && (
             <button
               onClick={onDashboardClick}
@@ -54,7 +64,7 @@ export function Header({ isAuthenticated = false, user, onLoginClick, onLogoutCl
             <GraduationCap size={14} />
             <span className="hidden md:inline">AI Courses</span>
           </button>
-          
+
         {isAuthenticated ? (
           <>
             <div className="flex items-center gap-1 bg-green-500 bg-opacity-90 px-3 py-1.5 rounded-full shadow-lg text-sm">
@@ -83,14 +93,6 @@ export function Header({ isAuthenticated = false, user, onLoginClick, onLogoutCl
         </div>
       </div>
 
-      <div className="relative z-10 max-w-xl mx-auto text-center">
-        <h1 className="text-2xl md:text-3xl font-bold mb-1 drop-shadow-lg">
-          💰 Smart Money Allocator
-        </h1>
-        <p className="text-sm md:text-base opacity-90 font-medium">
-          Turn your money into a well-balanced financial smoothie!
-        </p>
-      </div>
       <div className="absolute -top-4 -right-4 w-24 h-24 bg-white bg-opacity-20 rounded-full blur-xl"></div>
       <div className="absolute -bottom-8 -left-8 w-32 h-32 bg-white bg-opacity-10 rounded-full blur-2xl"></div>
     </div>
