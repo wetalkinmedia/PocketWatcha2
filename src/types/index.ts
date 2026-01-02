@@ -40,6 +40,7 @@ export interface UserProfile {
   occupation: string;
   phoneNumber: string;
   email: string;
+  isAdmin?: boolean;
 }
 
 export interface CourseLesson {

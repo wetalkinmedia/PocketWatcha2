@@ -92,6 +92,16 @@ export function useAuth() {
 
       if (profile) {
         console.log('Profile loaded successfully:', profile);
+
+        const { data: adminCheck } = await supabase
+          .from('admin_users')
+          .select('user_id')
+          .eq('user_id', supabaseUser.id)
+          .maybeSingle();
+
+        const isAdmin = !!adminCheck;
+        console.log('Admin check result:', isAdmin);
+
         setAuthState({
           isAuthenticated: true,
           user: {
@@ -103,14 +113,14 @@ export function useAuth() {
             relationshipStatus: profile.relationship_status,
             occupation: profile.occupation,
             phoneNumber: profile.phone_number,
-            email: supabaseUser.email || ''
+            email: supabaseUser.email || '',
+            isAdmin
           },
           supabaseUser,
           loading: false
         });
       } else {
         console.warn('No profile found, will retry in a moment...');
-        // Profile might still be creating via trigger, retry once
         await new Promise(resolve => setTimeout(resolve, 500));
         const { data: retryProfile } = await supabase
           .from('user_profiles')
@@ -120,6 +130,16 @@ export function useAuth() {
 
         if (retryProfile) {
           console.log('Profile loaded on retry:', retryProfile);
+
+          const { data: adminCheck } = await supabase
+            .from('admin_users')
+            .select('user_id')
+            .eq('user_id', supabaseUser.id)
+            .maybeSingle();
+
+          const isAdmin = !!adminCheck;
+          console.log('Admin check result:', isAdmin);
+
           setAuthState({
             isAuthenticated: true,
             user: {
@@ -131,7 +151,8 @@ export function useAuth() {
               relationshipStatus: retryProfile.relationship_status,
               occupation: retryProfile.occupation,
               phoneNumber: retryProfile.phone_number,
-              email: supabaseUser.email || ''
+              email: supabaseUser.email || '',
+              isAdmin
             },
             supabaseUser,
             loading: false

@@ -340,7 +340,7 @@ function App() {
               onCoursesClick={handleCoursesClick}
               onAuthoringClick={handleAuthoringClick}
               onDashboardClick={handleDashboardClick}
-              onAdminClick={handleAdminClick}
+              onAdminClick={user?.isAdmin ? handleAdminClick : undefined}
             />
           )}
           
