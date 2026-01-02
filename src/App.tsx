@@ -412,11 +412,11 @@ function App() {
         )}
 
         {showDashboard && (
-          <div className="fixed inset-0 bg-white z-50 overflow-y-auto">
+          <div className="fixed inset-0 bg-white z-50 overflow-y-auto overflow-x-hidden">
             <Dashboard />
             <button
               onClick={() => setShowDashboard(false)}
-              className="fixed top-4 right-4 bg-white px-4 py-2 rounded-lg shadow-lg hover:bg-gray-100 transition-colors"
+              className="fixed top-4 right-4 bg-white px-4 py-2 rounded-lg shadow-lg hover:bg-gray-100 transition-colors z-10"
             >
               ← Back to Calculator
             </button>
@@ -424,11 +424,11 @@ function App() {
         )}
 
         {showAdminDashboard && (
-          <div className="fixed inset-0 bg-white z-50 overflow-y-auto">
+          <div className="fixed inset-0 bg-white z-50 overflow-y-auto overflow-x-hidden">
             <AdminDashboard />
             <button
               onClick={() => setShowAdminDashboard(false)}
-              className="fixed top-4 right-4 bg-white px-4 py-2 rounded-lg shadow-lg hover:bg-gray-100 transition-colors"
+              className="fixed top-4 right-4 bg-white px-4 py-2 rounded-lg shadow-lg hover:bg-gray-100 transition-colors z-10"
             >
               ← Back to Calculator
             </button>
