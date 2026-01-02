@@ -210,7 +210,7 @@ export function LoginPopup({ isOpen, onClose, onLogin, onAuthLogin, onAuthRegist
     <div
       className="fixed inset-0 bg-black bg-opacity-50 flex items-start justify-center z-50 overflow-y-auto"
       style={{ padding: '20px 16px' }}
-      onClick={(e) => {
+      onMouseDown={(e) => {
         if (e.target === e.currentTarget) {
           onClose();
         }
@@ -218,6 +218,7 @@ export function LoginPopup({ isOpen, onClose, onLogin, onAuthLogin, onAuthRegist
     >
       <div
         className="bg-white rounded-2xl shadow-2xl max-w-md w-full my-auto"
+        onMouseDown={(e) => e.stopPropagation()}
         onClick={(e) => e.stopPropagation()}
       >
         <div className="bg-gradient-to-r from-blue-600 to-blue-700 p-6 text-white relative">
@@ -259,7 +260,12 @@ export function LoginPopup({ isOpen, onClose, onLogin, onAuthLogin, onAuthRegist
           </div>
         </div>
 
-        <form onSubmit={handleSubmit} className="p-6 space-y-4">
+        <form
+          onSubmit={handleSubmit}
+          className="p-6 space-y-4"
+          onMouseDown={(e) => e.stopPropagation()}
+          onClick={(e) => e.stopPropagation()}
+        >
           {message && (
             <div className={`p-3 rounded-lg ${message.includes('❌') || message.includes('match') || message.includes('failed') || message.includes('Failed') ? 'bg-red-50 text-red-700' : 'bg-green-50 text-green-700'}`}>
               {message}
@@ -398,7 +404,7 @@ export function LoginPopup({ isOpen, onClose, onLogin, onAuthLogin, onAuthRegist
             </div>
           )}
 
-          <div>
+          <div onClick={(e) => e.stopPropagation()} onMouseDown={(e) => e.stopPropagation()}>
             <label htmlFor="email" className="block text-sm font-semibold text-gray-700 mb-2">
               <Mail size={16} className="inline mr-2" />
               Email Address
@@ -409,6 +415,8 @@ export function LoginPopup({ isOpen, onClose, onLogin, onAuthLogin, onAuthRegist
               type="email"
               value={profile.email}
               onChange={(e) => handleInputChange('email', e.target.value)}
+              onClick={(e) => e.stopPropagation()}
+              onMouseDown={(e) => e.stopPropagation()}
               className="w-full p-3 border-2 border-gray-200 rounded-lg focus:border-blue-400 focus:ring-2 focus:ring-blue-100 transition-all"
               placeholder="john.doe@example.com"
               autoComplete="email"
@@ -416,7 +424,7 @@ export function LoginPopup({ isOpen, onClose, onLogin, onAuthLogin, onAuthRegist
             />
           </div>
 
-          <div>
+          <div onClick={(e) => e.stopPropagation()} onMouseDown={(e) => e.stopPropagation()}>
             <label htmlFor="password" className="block text-sm font-semibold text-gray-700 mb-2">
               <Lock size={16} className="inline mr-2" />
               Password
@@ -427,6 +435,8 @@ export function LoginPopup({ isOpen, onClose, onLogin, onAuthLogin, onAuthRegist
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
+              onClick={(e) => e.stopPropagation()}
+              onMouseDown={(e) => e.stopPropagation()}
               className="w-full p-3 border-2 border-gray-200 rounded-lg focus:border-blue-400 focus:ring-2 focus:ring-blue-100 transition-all"
               placeholder={isSignUp ? "Create a secure password" : "Enter your password"}
               autoComplete={isSignUp ? "new-password" : "current-password"}
