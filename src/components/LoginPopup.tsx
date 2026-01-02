@@ -216,7 +216,10 @@ export function LoginPopup({ isOpen, onClose, onLogin, onAuthLogin, onAuthRegist
         }
       }}
     >
-      <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full my-auto">
+      <div
+        className="bg-white rounded-2xl shadow-2xl max-w-md w-full my-auto"
+        onClick={(e) => e.stopPropagation()}
+      >
         <div className="bg-gradient-to-r from-blue-600 to-blue-700 p-6 text-white relative">
           <button
             type="button"
