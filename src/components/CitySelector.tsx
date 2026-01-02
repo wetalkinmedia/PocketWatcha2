@@ -97,8 +97,8 @@ export function CitySelector({ value, onChange }: CitySelectorProps) {
       </button>
 
       {isOpen && (
-        <div className="fixed inset-0 z-[100] flex items-start justify-center pt-20" onClick={() => { setIsOpen(false); setSearchTerm(''); }}>
-          <div className="relative w-full max-w-2xl mx-4" onClick={(e) => e.stopPropagation()}>
+        <div className="fixed inset-0 z-[100] overflow-y-auto bg-black bg-opacity-50 flex items-start justify-center pt-20 pb-20" onClick={() => { setIsOpen(false); setSearchTerm(''); }}>
+          <div className="relative w-full max-w-2xl mx-4 my-auto" onClick={(e) => e.stopPropagation()}>
             <div className="bg-white border-2 border-gray-200 rounded-xl shadow-2xl overflow-hidden">
               <div className="p-3 border-b border-gray-200 bg-gray-50">
                 <div className="relative">
