@@ -208,7 +208,7 @@ export function LoginPopup({ isOpen, onClose, onLogin, onAuthLogin, onAuthRegist
 
   return (
     <div
-      className="fixed inset-0 bg-black bg-opacity-50 flex items-start justify-center z-50 overflow-y-auto"
+      className="fixed inset-0 bg-black bg-opacity-50 flex items-start justify-center z-[100] overflow-y-auto"
       style={{ padding: '20px 16px' }}
       onClick={(e) => {
         if (e.target === e.currentTarget) {
