@@ -97,48 +97,52 @@ export function CitySelector({ value, onChange }: CitySelectorProps) {
       </button>
 
       {isOpen && (
-        <div className="absolute z-50 w-full mt-2 bg-white border-2 border-gray-200 rounded-xl shadow-2xl overflow-hidden">
-          <div className="p-3 border-b border-gray-200 bg-gray-50">
-            <div className="relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
-              <input
-                ref={searchInputRef}
-                type="text"
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                placeholder="Search cities..."
-                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-100"
-                onClick={(e) => e.stopPropagation()}
-              />
-            </div>
-          </div>
-
-          <div className="overflow-y-auto overflow-x-hidden max-h-80" style={{ WebkitOverflowScrolling: 'touch' }}>
-            {filteredGroups.length > 0 ? (
-              filteredGroups.map((group) => (
-                <div key={group.label}>
-                  <div className="px-4 py-2 bg-gray-100 text-sm font-semibold text-gray-600">
-                    {group.label}
-                  </div>
-                  {group.cities.map((city) => (
-                    <button
-                      key={city.value}
-                      type="button"
-                      onClick={() => handleSelect(city.value)}
-                      className={`w-full px-5 py-4 text-left hover:bg-blue-50 active:bg-blue-100 transition-colors border-b border-gray-100 last:border-b-0 ${
-                        city.value === value ? 'bg-blue-100 font-semibold' : ''
-                      }`}
-                    >
-                      <span className="text-lg">{city.name}</span>
-                    </button>
-                  ))}
+        <div className="fixed inset-0 z-[100] flex items-start justify-center pt-20" onClick={() => { setIsOpen(false); setSearchTerm(''); }}>
+          <div className="relative w-full max-w-2xl mx-4" onClick={(e) => e.stopPropagation()}>
+            <div className="bg-white border-2 border-gray-200 rounded-xl shadow-2xl overflow-hidden">
+              <div className="p-3 border-b border-gray-200 bg-gray-50">
+                <div className="relative">
+                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
+                  <input
+                    ref={searchInputRef}
+                    type="text"
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    placeholder="Search cities..."
+                    className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-100"
+                    onClick={(e) => e.stopPropagation()}
+                  />
                 </div>
-              ))
-            ) : (
-              <div className="px-4 py-8 text-center text-gray-500">
-                No cities found
               </div>
-            )}
+
+              <div className="overflow-y-auto overflow-x-hidden max-h-96" style={{ WebkitOverflowScrolling: 'touch' }}>
+                {filteredGroups.length > 0 ? (
+                  filteredGroups.map((group) => (
+                    <div key={group.label}>
+                      <div className="px-4 py-2 bg-gray-100 text-sm font-semibold text-gray-600 sticky top-0">
+                        {group.label}
+                      </div>
+                      {group.cities.map((city) => (
+                        <button
+                          key={city.value}
+                          type="button"
+                          onClick={() => handleSelect(city.value)}
+                          className={`w-full px-5 py-4 text-left hover:bg-blue-50 active:bg-blue-100 transition-colors border-b border-gray-100 last:border-b-0 ${
+                            city.value === value ? 'bg-blue-100 font-semibold' : ''
+                          }`}
+                        >
+                          <span className="text-lg">{city.name}</span>
+                        </button>
+                      ))}
+                    </div>
+                  ))
+                ) : (
+                  <div className="px-4 py-8 text-center text-gray-500">
+                    No cities found
+                  </div>
+                )}
+              </div>
+            </div>
           </div>
         </div>
       )}
