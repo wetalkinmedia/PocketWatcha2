@@ -35,25 +35,14 @@ export function LoginPopup({ isOpen, onClose, onLogin, onAuthLogin, onAuthRegist
   });
 
   useEffect(() => {
-    if (isOpen) {
+    if (!isOpen) {
+      // Only reset when closing, not when opening
       setPassword('');
       setConfirmPassword('');
       setMessage('');
       setLoading(false);
       setResetEmail('');
       setCredentialsEmail('');
-      setProfile({
-        firstName: '',
-        lastName: '',
-        age: 0,
-        salary: 0,
-        zipCode: '',
-        relationshipStatus: 'single',
-        occupation: '',
-        phoneNumber: '',
-        email: ''
-      });
-      setIsSignUp(false);
       setIsForgotPassword(false);
       setIsForgotCredentials(false);
     }
@@ -439,7 +428,7 @@ export function LoginPopup({ isOpen, onClose, onLogin, onAuthLogin, onAuthRegist
               type="email"
               value={profile.email}
               onChange={(e) => handleInputChange('email', e.target.value)}
-              className="w-full p-3 border-2 border-gray-200 rounded-lg focus:border-blue-400 focus:ring-2 focus:ring-blue-100 transition-all"
+              className="w-full p-2 sm:p-3 border-2 border-gray-200 rounded-lg focus:border-blue-400 focus:ring-2 focus:ring-blue-100 transition-all text-base"
               placeholder="john.doe@example.com"
               autoComplete="email"
               required
@@ -457,7 +446,7 @@ export function LoginPopup({ isOpen, onClose, onLogin, onAuthLogin, onAuthRegist
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="w-full p-3 border-2 border-gray-200 rounded-lg focus:border-blue-400 focus:ring-2 focus:ring-blue-100 transition-all"
+              className="w-full p-2 sm:p-3 border-2 border-gray-200 rounded-lg focus:border-blue-400 focus:ring-2 focus:ring-blue-100 transition-all text-base"
               placeholder={isSignUp ? "Create a secure password" : "Enter your password"}
               autoComplete={isSignUp ? "new-password" : "current-password"}
               required
@@ -477,7 +466,7 @@ export function LoginPopup({ isOpen, onClose, onLogin, onAuthLogin, onAuthRegist
                 type="password"
                 value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}
-                className="w-full p-3 border-2 border-gray-200 rounded-lg focus:border-blue-400 focus:ring-2 focus:ring-blue-100 transition-all"
+                className="w-full p-2 sm:p-3 border-2 border-gray-200 rounded-lg focus:border-blue-400 focus:ring-2 focus:ring-blue-100 transition-all text-base"
                 placeholder="Confirm your password"
                 required
                 minLength={6}
