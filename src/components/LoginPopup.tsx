@@ -34,17 +34,31 @@ export function LoginPopup({ isOpen, onClose, onLogin, onAuthLogin, onAuthRegist
     email: ''
   });
 
+  // Reset state when modal closes
   useEffect(() => {
     if (!isOpen) {
-      // Only reset when closing, not when opening
-      setPassword('');
-      setConfirmPassword('');
-      setMessage('');
-      setLoading(false);
-      setResetEmail('');
-      setCredentialsEmail('');
-      setIsForgotPassword(false);
-      setIsForgotCredentials(false);
+      setTimeout(() => {
+        setPassword('');
+        setConfirmPassword('');
+        setMessage('');
+        setLoading(false);
+        setResetEmail('');
+        setCredentialsEmail('');
+        setProfile({
+          firstName: '',
+          lastName: '',
+          age: 0,
+          salary: 0,
+          zipCode: '',
+          relationshipStatus: 'single',
+          occupation: '',
+          phoneNumber: '',
+          email: ''
+        });
+        setIsSignUp(false);
+        setIsForgotPassword(false);
+        setIsForgotCredentials(false);
+      }, 300);
     }
   }, [isOpen]);
 
@@ -226,7 +240,7 @@ export function LoginPopup({ isOpen, onClose, onLogin, onAuthLogin, onAuthRegist
   return (
     <div
       className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-[100] overflow-y-auto p-4"
-      onClick={(e) => {
+      onMouseDown={(e) => {
         if (e.target === e.currentTarget) {
           onClose();
         }
@@ -234,6 +248,7 @@ export function LoginPopup({ isOpen, onClose, onLogin, onAuthLogin, onAuthRegist
     >
       <div
         className="bg-white rounded-2xl shadow-2xl w-full max-w-md max-h-[95vh] overflow-hidden flex flex-col my-auto"
+        onMouseDown={(e) => e.stopPropagation()}
         onClick={(e) => e.stopPropagation()}
       >
         <div className="bg-gradient-to-r from-blue-600 to-blue-700 p-4 sm:p-6 text-white relative flex-shrink-0">
@@ -297,10 +312,16 @@ export function LoginPopup({ isOpen, onClose, onLogin, onAuthLogin, onAuthRegist
                   name="credentialsEmail"
                   type="email"
                   value={credentialsEmail}
-                  onChange={(e) => setCredentialsEmail(e.target.value)}
-                  className="w-full p-2 sm:p-3 border-2 border-gray-200 rounded-lg focus:border-blue-400 focus:ring-2 focus:ring-blue-100 transition-all text-base"
+                  onChange={(e) => {
+                    e.stopPropagation();
+                    setCredentialsEmail(e.target.value);
+                  }}
+                  onFocus={(e) => e.stopPropagation()}
+                  onClick={(e) => e.stopPropagation()}
+                  className="w-full p-2 sm:p-3 border-2 border-gray-200 rounded-lg focus:border-blue-400 focus:ring-2 focus:ring-blue-100 transition-all text-base relative z-50"
                   placeholder="Enter your email address"
                   required
+                  style={{ pointerEvents: 'auto' }}
                 />
               </div>
 
@@ -348,10 +369,16 @@ export function LoginPopup({ isOpen, onClose, onLogin, onAuthLogin, onAuthRegist
                   name="resetEmail"
                   type="email"
                   value={resetEmail}
-                  onChange={(e) => setResetEmail(e.target.value)}
-                  className="w-full p-2 sm:p-3 border-2 border-gray-200 rounded-lg focus:border-blue-400 focus:ring-2 focus:ring-blue-100 transition-all text-base"
+                  onChange={(e) => {
+                    e.stopPropagation();
+                    setResetEmail(e.target.value);
+                  }}
+                  onFocus={(e) => e.stopPropagation()}
+                  onClick={(e) => e.stopPropagation()}
+                  className="w-full p-2 sm:p-3 border-2 border-gray-200 rounded-lg focus:border-blue-400 focus:ring-2 focus:ring-blue-100 transition-all text-base relative z-50"
                   placeholder="Enter your email address"
                   required
+                  style={{ pointerEvents: 'auto' }}
                 />
               </div>
 
@@ -391,11 +418,17 @@ export function LoginPopup({ isOpen, onClose, onLogin, onAuthLogin, onAuthRegist
                   name="firstName"
                   type="text"
                   value={profile.firstName}
-                  onChange={(e) => handleInputChange('firstName', e.target.value)}
-                  className="w-full p-2 sm:p-3 border-2 border-gray-200 rounded-lg focus:border-blue-400 focus:ring-2 focus:ring-blue-100 transition-all text-base"
+                  onChange={(e) => {
+                    e.stopPropagation();
+                    handleInputChange('firstName', e.target.value);
+                  }}
+                  onFocus={(e) => e.stopPropagation()}
+                  onClick={(e) => e.stopPropagation()}
+                  className="w-full p-2 sm:p-3 border-2 border-gray-200 rounded-lg focus:border-blue-400 focus:ring-2 focus:ring-blue-100 transition-all text-base relative z-50"
                   placeholder="John"
                   autoComplete="given-name"
                   required
+                  style={{ pointerEvents: 'auto' }}
                 />
               </div>
               <div>
@@ -407,11 +440,17 @@ export function LoginPopup({ isOpen, onClose, onLogin, onAuthLogin, onAuthRegist
                   name="lastName"
                   type="text"
                   value={profile.lastName}
-                  onChange={(e) => handleInputChange('lastName', e.target.value)}
-                  className="w-full p-2 sm:p-3 border-2 border-gray-200 rounded-lg focus:border-blue-400 focus:ring-2 focus:ring-blue-100 transition-all text-base"
+                  onChange={(e) => {
+                    e.stopPropagation();
+                    handleInputChange('lastName', e.target.value);
+                  }}
+                  onFocus={(e) => e.stopPropagation()}
+                  onClick={(e) => e.stopPropagation()}
+                  className="w-full p-2 sm:p-3 border-2 border-gray-200 rounded-lg focus:border-blue-400 focus:ring-2 focus:ring-blue-100 transition-all text-base relative z-50"
                   placeholder="Doe"
                   autoComplete="family-name"
                   required
+                  style={{ pointerEvents: 'auto' }}
                 />
               </div>
             </div>
@@ -427,11 +466,18 @@ export function LoginPopup({ isOpen, onClose, onLogin, onAuthLogin, onAuthRegist
               name="email"
               type="email"
               value={profile.email}
-              onChange={(e) => handleInputChange('email', e.target.value)}
-              className="w-full p-2 sm:p-3 border-2 border-gray-200 rounded-lg focus:border-blue-400 focus:ring-2 focus:ring-blue-100 transition-all text-base"
+              onChange={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                handleInputChange('email', e.target.value);
+              }}
+              onFocus={(e) => e.stopPropagation()}
+              onClick={(e) => e.stopPropagation()}
+              className="w-full p-2 sm:p-3 border-2 border-gray-200 rounded-lg focus:border-blue-400 focus:ring-2 focus:ring-blue-100 transition-all text-base relative z-50"
               placeholder="john.doe@example.com"
               autoComplete="email"
               required
+              style={{ pointerEvents: 'auto' }}
             />
           </div>
 
@@ -445,12 +491,18 @@ export function LoginPopup({ isOpen, onClose, onLogin, onAuthLogin, onAuthRegist
               name="password"
               type="password"
               value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              className="w-full p-2 sm:p-3 border-2 border-gray-200 rounded-lg focus:border-blue-400 focus:ring-2 focus:ring-blue-100 transition-all text-base"
+              onChange={(e) => {
+                e.stopPropagation();
+                setPassword(e.target.value);
+              }}
+              onFocus={(e) => e.stopPropagation()}
+              onClick={(e) => e.stopPropagation()}
+              className="w-full p-2 sm:p-3 border-2 border-gray-200 rounded-lg focus:border-blue-400 focus:ring-2 focus:ring-blue-100 transition-all text-base relative z-50"
               placeholder={isSignUp ? "Create a secure password" : "Enter your password"}
               autoComplete={isSignUp ? "new-password" : "current-password"}
               required
               minLength={isSignUp ? 6 : undefined}
+              style={{ pointerEvents: 'auto' }}
             />
           </div>
 
@@ -465,11 +517,17 @@ export function LoginPopup({ isOpen, onClose, onLogin, onAuthLogin, onAuthRegist
                 name="confirmPassword"
                 type="password"
                 value={confirmPassword}
-                onChange={(e) => setConfirmPassword(e.target.value)}
-                className="w-full p-2 sm:p-3 border-2 border-gray-200 rounded-lg focus:border-blue-400 focus:ring-2 focus:ring-blue-100 transition-all text-base"
+                onChange={(e) => {
+                  e.stopPropagation();
+                  setConfirmPassword(e.target.value);
+                }}
+                onFocus={(e) => e.stopPropagation()}
+                onClick={(e) => e.stopPropagation()}
+                className="w-full p-2 sm:p-3 border-2 border-gray-200 rounded-lg focus:border-blue-400 focus:ring-2 focus:ring-blue-100 transition-all text-base relative z-50"
                 placeholder="Confirm your password"
                 required
                 minLength={6}
+                style={{ pointerEvents: 'auto' }}
               />
             </div>
           )}
