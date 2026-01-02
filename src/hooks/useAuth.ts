@@ -109,18 +109,42 @@ export function useAuth() {
           loading: false
         });
       } else {
-        console.error('No profile found for user:', supabaseUser.id);
-        console.error('This user has an auth account but no profile in user_profiles table');
-        // User exists but no profile - create a basic profile or show error
-        alert('Your account exists but your profile is missing. Please contact support or try registering again.');
-        setAuthState({
-          isAuthenticated: false,
-          user: null,
-          supabaseUser: null,
-          loading: false
-        });
-        // Sign them out since they can't use the app without a profile
-        await supabase.auth.signOut();
+        console.warn('No profile found, will retry in a moment...');
+        // Profile might still be creating via trigger, retry once
+        await new Promise(resolve => setTimeout(resolve, 500));
+        const { data: retryProfile } = await supabase
+          .from('user_profiles')
+          .select('*')
+          .eq('id', supabaseUser.id)
+          .maybeSingle();
+
+        if (retryProfile) {
+          console.log('Profile loaded on retry:', retryProfile);
+          setAuthState({
+            isAuthenticated: true,
+            user: {
+              firstName: retryProfile.first_name,
+              lastName: retryProfile.last_name,
+              age: retryProfile.age,
+              salary: retryProfile.salary,
+              zipCode: retryProfile.zip_code,
+              relationshipStatus: retryProfile.relationship_status,
+              occupation: retryProfile.occupation,
+              phoneNumber: retryProfile.phone_number,
+              email: supabaseUser.email || ''
+            },
+            supabaseUser,
+            loading: false
+          });
+        } else {
+          console.error('Profile still not found after retry');
+          setAuthState({
+            isAuthenticated: false,
+            user: null,
+            supabaseUser: null,
+            loading: false
+          });
+        }
       }
     } catch (error) {
       console.error('Error loading user profile:', error);
@@ -175,14 +199,21 @@ export function useAuth() {
         return { success: false, message: 'Password must be at least 6 characters' };
       }
 
-      // First, create the auth user
+      // Create auth user with profile data in metadata
+      // The database trigger will automatically create the profile
       const { data: authData, error: authError } = await supabase.auth.signUp({
         email: email.trim().toLowerCase(),
         password: password,
         options: {
           data: {
-            first_name: profile.firstName,
-            last_name: profile.lastName
+            first_name: profile.firstName.trim(),
+            last_name: profile.lastName.trim(),
+            age: profile.age,
+            salary: profile.salary,
+            zip_code: profile.zipCode.trim(),
+            relationship_status: profile.relationshipStatus.toLowerCase(),
+            occupation: profile.occupation.trim(),
+            phone_number: profile.phoneNumber.trim()
           }
         }
       });
@@ -203,40 +234,12 @@ export function useAuth() {
         return { success: false, message: 'Registration failed - no user created' };
       }
 
-      console.log('User created, now creating profile for user ID:', authData.user.id);
+      console.log('User created, profile will be auto-created by database trigger');
 
-      // Wait a brief moment to ensure session is fully established in the database context
-      // This prevents RLS policy violations due to race conditions
-      await new Promise(resolve => setTimeout(resolve, 100));
+      // Wait for trigger to create profile
+      await new Promise(resolve => setTimeout(resolve, 500));
 
-      // Verify we have a session before creating profile
-      const { data: sessionData } = await supabase.auth.getSession();
-      console.log('Session check before profile creation:', !!sessionData.session);
-
-      // Create the user profile
-      const { error: profileError } = await supabase
-        .from('user_profiles')
-        .insert({
-          id: authData.user.id,
-          first_name: profile.firstName.trim(),
-          last_name: profile.lastName.trim(),
-          age: profile.age,
-          salary: profile.salary,
-          zip_code: profile.zipCode.trim(),
-          relationship_status: profile.relationshipStatus.toLowerCase(),
-          occupation: profile.occupation.trim(),
-          phone_number: profile.phoneNumber.trim()
-        });
-
-      if (profileError) {
-        console.error('Profile creation error:', profileError);
-        console.error('Profile creation error details:', JSON.stringify(profileError, null, 2));
-        return { success: false, message: `Failed to create profile: ${profileError.message}` };
-      }
-
-      console.log('Profile created successfully');
-
-      // Load the user profile into state immediately
+      // Load the user profile into state
       await loadUserProfile(authData.user);
 
       return { success: true, message: 'Account created successfully!' };
