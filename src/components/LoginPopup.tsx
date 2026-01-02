@@ -178,18 +178,21 @@ export function LoginPopup({ isOpen, onClose, onLogin, onAuthLogin, onAuthRegist
 
       if (onAuthLogin) {
         try {
+          setMessage('Signing you in...');
           const result = await onAuthLogin(profile.email, password);
 
           if (result.success) {
-            setMessage('Login successful! Welcome back! 🎉');
+            setMessage('Login successful! Loading your profile...');
+            // Wait a bit longer to ensure profile loads
             setTimeout(() => {
               onClose();
-            }, 1500);
+            }, 2000);
           } else {
             setMessage(result.message);
           }
         } catch (error) {
-          setMessage('Login failed. Please try again! ❌');
+          console.error('Login error in popup:', error);
+          setMessage('Login failed. Please try again!');
         }
       } else {
         // Fallback to old method

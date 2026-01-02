@@ -73,8 +73,15 @@ function App() {
   const hasPopulated = useRef(false);
 
   useEffect(() => {
-    console.log('Auth state changed:', { isAuthenticated, user: user ? `${user.firstName} ${user.lastName}` : null });
+    console.log('Auth state changed:', {
+      isAuthenticated,
+      user: user ? `${user.firstName} ${user.lastName}` : null,
+      loading,
+      hasPopulated: hasPopulated.current
+    });
+
     if (isAuthenticated && user && !hasPopulated.current) {
+      console.log('Auto-populating form with user data:', user);
       // Round to 2 decimal places and remove trailing zeros
       const monthlyIncome = Math.round((user.salary / 12) * 100) / 100;
       setIncome(monthlyIncome.toString());
@@ -94,11 +101,12 @@ function App() {
       }
 
       hasPopulated.current = true;
+      console.log('Form populated successfully');
     } else if (!isAuthenticated) {
       // Reset flag when user logs out
       hasPopulated.current = false;
     }
-  }, [isAuthenticated, user]);
+  }, [isAuthenticated, user, loading]);
 
 
   const handleCalculate = useCallback(() => {
@@ -263,6 +271,16 @@ function App() {
 
   const MainApp = () => (
     <div className="min-h-screen bg-gradient-to-br from-blue-600 via-purple-700 to-purple-900">
+      {/* Loading Overlay */}
+      {loading && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-[150]">
+          <div className="bg-white rounded-lg p-8 shadow-2xl text-center">
+            <div className="animate-spin rounded-full h-16 w-16 border-b-4 border-blue-600 mx-auto mb-4"></div>
+            <p className="text-lg font-semibold text-gray-800">Loading your profile...</p>
+          </div>
+        </div>
+      )}
+
       {/* Floating Debug Panel */}
       {debugVisible && (
         <div className="fixed top-4 right-4 z-50 bg-yellow-100 border-4 border-yellow-500 rounded-lg shadow-2xl max-w-md max-h-96 overflow-hidden">

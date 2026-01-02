@@ -109,14 +109,18 @@ export function useAuth() {
           loading: false
         });
       } else {
-        console.warn('No profile found for user:', supabaseUser.id);
-        // User exists but no profile - they need to complete registration
+        console.error('No profile found for user:', supabaseUser.id);
+        console.error('This user has an auth account but no profile in user_profiles table');
+        // User exists but no profile - create a basic profile or show error
+        alert('Your account exists but your profile is missing. Please contact support or try registering again.');
         setAuthState({
           isAuthenticated: false,
           user: null,
-          supabaseUser,
+          supabaseUser: null,
           loading: false
         });
+        // Sign them out since they can't use the app without a profile
+        await supabase.auth.signOut();
       }
     } catch (error) {
       console.error('Error loading user profile:', error);
