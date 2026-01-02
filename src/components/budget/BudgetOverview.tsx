@@ -44,15 +44,27 @@ export function BudgetOverview({ onNavigate }: BudgetOverviewProps) {
   });
 
   useEffect(() => {
-    if (supabaseUser) {
-      loadBudgetData();
-      loadDailyTip();
-    }
+    const initData = async () => {
+      if (supabaseUser) {
+        await Promise.all([
+          loadBudgetData(),
+          loadDailyTip()
+        ]);
+      } else {
+        setLoading(false);
+      }
+    };
+
+    initData();
   }, [supabaseUser]);
 
   const loadBudgetData = async () => {
-    if (!supabaseUser) return;
+    if (!supabaseUser) {
+      setLoading(false);
+      return;
+    }
 
+    console.log('Loading budget data for user:', supabaseUser.id);
     try {
       const startOfMonth = new Date();
       startOfMonth.setDate(1);
@@ -73,7 +85,12 @@ export function BudgetOverview({ onNavigate }: BudgetOverviewProps) {
         `)
         .eq('user_id', supabaseUser.id);
 
-      if (budgetError) throw budgetError;
+      if (budgetError) {
+        console.error('Budget data error:', budgetError);
+        throw budgetError;
+      }
+
+      console.log('Budget data loaded:', budgetData?.length || 0, 'budgets');
 
       const { data: expensesData, error: expensesError } = await supabase
         .from('expenses')
@@ -125,17 +142,23 @@ export function BudgetOverview({ onNavigate }: BudgetOverviewProps) {
 
   const loadDailyTip = async () => {
     try {
+      console.log('Loading daily tip...');
       const { data, error } = await supabase
         .from('financial_tips')
         .select('*')
         .order('display_order');
 
-      if (error) throw error;
+      if (error) {
+        console.error('Error fetching tips:', error);
+        throw error;
+      }
 
+      console.log('Tips loaded:', data?.length || 0);
       if (data && data.length > 0) {
         const dayOfYear = Math.floor((Date.now() - new Date(new Date().getFullYear(), 0, 0).getTime()) / 86400000);
         const tipIndex = dayOfYear % data.length;
         setCurrentTip(data[tipIndex]);
+        console.log('Current tip set:', data[tipIndex].title);
       }
     } catch (error) {
       console.error('Error loading tip:', error);
