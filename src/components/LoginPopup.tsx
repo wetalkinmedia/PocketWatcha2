@@ -40,6 +40,22 @@ export function LoginPopup({ isOpen, onClose, onLogin, onAuthLogin, onAuthRegist
       setConfirmPassword('');
       setMessage('');
       setLoading(false);
+      setResetEmail('');
+      setCredentialsEmail('');
+      setProfile({
+        firstName: '',
+        lastName: '',
+        age: 0,
+        salary: 0,
+        zipCode: '',
+        relationshipStatus: 'single',
+        occupation: '',
+        phoneNumber: '',
+        email: ''
+      });
+      setIsSignUp(false);
+      setIsForgotPassword(false);
+      setIsForgotCredentials(false);
     }
   }, [isOpen]);
 
@@ -220,8 +236,7 @@ export function LoginPopup({ isOpen, onClose, onLogin, onAuthLogin, onAuthRegist
 
   return (
     <div
-      className="fixed inset-0 bg-black bg-opacity-50 flex items-start justify-center z-[100] overflow-y-auto"
-      style={{ padding: '20px 16px' }}
+      className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-[100] overflow-y-auto p-4"
       onClick={(e) => {
         if (e.target === e.currentTarget) {
           onClose();
@@ -229,10 +244,10 @@ export function LoginPopup({ isOpen, onClose, onLogin, onAuthLogin, onAuthRegist
       }}
     >
       <div
-        className="bg-white rounded-2xl shadow-2xl max-w-md w-full my-auto"
+        className="bg-white rounded-2xl shadow-2xl w-full max-w-md max-h-[95vh] overflow-hidden flex flex-col my-auto"
         onClick={(e) => e.stopPropagation()}
       >
-        <div className="bg-gradient-to-r from-blue-600 to-blue-700 p-6 text-white relative">
+        <div className="bg-gradient-to-r from-blue-600 to-blue-700 p-4 sm:p-6 text-white relative flex-shrink-0">
           <button
             type="button"
             onClick={onClose}
@@ -241,10 +256,10 @@ export function LoginPopup({ isOpen, onClose, onLogin, onAuthLogin, onAuthRegist
           >
             <X size={28} />
           </button>
-          <h2 className="text-2xl font-bold mb-2">
+          <h2 className="text-xl sm:text-2xl font-bold mb-2 pr-12">
             {isForgotCredentials ? '🔍 Forgot Username/Password' : isForgotPassword ? '🔐 Reset Password' : isSignUp ? '🚀 Create Your Profile' : '👋 Welcome Back!'}
           </h2>
-          <p className="opacity-90">
+          <p className="opacity-90 text-sm sm:text-base">
             {isForgotCredentials
               ? 'Enter your email to receive your username and password reset link'
               : isForgotPassword
@@ -254,7 +269,7 @@ export function LoginPopup({ isOpen, onClose, onLogin, onAuthLogin, onAuthRegist
                 : 'Sign in to access your personalized money plan'
             }
           </p>
-          <div className="mt-4 p-3 bg-white bg-opacity-20 rounded-lg text-sm">
+          <div className="mt-3 sm:mt-4 p-2 sm:p-3 bg-white bg-opacity-20 rounded-lg text-xs sm:text-sm">
             <p className="font-semibold mb-1">
               {isForgotCredentials ? '🔍 Account Recovery:' : isForgotPassword ? '🔐 Password Reset:' : isSignUp ? '🚀 Create Your Account:' : '🔐 Sign In:'}
             </p>
@@ -273,7 +288,7 @@ export function LoginPopup({ isOpen, onClose, onLogin, onAuthLogin, onAuthRegist
 
         <form
           onSubmit={handleSubmit}
-          className="p-6 space-y-4"
+          className="p-4 sm:p-6 space-y-4 overflow-y-auto flex-1"
         >
           {message && (
             <div className={`p-3 rounded-lg ${message.includes('❌') || message.includes('match') || message.includes('failed') || message.includes('Failed') ? 'bg-red-50 text-red-700' : 'bg-green-50 text-green-700'}`}>
@@ -294,7 +309,7 @@ export function LoginPopup({ isOpen, onClose, onLogin, onAuthLogin, onAuthRegist
                   type="email"
                   value={credentialsEmail}
                   onChange={(e) => setCredentialsEmail(e.target.value)}
-                  className="w-full p-3 border-2 border-gray-200 rounded-lg focus:border-blue-400 focus:ring-2 focus:ring-blue-100 transition-all"
+                  className="w-full p-2 sm:p-3 border-2 border-gray-200 rounded-lg focus:border-blue-400 focus:ring-2 focus:ring-blue-100 transition-all text-base"
                   placeholder="Enter your email address"
                   required
                 />
@@ -313,7 +328,7 @@ export function LoginPopup({ isOpen, onClose, onLogin, onAuthLogin, onAuthRegist
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full py-3 bg-gradient-to-r from-blue-500 to-purple-600 text-white font-bold rounded-lg hover:from-blue-600 hover:to-purple-700 transform hover:-translate-y-1 hover:shadow-lg transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
+                className="w-full py-2.5 sm:py-3 bg-gradient-to-r from-blue-500 to-purple-600 text-white font-bold rounded-lg hover:from-blue-600 hover:to-purple-700 transform hover:-translate-y-1 hover:shadow-lg transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none text-sm sm:text-base"
               >
                 {loading ? '⏳ Sending Recovery Email...' : '📧 Send Username & Reset Link'}
               </button>
@@ -345,7 +360,7 @@ export function LoginPopup({ isOpen, onClose, onLogin, onAuthLogin, onAuthRegist
                   type="email"
                   value={resetEmail}
                   onChange={(e) => setResetEmail(e.target.value)}
-                  className="w-full p-3 border-2 border-gray-200 rounded-lg focus:border-blue-400 focus:ring-2 focus:ring-blue-100 transition-all"
+                  className="w-full p-2 sm:p-3 border-2 border-gray-200 rounded-lg focus:border-blue-400 focus:ring-2 focus:ring-blue-100 transition-all text-base"
                   placeholder="Enter your email address"
                   required
                 />
@@ -354,7 +369,7 @@ export function LoginPopup({ isOpen, onClose, onLogin, onAuthLogin, onAuthRegist
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full py-3 bg-gradient-to-r from-blue-500 to-purple-600 text-white font-bold rounded-lg hover:from-blue-600 hover:to-purple-700 transform hover:-translate-y-1 hover:shadow-lg transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
+                className="w-full py-2.5 sm:py-3 bg-gradient-to-r from-blue-500 to-purple-600 text-white font-bold rounded-lg hover:from-blue-600 hover:to-purple-700 transform hover:-translate-y-1 hover:shadow-lg transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none text-sm sm:text-base"
               >
                 {loading ? '⏳ Sending Reset Email...' : '📧 Send Reset Link'}
               </button>
@@ -376,7 +391,7 @@ export function LoginPopup({ isOpen, onClose, onLogin, onAuthLogin, onAuthRegist
           ) : (
             <>
               {isSignUp && (
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
               <div>
                 <label htmlFor="firstName" className="block text-sm font-semibold text-gray-700 mb-2">
                   <User size={16} className="inline mr-2" />
@@ -388,7 +403,7 @@ export function LoginPopup({ isOpen, onClose, onLogin, onAuthLogin, onAuthRegist
                   type="text"
                   value={profile.firstName}
                   onChange={(e) => handleInputChange('firstName', e.target.value)}
-                  className="w-full p-3 border-2 border-gray-200 rounded-lg focus:border-blue-400 focus:ring-2 focus:ring-blue-100 transition-all"
+                  className="w-full p-2 sm:p-3 border-2 border-gray-200 rounded-lg focus:border-blue-400 focus:ring-2 focus:ring-blue-100 transition-all text-base"
                   placeholder="John"
                   autoComplete="given-name"
                   required
@@ -404,7 +419,7 @@ export function LoginPopup({ isOpen, onClose, onLogin, onAuthLogin, onAuthRegist
                   type="text"
                   value={profile.lastName}
                   onChange={(e) => handleInputChange('lastName', e.target.value)}
-                  className="w-full p-3 border-2 border-gray-200 rounded-lg focus:border-blue-400 focus:ring-2 focus:ring-blue-100 transition-all"
+                  className="w-full p-2 sm:p-3 border-2 border-gray-200 rounded-lg focus:border-blue-400 focus:ring-2 focus:ring-blue-100 transition-all text-base"
                   placeholder="Doe"
                   autoComplete="family-name"
                   required
@@ -472,7 +487,7 @@ export function LoginPopup({ isOpen, onClose, onLogin, onAuthLogin, onAuthRegist
 
           {isSignUp && (
             <>
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                 <div>
                   <label htmlFor="age" className="block text-sm font-semibold text-gray-700 mb-2">
                     🎂 Age
@@ -483,7 +498,7 @@ export function LoginPopup({ isOpen, onClose, onLogin, onAuthLogin, onAuthRegist
                     type="number"
                     value={profile.age || ''}
                     onChange={(e) => handleInputChange('age', parseInt(e.target.value) || 0)}
-                    className="w-full p-3 border-2 border-gray-200 rounded-lg focus:border-blue-400 focus:ring-2 focus:ring-blue-100 transition-all"
+                    className="w-full p-2 sm:p-3 border-2 border-gray-200 rounded-lg focus:border-blue-400 focus:ring-2 focus:ring-blue-100 transition-all text-base"
                     placeholder="30"
                     min="18"
                     max="100"
@@ -501,7 +516,7 @@ export function LoginPopup({ isOpen, onClose, onLogin, onAuthLogin, onAuthRegist
                     type="number"
                     value={profile.salary || ''}
                     onChange={(e) => handleInputChange('salary', parseInt(e.target.value) || 0)}
-                    className="w-full p-3 border-2 border-gray-200 rounded-lg focus:border-blue-400 focus:ring-2 focus:ring-blue-100 transition-all"
+                    className="w-full p-2 sm:p-3 border-2 border-gray-200 rounded-lg focus:border-blue-400 focus:ring-2 focus:ring-blue-100 transition-all text-base"
                     placeholder="75000"
                     min="0"
                     required
@@ -509,7 +524,7 @@ export function LoginPopup({ isOpen, onClose, onLogin, onAuthLogin, onAuthRegist
                 </div>
               </div>
 
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                 <div>
                   <label htmlFor="zipCode" className="block text-sm font-semibold text-gray-700 mb-2">
                     <MapPin size={16} className="inline mr-2" />
@@ -521,7 +536,7 @@ export function LoginPopup({ isOpen, onClose, onLogin, onAuthLogin, onAuthRegist
                     type="text"
                     value={profile.zipCode}
                     onChange={(e) => handleInputChange('zipCode', e.target.value)}
-                    className="w-full p-3 border-2 border-gray-200 rounded-lg focus:border-blue-400 focus:ring-2 focus:ring-blue-100 transition-all"
+                    className="w-full p-2 sm:p-3 border-2 border-gray-200 rounded-lg focus:border-blue-400 focus:ring-2 focus:ring-blue-100 transition-all text-base"
                     placeholder="12345"
                     required
                   />
@@ -537,7 +552,7 @@ export function LoginPopup({ isOpen, onClose, onLogin, onAuthLogin, onAuthRegist
                     type="tel"
                     value={profile.phoneNumber}
                     onChange={(e) => handleInputChange('phoneNumber', formatPhoneNumber(e.target.value))}
-                    className="w-full p-3 border-2 border-gray-200 rounded-lg focus:border-blue-400 focus:ring-2 focus:ring-blue-100 transition-all"
+                    className="w-full p-2 sm:p-3 border-2 border-gray-200 rounded-lg focus:border-blue-400 focus:ring-2 focus:ring-blue-100 transition-all text-base"
                     placeholder="555-123-4567"
                     required
                   />
@@ -554,7 +569,7 @@ export function LoginPopup({ isOpen, onClose, onLogin, onAuthLogin, onAuthRegist
                   name="relationshipStatus"
                   value={profile.relationshipStatus}
                   onChange={(e) => handleInputChange('relationshipStatus', e.target.value)}
-                  className="w-full p-3 border-2 border-gray-200 rounded-lg focus:border-blue-400 focus:ring-2 focus:ring-blue-100 transition-all"
+                  className="w-full p-2 sm:p-3 border-2 border-gray-200 rounded-lg focus:border-blue-400 focus:ring-2 focus:ring-blue-100 transition-all text-base"
                   required
                 >
                   <option value="single">Single</option>
@@ -576,7 +591,7 @@ export function LoginPopup({ isOpen, onClose, onLogin, onAuthLogin, onAuthRegist
                   type="text"
                   value={profile.occupation}
                   onChange={(e) => handleInputChange('occupation', e.target.value)}
-                  className="w-full p-3 border-2 border-gray-200 rounded-lg focus:border-blue-400 focus:ring-2 focus:ring-blue-100 transition-all"
+                  className="w-full p-2 sm:p-3 border-2 border-gray-200 rounded-lg focus:border-blue-400 focus:ring-2 focus:ring-blue-100 transition-all text-base"
                   placeholder="Software Engineer"
                   required
                 />
@@ -587,7 +602,7 @@ export function LoginPopup({ isOpen, onClose, onLogin, onAuthLogin, onAuthRegist
           <button
             type="submit"
             disabled={loading}
-            className="w-full py-4 bg-gradient-to-r from-blue-600 to-blue-700 text-white font-bold rounded-lg hover:from-blue-700 hover:to-blue-800 active:scale-95 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed text-lg"
+            className="w-full py-3 sm:py-4 bg-gradient-to-r from-blue-600 to-blue-700 text-white font-bold rounded-lg hover:from-blue-700 hover:to-blue-800 active:scale-95 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed text-base sm:text-lg"
           >
             {loading
               ? (isSignUp ? 'Creating Account...' : 'Signing In...')
