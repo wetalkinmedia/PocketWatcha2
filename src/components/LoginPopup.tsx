@@ -158,16 +158,21 @@ export function LoginPopup({ isOpen, onClose, onLogin, onAuthLogin, onAuthRegist
     if (editMode) {
       console.log('Edit mode - submitting form with profile:', profile);
 
-      // Edit profile mode
-      const requiredFields = Object.entries(profile).filter(([key, value]) => {
-        if (key === 'email') return false;
-        if (key === 'age' || key === 'salary') return value <= 0;
-        return !value || value.toString().trim() === '';
-      });
+      // Edit profile mode - check specific required fields
+      const missingFields: string[] = [];
 
-      if (requiredFields.length > 0) {
-        console.log('Validation failed - missing fields:', requiredFields);
-        setMessage('Please fill in all fields! 📝');
+      if (!profile.firstName || profile.firstName.trim() === '') missingFields.push('First Name');
+      if (!profile.lastName || profile.lastName.trim() === '') missingFields.push('Last Name');
+      if (!profile.age || profile.age <= 0) missingFields.push('Age');
+      if (!profile.salary || profile.salary <= 0) missingFields.push('Salary');
+      if (!profile.zipCode || profile.zipCode.trim() === '') missingFields.push('Zip Code');
+      if (!profile.phoneNumber || profile.phoneNumber.trim() === '') missingFields.push('Phone Number');
+      if (!profile.relationshipStatus || profile.relationshipStatus.trim() === '') missingFields.push('Relationship Status');
+      if (!profile.occupation || profile.occupation.trim() === '') missingFields.push('Occupation');
+
+      if (missingFields.length > 0) {
+        console.log('Validation failed - missing fields:', missingFields);
+        setMessage(`Please fill in: ${missingFields.join(', ')}`);
         setLoading(false);
         return;
       }
