@@ -74,7 +74,7 @@ export function useAuth() {
   const loadUserProfile = async (supabaseUser: User) => {
     // Skip if we already loaded this user
     if (loadedUserIdRef.current === supabaseUser.id) {
-      console.log('[useAuth] User profile already loaded, skipping');
+      console.log('[useAuth] SKIPPING - User profile already loaded for:', supabaseUser.id);
       return;
     }
 
@@ -118,23 +118,28 @@ export function useAuth() {
           console.warn('[useAuth] Admin check failed, defaulting to non-admin:', adminError);
         }
 
-        setAuthState(prev => ({
-          isAuthenticated: true,
-          user: {
-            firstName: profile.first_name,
-            lastName: profile.last_name,
-            age: profile.age,
-            salary: profile.salary,
-            zipCode: profile.zip_code,
-            relationshipStatus: profile.relationship_status,
-            occupation: profile.occupation,
-            phoneNumber: profile.phone_number,
-            email: supabaseUser.email || '',
-            isAdmin
-          },
-          supabaseUser,
-          loading: false
-        }));
+        console.log('[useAuth] Setting auth state with profile data');
+        setAuthState(prev => {
+          const newState = {
+            isAuthenticated: true,
+            user: {
+              firstName: profile.first_name,
+              lastName: profile.last_name,
+              age: profile.age,
+              salary: profile.salary,
+              zipCode: profile.zip_code,
+              relationshipStatus: profile.relationship_status,
+              occupation: profile.occupation,
+              phoneNumber: profile.phone_number,
+              email: supabaseUser.email || '',
+              isAdmin
+            },
+            supabaseUser,
+            loading: false
+          };
+          console.log('[useAuth] Auth state updated');
+          return newState;
+        });
       } else {
         console.warn('No profile found, will retry in a moment...');
         await new Promise(resolve => setTimeout(resolve, 500));

@@ -34,6 +34,7 @@ interface BudgetOverviewProps {
 export function BudgetOverview({ onNavigate }: BudgetOverviewProps) {
   const { supabaseUser, user } = useAuth();
   const hasCheckedRef = useRef(false);
+  const effectCountRef = useRef(0);
   const [budgets, setBudgets] = useState<UserBudget[]>([]);
   const [currentTip, setCurrentTip] = useState<FinancialTip | null>(null);
   const [loading, setLoading] = useState(true);
@@ -46,12 +47,16 @@ export function BudgetOverview({ onNavigate }: BudgetOverviewProps) {
   });
 
   useEffect(() => {
+    effectCountRef.current++;
+    console.log(`[BudgetOverview] useEffect #${effectCountRef.current}, user ID:`, supabaseUser?.id, 'hasChecked:', hasCheckedRef.current);
+
     if (!supabaseUser) {
       setLoading(false);
       return;
     }
 
     if (hasCheckedRef.current) {
+      console.log('[BudgetOverview] Already checked, returning early');
       return;
     }
 
