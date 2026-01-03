@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { TrendingUp, TrendingDown, DollarSign, Target, Calendar, Lightbulb, ArrowRight } from 'lucide-react';
 import { supabase } from '../../lib/supabase';
 import { useAuth } from '../../hooks/useAuth';
@@ -33,11 +33,11 @@ interface BudgetOverviewProps {
 
 export function BudgetOverview({ onNavigate }: BudgetOverviewProps) {
   const { supabaseUser, user } = useAuth();
+  const hasCheckedRef = useRef(false);
   const [budgets, setBudgets] = useState<UserBudget[]>([]);
   const [currentTip, setCurrentTip] = useState<FinancialTip | null>(null);
   const [loading, setLoading] = useState(true);
   const [hasProfile, setHasProfile] = useState(false);
-  const [hasChecked, setHasChecked] = useState(false);
   const [stats, setStats] = useState({
     todayRemaining: 0,
     weeklySpending: 0,
@@ -47,12 +47,12 @@ export function BudgetOverview({ onNavigate }: BudgetOverviewProps) {
 
   useEffect(() => {
     const initData = async () => {
-      if (supabaseUser && !hasChecked) {
+      if (supabaseUser && !hasCheckedRef.current) {
+        hasCheckedRef.current = true;
         await checkProfileCompletion();
-        setHasChecked(true);
       } else if (!supabaseUser) {
+        hasCheckedRef.current = false;
         setLoading(false);
-        setHasChecked(false);
       }
     };
 

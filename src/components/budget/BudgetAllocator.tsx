@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { PieChart, Pie, Cell, ResponsiveContainer, Legend, Tooltip } from 'recharts';
 import { Save, AlertCircle, CheckCircle, DollarSign, TrendingUp } from 'lucide-react';
 import { supabase } from '../../lib/supabase';
@@ -23,6 +23,7 @@ interface BudgetAllocation {
 
 export function BudgetAllocator() {
   const { supabaseUser } = useAuth();
+  const hasCheckedRef = useRef(false);
   const [categories, setCategories] = useState<BudgetCategory[]>([]);
   const [totalIncome, setTotalIncome] = useState<number>(0);
   const [incomeInputValue, setIncomeInputValue] = useState<string>('0');
@@ -31,14 +32,13 @@ export function BudgetAllocator() {
   const [saveMessage, setSaveMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
   const [loading, setLoading] = useState(true);
   const [hasProfile, setHasProfile] = useState(false);
-  const [hasChecked, setHasChecked] = useState(false);
 
   useEffect(() => {
-    if (supabaseUser && !hasChecked) {
+    if (supabaseUser && !hasCheckedRef.current) {
+      hasCheckedRef.current = true;
       checkAndLoadData();
-      setHasChecked(true);
     } else if (!supabaseUser) {
-      setHasChecked(false);
+      hasCheckedRef.current = false;
     }
   }, [supabaseUser?.id]);
 

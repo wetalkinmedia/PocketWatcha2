@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
   BarChart,
   Bar,
@@ -34,12 +34,12 @@ interface TrendData {
 
 export function AnalyticsView() {
   const { supabaseUser } = useAuth();
+  const hasCheckedRef = useRef(false);
   const [timeRange, setTimeRange] = useState<'week' | 'month' | 'year'>('month');
   const [categoryData, setCategoryData] = useState<CategoryData[]>([]);
   const [trendData, setTrendData] = useState<TrendData[]>([]);
   const [loading, setLoading] = useState(true);
   const [hasProfile, setHasProfile] = useState(false);
-  const [hasChecked, setHasChecked] = useState(false);
   const [stats, setStats] = useState({
     totalSpent: 0,
     totalBudget: 0,
@@ -48,11 +48,11 @@ export function AnalyticsView() {
   });
 
   useEffect(() => {
-    if (supabaseUser && !hasChecked) {
+    if (supabaseUser && !hasCheckedRef.current) {
+      hasCheckedRef.current = true;
       checkAndLoadAnalytics();
-      setHasChecked(true);
     } else if (!supabaseUser) {
-      setHasChecked(false);
+      hasCheckedRef.current = false;
     }
   }, [supabaseUser?.id]);
 

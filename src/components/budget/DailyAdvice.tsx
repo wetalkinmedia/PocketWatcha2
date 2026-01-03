@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Lightbulb, TrendingUp, TrendingDown, Award, AlertTriangle, CheckCircle, RefreshCw } from 'lucide-react';
 import { supabase } from '../../lib/supabase';
 import { useAuth } from '../../hooks/useAuth';
@@ -13,17 +13,17 @@ interface Advice {
 
 export function DailyAdvice() {
   const { supabaseUser } = useAuth();
+  const hasCheckedRef = useRef(false);
   const [advice, setAdvice] = useState<Advice[]>([]);
   const [loading, setLoading] = useState(true);
   const [hasProfile, setHasProfile] = useState(false);
-  const [hasChecked, setHasChecked] = useState(false);
 
   useEffect(() => {
-    if (supabaseUser && !hasChecked) {
+    if (supabaseUser && !hasCheckedRef.current) {
+      hasCheckedRef.current = true;
       checkAndGenerateAdvice();
-      setHasChecked(true);
     } else if (!supabaseUser) {
-      setHasChecked(false);
+      hasCheckedRef.current = false;
     }
   }, [supabaseUser?.id]);
 
