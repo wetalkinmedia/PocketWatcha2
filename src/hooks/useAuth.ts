@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { supabase } from '../lib/supabase';
 import type { User } from '@supabase/supabase-js';
 import { UserProfile } from '../types';
@@ -17,6 +17,7 @@ export function useAuth() {
     supabaseUser: null,
     loading: true
   });
+  const loadedUserIdRef = useRef<string | null>(null);
 
   useEffect(() => {
     // Initialize auth in background without blocking UI
@@ -46,12 +47,12 @@ export function useAuth() {
 
       // Listen for auth changes
       const { data } = supabase.auth.onAuthStateChange((event, session) => {
-        console.log('Auth state change event:', event, 'Session:', session ? 'Present' : 'None');
+        console.log('[useAuth] Auth state change:', event, 'User ID:', session?.user?.id || 'none');
         (async () => {
           if (session?.user) {
             await loadUserProfile(session.user);
           } else {
-            console.log('No session, setting unauthenticated state');
+            console.log('[useAuth] No session, setting unauthenticated state');
             setAuthState({
               isAuthenticated: false,
               user: null,
@@ -71,8 +72,16 @@ export function useAuth() {
   }, []);
 
   const loadUserProfile = async (supabaseUser: User) => {
+    // Skip if we already loaded this user
+    if (loadedUserIdRef.current === supabaseUser.id) {
+      console.log('[useAuth] User profile already loaded, skipping');
+      return;
+    }
+
     try {
-      console.log('Loading profile for user:', supabaseUser.id);
+      console.log('[useAuth] Loading profile for user:', supabaseUser.id);
+      loadedUserIdRef.current = supabaseUser.id;
+
       const { data: profile, error } = await supabase
         .from('user_profiles')
         .select('*')
@@ -80,18 +89,19 @@ export function useAuth() {
         .maybeSingle();
 
       if (error) {
-        console.error('Error loading profile:', error);
-        setAuthState({
+        console.error('[useAuth] Error loading profile:', error);
+        loadedUserIdRef.current = null;
+        setAuthState(prev => ({
           isAuthenticated: false,
           user: null,
           supabaseUser,
           loading: false
-        });
+        }));
         return;
       }
 
       if (profile) {
-        console.log('Profile loaded successfully:', profile);
+        console.log('[useAuth] Profile loaded successfully');
 
         let isAdmin = false;
         try {
@@ -105,11 +115,10 @@ export function useAuth() {
             isAdmin = !!adminCheck;
           }
         } catch (adminError) {
-          console.warn('Admin check failed, defaulting to non-admin:', adminError);
+          console.warn('[useAuth] Admin check failed, defaulting to non-admin:', adminError);
         }
-        console.log('Admin check result:', isAdmin);
 
-        setAuthState({
+        setAuthState(prev => ({
           isAuthenticated: true,
           user: {
             firstName: profile.first_name,
@@ -125,7 +134,7 @@ export function useAuth() {
           },
           supabaseUser,
           loading: false
-        });
+        }));
       } else {
         console.warn('No profile found, will retry in a moment...');
         await new Promise(resolve => setTimeout(resolve, 500));
@@ -173,6 +182,7 @@ export function useAuth() {
           });
         } else {
           console.error('Profile still not found after retry');
+          loadedUserIdRef.current = null;
           setAuthState({
             isAuthenticated: false,
             user: null,
@@ -183,6 +193,7 @@ export function useAuth() {
       }
     } catch (error) {
       console.error('Error loading user profile:', error);
+      loadedUserIdRef.current = null;
       setAuthState({
         isAuthenticated: false,
         user: null,
@@ -287,6 +298,7 @@ export function useAuth() {
   const logout = async () => {
     try {
       await supabase.auth.signOut();
+      loadedUserIdRef.current = null;
       setAuthState({
         isAuthenticated: false,
         user: null,
@@ -339,6 +351,8 @@ export function useAuth() {
         return { success: false, message: `Profile update failed: ${error.message}` };
       }
 
+      // Reset the ref so profile will be reloaded on next auth state change
+      loadedUserIdRef.current = null;
       // Reload the profile to ensure we have the latest data
       await loadUserProfile(authState.supabaseUser);
 

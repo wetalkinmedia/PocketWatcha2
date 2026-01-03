@@ -54,7 +54,7 @@ export function Dashboard() {
     if (supabaseUser) {
       loadDashboardData();
     }
-  }, [supabaseUser]);
+  }, [supabaseUser?.id]);
 
   const loadDashboardData = async () => {
     if (!supabaseUser) return;
