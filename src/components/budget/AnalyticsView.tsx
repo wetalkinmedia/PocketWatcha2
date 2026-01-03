@@ -71,7 +71,11 @@ export function AnalyticsView() {
         data.first_name &&
         data.last_name &&
         data.age > 0 &&
-        data.annual_salary > 0;
+        data.salary > 0 &&
+        data.zip_code &&
+        data.phone_number &&
+        data.relationship_status &&
+        data.occupation;
 
       setHasProfile(!!profileComplete);
 
@@ -247,7 +251,10 @@ export function AnalyticsView() {
               <li>✓ First and Last Name</li>
               <li>✓ Age</li>
               <li>✓ Annual Salary</li>
-              <li>✓ Other profile details</li>
+              <li>✓ Zip Code</li>
+              <li>✓ Phone Number</li>
+              <li>✓ Relationship Status</li>
+              <li>✓ Occupation</li>
             </ul>
           </div>
           <p className="text-sm text-gray-600">
