@@ -68,6 +68,17 @@ function App() {
     timerResume();
   }, [timerResume]);
 
+  // Pause timer when login popup is open
+  useEffect(() => {
+    if (showLoginPopup) {
+      console.log('Login popup opened - pausing timer');
+      timerPause();
+    } else {
+      console.log('Login popup closed - resuming timer');
+      timerResume();
+    }
+  }, [showLoginPopup, timerPause, timerResume]);
+
   // Auto-populate form when user data becomes available after login
   // Use a ref to track if we've already populated to prevent overwriting user edits
   const hasPopulated = useRef(false);
