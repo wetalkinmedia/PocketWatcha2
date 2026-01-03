@@ -27,6 +27,7 @@ function App() {
   const [allocations, setAllocations] = useState<Allocations | null>(null);
   const [showResults, setShowResults] = useState(false);
   const [showLoginPopup, setShowLoginPopup] = useState(false);
+  const [isEditMode, setIsEditMode] = useState(false);
   const [careerSuggestions, setCareerSuggestions] = useState<any[]>([]);
   const [careerAdvice, setCareerAdvice] = useState<string>('');
   const [showCoursePlatform, setShowCoursePlatform] = useState(false);
@@ -37,7 +38,7 @@ function App() {
   const [debugVisible, setDebugVisible] = useState(false);
 
   // Use authentication hook
-  const { isAuthenticated, user, loading, login, register, logout } = useAuth();
+  const { isAuthenticated, user, loading, login, register, logout, updateProfile } = useAuth();
 
   // Define logError early so it can be used in useEffects
   const logError = useCallback((message: string) => {
@@ -238,6 +239,16 @@ function App() {
     const result = await register(email, password, profile);
     if (result.success) {
       setShowLoginPopup(false);
+      setIsEditMode(false);
+    }
+    return result;
+  };
+
+  const handleUpdateProfile = async (profile: Partial<UserProfileType>) => {
+    const result = await updateProfile(profile);
+    if (result.success) {
+      setShowLoginPopup(false);
+      setIsEditMode(false);
     }
     return result;
   };
@@ -256,10 +267,12 @@ function App() {
   };
 
   const handleEditProfile = () => {
+    setIsEditMode(true);
     setShowLoginPopup(true);
   };
 
   const handleLoginClick = () => {
+    setIsEditMode(false);
     setShowLoginPopup(true);
   };
 
@@ -404,10 +417,16 @@ function App() {
         
         <LoginPopup
           isOpen={showLoginPopup}
-          onClose={() => setShowLoginPopup(false)}
+          onClose={() => {
+            setShowLoginPopup(false);
+            setIsEditMode(false);
+          }}
           onLogin={handleLegacyLogin}
           onAuthLogin={handleAuthLogin}
           onAuthRegister={handleAuthRegister}
+          onUpdateProfile={handleUpdateProfile}
+          currentUser={user}
+          editMode={isEditMode}
         />
         
         <CoursePlatform 

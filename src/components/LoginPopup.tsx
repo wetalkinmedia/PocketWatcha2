@@ -10,9 +10,12 @@ interface LoginPopupProps {
   onLogin: (profile: UserProfile) => void;
   onAuthLogin?: (email: string, password: string) => Promise<{ success: boolean; message: string }>;
   onAuthRegister?: (email: string, password: string, profile: Omit<UserProfile, 'email'>) => Promise<{ success: boolean; message: string }>;
+  onUpdateProfile?: (profile: Partial<UserProfile>) => Promise<{ success: boolean; message: string }>;
+  currentUser?: UserProfile | null;
+  editMode?: boolean;
 }
 
-export function LoginPopup({ isOpen, onClose, onLogin, onAuthLogin, onAuthRegister }: LoginPopupProps) {
+export function LoginPopup({ isOpen, onClose, onLogin, onAuthLogin, onAuthRegister, onUpdateProfile, currentUser, editMode = false }: LoginPopupProps) {
   const [isSignUp, setIsSignUp] = useState(false);
   const [isForgotPassword, setIsForgotPassword] = useState(false);
   const [isForgotCredentials, setIsForgotCredentials] = useState(false);
@@ -34,6 +37,13 @@ export function LoginPopup({ isOpen, onClose, onLogin, onAuthLogin, onAuthRegist
     email: ''
   });
 
+  // Pre-populate form in edit mode
+  useEffect(() => {
+    if (isOpen && editMode && currentUser) {
+      setProfile(currentUser);
+    }
+  }, [isOpen, editMode, currentUser]);
+
   // Reset state when modal closes
   useEffect(() => {
     if (!isOpen) {
@@ -44,23 +54,25 @@ export function LoginPopup({ isOpen, onClose, onLogin, onAuthLogin, onAuthRegist
         setLoading(false);
         setResetEmail('');
         setCredentialsEmail('');
-        setProfile({
-          firstName: '',
-          lastName: '',
-          age: 0,
-          salary: 0,
-          zipCode: '',
-          relationshipStatus: 'single',
-          occupation: '',
-          phoneNumber: '',
-          email: ''
-        });
+        if (!editMode) {
+          setProfile({
+            firstName: '',
+            lastName: '',
+            age: 0,
+            salary: 0,
+            zipCode: '',
+            relationshipStatus: 'single',
+            occupation: '',
+            phoneNumber: '',
+            email: ''
+          });
+        }
         setIsSignUp(false);
         setIsForgotPassword(false);
         setIsForgotCredentials(false);
       }, 300);
     }
-  }, [isOpen]);
+  }, [isOpen, editMode]);
 
   const handleForgotCredentials = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -142,6 +154,49 @@ export function LoginPopup({ isOpen, onClose, onLogin, onAuthLogin, onAuthRegist
 
     setLoading(true);
     setMessage('');
+
+    if (editMode) {
+      // Edit profile mode
+      const requiredFields = Object.entries(profile).filter(([key, value]) => {
+        if (key === 'email') return false; // Skip email validation in edit mode
+        if (key === 'age' || key === 'salary') return value <= 0;
+        return !value || value.toString().trim() === '';
+      });
+
+      if (requiredFields.length > 0) {
+        setMessage('Please fill in all fields! 📝');
+        setLoading(false);
+        return;
+      }
+
+      if (onUpdateProfile) {
+        try {
+          const result = await onUpdateProfile({
+            firstName: profile.firstName,
+            lastName: profile.lastName,
+            age: profile.age,
+            salary: profile.salary,
+            zipCode: profile.zipCode,
+            relationshipStatus: profile.relationshipStatus,
+            occupation: profile.occupation,
+            phoneNumber: profile.phoneNumber
+          });
+
+          if (result.success) {
+            setMessage('Profile updated successfully! 🎉');
+            setTimeout(() => {
+              onClose();
+            }, 1500);
+          } else {
+            setMessage(result.message);
+          }
+        } catch (error) {
+          setMessage('Profile update failed. Please try again! ❌');
+        }
+      }
+      setLoading(false);
+      return;
+    }
 
     if (isSignUp) {
       // Sign up validation
@@ -254,10 +309,12 @@ export function LoginPopup({ isOpen, onClose, onLogin, onAuthLogin, onAuthRegist
             <X size={28} />
           </button>
           <h2 className="text-xl sm:text-2xl font-bold mb-2 pr-12">
-            {isForgotCredentials ? '🔍 Forgot Username/Password' : isForgotPassword ? '🔐 Reset Password' : isSignUp ? '🚀 Create Your Profile' : '👋 Welcome Back!'}
+            {editMode ? '✏️ Edit Your Profile' : isForgotCredentials ? '🔍 Forgot Username/Password' : isForgotPassword ? '🔐 Reset Password' : isSignUp ? '🚀 Create Your Profile' : '👋 Welcome Back!'}
           </h2>
           <p className="opacity-90 text-sm sm:text-base">
-            {isForgotCredentials
+            {editMode
+              ? 'Update your personal information'
+              : isForgotCredentials
               ? 'Enter your email to receive your username and password reset link'
               : isForgotPassword
               ? 'Enter your email to receive a password reset link'
@@ -268,10 +325,12 @@ export function LoginPopup({ isOpen, onClose, onLogin, onAuthLogin, onAuthRegist
           </p>
           <div className="mt-3 sm:mt-4 p-2 sm:p-3 bg-white bg-opacity-20 rounded-lg text-xs sm:text-sm">
             <p className="font-semibold mb-1">
-              {isForgotCredentials ? '🔍 Account Recovery:' : isForgotPassword ? '🔐 Password Reset:' : isSignUp ? '🚀 Create Your Account:' : '🔐 Sign In:'}
+              {editMode ? '✏️ Edit Profile:' : isForgotCredentials ? '🔍 Account Recovery:' : isForgotPassword ? '🔐 Password Reset:' : isSignUp ? '🚀 Create Your Account:' : '🔐 Sign In:'}
             </p>
             <p>
-              {isForgotCredentials
+              {editMode
+                ? 'Make changes to your profile information below'
+                : isForgotCredentials
                 ? 'We\'ll send your username and a password reset link to your email'
                 : isForgotPassword
                 ? 'We\'ll send you a secure link to reset your password'
@@ -387,7 +446,7 @@ export function LoginPopup({ isOpen, onClose, onLogin, onAuthLogin, onAuthRegist
             </>
           ) : (
             <>
-              {isSignUp && (
+              {(isSignUp || editMode) && (
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
               <div>
                 <label htmlFor="firstName" className="block text-sm font-semibold text-gray-700 mb-2">
@@ -425,64 +484,86 @@ export function LoginPopup({ isOpen, onClose, onLogin, onAuthLogin, onAuthRegist
             </div>
           )}
 
-          <div>
-            <label htmlFor="email" className="block text-sm font-semibold text-gray-700 mb-2">
-              <Mail size={16} className="inline mr-2" />
-              Email Address
-            </label>
-            <input
-              id="email"
-              name="email"
-              type="email"
-              value={profile.email}
-              onChange={(e) => handleInputChange('email', e.target.value)}
-              className="w-full p-2 sm:p-3 border-2 border-gray-200 rounded-lg focus:border-blue-400 focus:ring-2 focus:ring-blue-100 transition-all text-base"
-              placeholder="john.doe@example.com"
-              autoComplete="email"
-              required
-            />
-          </div>
-
-          <div>
-            <label htmlFor="password" className="block text-sm font-semibold text-gray-700 mb-2">
-              <Lock size={16} className="inline mr-2" />
-              Password
-            </label>
-            <input
-              id="password"
-              name="password"
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              className="w-full p-2 sm:p-3 border-2 border-gray-200 rounded-lg focus:border-blue-400 focus:ring-2 focus:ring-blue-100 transition-all text-base"
-              placeholder={isSignUp ? "Create a secure password" : "Enter your password"}
-              autoComplete={isSignUp ? "new-password" : "current-password"}
-              required
-              minLength={isSignUp ? 6 : undefined}
-            />
-          </div>
-
-          {isSignUp && (
+          {editMode && (
             <div>
-              <label htmlFor="confirmPassword" className="block text-sm font-semibold text-gray-700 mb-2">
-                <Lock size={16} className="inline mr-2" />
-                Confirm Password
+              <label htmlFor="email" className="block text-sm font-semibold text-gray-700 mb-2">
+                <Mail size={16} className="inline mr-2" />
+                Email Address
               </label>
               <input
-                id="confirmPassword"
-                name="confirmPassword"
-                type="password"
-                value={confirmPassword}
-                onChange={(e) => setConfirmPassword(e.target.value)}
-                className="w-full p-2 sm:p-3 border-2 border-gray-200 rounded-lg focus:border-blue-400 focus:ring-2 focus:ring-blue-100 transition-all text-base"
-                placeholder="Confirm your password"
-                required
-                minLength={6}
+                id="email"
+                name="email"
+                type="email"
+                value={profile.email}
+                className="w-full p-2 sm:p-3 border-2 border-gray-200 rounded-lg bg-gray-100 text-gray-600 transition-all text-base cursor-not-allowed"
+                disabled
               />
+              <p className="text-xs text-gray-500 mt-1">Email address cannot be changed</p>
             </div>
           )}
 
-          {isSignUp && (
+          {!editMode && (
+            <>
+              <div>
+                <label htmlFor="email" className="block text-sm font-semibold text-gray-700 mb-2">
+                  <Mail size={16} className="inline mr-2" />
+                  Email Address
+                </label>
+                <input
+                  id="email"
+                  name="email"
+                  type="email"
+                  value={profile.email}
+                  onChange={(e) => handleInputChange('email', e.target.value)}
+                  className="w-full p-2 sm:p-3 border-2 border-gray-200 rounded-lg focus:border-blue-400 focus:ring-2 focus:ring-blue-100 transition-all text-base"
+                  placeholder="john.doe@example.com"
+                  autoComplete="email"
+                  required
+                />
+              </div>
+
+              <div>
+                <label htmlFor="password" className="block text-sm font-semibold text-gray-700 mb-2">
+                  <Lock size={16} className="inline mr-2" />
+                  Password
+                </label>
+                <input
+                  id="password"
+                  name="password"
+                  type="password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  className="w-full p-2 sm:p-3 border-2 border-gray-200 rounded-lg focus:border-blue-400 focus:ring-2 focus:ring-blue-100 transition-all text-base"
+                  placeholder={isSignUp ? "Create a secure password" : "Enter your password"}
+                  autoComplete={isSignUp ? "new-password" : "current-password"}
+                  required
+                  minLength={isSignUp ? 6 : undefined}
+                />
+              </div>
+
+              {isSignUp && (
+                <div>
+                  <label htmlFor="confirmPassword" className="block text-sm font-semibold text-gray-700 mb-2">
+                    <Lock size={16} className="inline mr-2" />
+                    Confirm Password
+                  </label>
+                  <input
+                    id="confirmPassword"
+                    name="confirmPassword"
+                    type="password"
+                    value={confirmPassword}
+                    onChange={(e) => setConfirmPassword(e.target.value)}
+                    className="w-full p-2 sm:p-3 border-2 border-gray-200 rounded-lg focus:border-blue-400 focus:ring-2 focus:ring-blue-100 transition-all text-base"
+                    placeholder="Confirm your password"
+                    required
+                    minLength={6}
+                  />
+                </div>
+              )}
+            </>
+          )}
+
+          {(isSignUp || editMode) && (
             <>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                 <div>
@@ -602,12 +683,12 @@ export function LoginPopup({ isOpen, onClose, onLogin, onAuthLogin, onAuthRegist
             className="w-full py-3 sm:py-4 bg-gradient-to-r from-blue-600 to-blue-700 text-white font-bold rounded-lg hover:from-blue-700 hover:to-blue-800 active:scale-95 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed text-base sm:text-lg"
           >
             {loading
-              ? (isSignUp ? 'Creating Account...' : 'Signing In...')
-              : (isSignUp ? 'Create My Profile' : 'Sign In')
+              ? (editMode ? 'Updating Profile...' : isSignUp ? 'Creating Account...' : 'Signing In...')
+              : (editMode ? 'Update Profile' : isSignUp ? 'Create My Profile' : 'Sign In')
             }
           </button>
 
-              {!isSignUp && (
+              {!isSignUp && !editMode && (
                 <div className="text-center">
                   <div className="space-y-2">
                     <button
@@ -634,21 +715,23 @@ export function LoginPopup({ isOpen, onClose, onLogin, onAuthLogin, onAuthRegist
                 </div>
               )}
 
-              <div className="text-center">
-            <button
-              type="button"
-                onClick={() => {
-                  setIsSignUp(!isSignUp);
-                  setMessage('');
-                }}
-              className="text-blue-600 hover:text-blue-800 font-semibold transition-colors py-2 px-4"
-            >
-              {isSignUp
-                ? 'Already have an account? Sign In'
-                : "Don't have an account? Sign Up"
-              }
-            </button>
-              </div>
+              {!editMode && (
+                <div className="text-center">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setIsSignUp(!isSignUp);
+                      setMessage('');
+                    }}
+                    className="text-blue-600 hover:text-blue-800 font-semibold transition-colors py-2 px-4"
+                  >
+                    {isSignUp
+                      ? 'Already have an account? Sign In'
+                      : "Don't have an account? Sign Up"
+                    }
+                  </button>
+                </div>
+              )}
             </>
           )}
         </form>
