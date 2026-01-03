@@ -300,42 +300,52 @@ export function useAuth() {
 
   const updateProfile = async (updatedProfile: Partial<UserProfile>): Promise<{ success: boolean; message: string }> => {
     try {
+      console.log('updateProfile called with:', updatedProfile);
+      console.log('Current auth state:', {
+        isAuthenticated: authState.isAuthenticated,
+        hasUser: !!authState.user,
+        hasSupabaseUser: !!authState.supabaseUser,
+        supabaseUserId: authState.supabaseUser?.id
+      });
+
       if (!authState.supabaseUser) {
+        console.error('No supabase user found');
         return { success: false, message: 'Not authenticated' };
       }
 
       const updateData: any = {};
-      if (updatedProfile.firstName) updateData.first_name = updatedProfile.firstName;
-      if (updatedProfile.lastName) updateData.last_name = updatedProfile.lastName;
-      if (updatedProfile.age) updateData.age = updatedProfile.age;
-      if (updatedProfile.salary) updateData.salary = updatedProfile.salary;
-      if (updatedProfile.zipCode) updateData.zip_code = updatedProfile.zipCode;
-      if (updatedProfile.relationshipStatus) updateData.relationship_status = updatedProfile.relationshipStatus;
-      if (updatedProfile.occupation) updateData.occupation = updatedProfile.occupation;
-      if (updatedProfile.phoneNumber) updateData.phone_number = updatedProfile.phoneNumber;
+      if (updatedProfile.firstName !== undefined) updateData.first_name = updatedProfile.firstName;
+      if (updatedProfile.lastName !== undefined) updateData.last_name = updatedProfile.lastName;
+      if (updatedProfile.age !== undefined) updateData.age = updatedProfile.age;
+      if (updatedProfile.salary !== undefined) updateData.salary = updatedProfile.salary;
+      if (updatedProfile.zipCode !== undefined) updateData.zip_code = updatedProfile.zipCode;
+      if (updatedProfile.relationshipStatus !== undefined) updateData.relationship_status = updatedProfile.relationshipStatus;
+      if (updatedProfile.occupation !== undefined) updateData.occupation = updatedProfile.occupation;
+      if (updatedProfile.phoneNumber !== undefined) updateData.phone_number = updatedProfile.phoneNumber;
 
-      const { error } = await supabase
+      console.log('Update data:', updateData);
+      console.log('Updating profile for user:', authState.supabaseUser.id);
+
+      const { data, error } = await supabase
         .from('user_profiles')
         .update(updateData)
-        .eq('id', authState.supabaseUser.id);
+        .eq('id', authState.supabaseUser.id)
+        .select();
+
+      console.log('Update result:', { data, error });
 
       if (error) {
         console.error('Profile update error:', error);
-        return { success: false, message: 'Profile update failed' };
+        return { success: false, message: `Profile update failed: ${error.message}` };
       }
 
-      // Update local state
-      if (authState.user) {
-        setAuthState(prev => ({
-          ...prev,
-          user: prev.user ? { ...prev.user, ...updatedProfile } : null
-        }));
-      }
+      // Reload the profile to ensure we have the latest data
+      await loadUserProfile(authState.supabaseUser);
 
       return { success: true, message: 'Profile updated successfully!' };
-    } catch (error) {
+    } catch (error: any) {
       console.error('Profile update error:', error);
-      return { success: false, message: 'Profile update failed. Please try again.' };
+      return { success: false, message: `Profile update failed: ${error?.message || 'Please try again.'}` };
     }
   };
 

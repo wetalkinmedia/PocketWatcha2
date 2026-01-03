@@ -156,14 +156,17 @@ export function LoginPopup({ isOpen, onClose, onLogin, onAuthLogin, onAuthRegist
     setMessage('');
 
     if (editMode) {
+      console.log('Edit mode - submitting form with profile:', profile);
+
       // Edit profile mode
       const requiredFields = Object.entries(profile).filter(([key, value]) => {
-        if (key === 'email') return false; // Skip email validation in edit mode
+        if (key === 'email') return false;
         if (key === 'age' || key === 'salary') return value <= 0;
         return !value || value.toString().trim() === '';
       });
 
       if (requiredFields.length > 0) {
+        console.log('Validation failed - missing fields:', requiredFields);
         setMessage('Please fill in all fields! 📝');
         setLoading(false);
         return;
@@ -171,7 +174,7 @@ export function LoginPopup({ isOpen, onClose, onLogin, onAuthLogin, onAuthRegist
 
       if (onUpdateProfile) {
         try {
-          const result = await onUpdateProfile({
+          const updateData = {
             firstName: profile.firstName,
             lastName: profile.lastName,
             age: profile.age,
@@ -180,7 +183,11 @@ export function LoginPopup({ isOpen, onClose, onLogin, onAuthLogin, onAuthRegist
             relationshipStatus: profile.relationshipStatus,
             occupation: profile.occupation,
             phoneNumber: profile.phoneNumber
-          });
+          };
+
+          console.log('Calling onUpdateProfile with:', updateData);
+          const result = await onUpdateProfile(updateData);
+          console.log('Update result:', result);
 
           if (result.success) {
             setMessage('Profile updated successfully! 🎉');
@@ -191,8 +198,12 @@ export function LoginPopup({ isOpen, onClose, onLogin, onAuthLogin, onAuthRegist
             setMessage(result.message);
           }
         } catch (error) {
+          console.error('Profile update error in LoginPopup:', error);
           setMessage('Profile update failed. Please try again! ❌');
         }
+      } else {
+        console.error('onUpdateProfile is not defined');
+        setMessage('Update function not available! ❌');
       }
       setLoading(false);
       return;
