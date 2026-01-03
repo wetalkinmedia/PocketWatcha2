@@ -16,12 +16,16 @@ export function DailyAdvice() {
   const [advice, setAdvice] = useState<Advice[]>([]);
   const [loading, setLoading] = useState(true);
   const [hasProfile, setHasProfile] = useState(false);
+  const [hasChecked, setHasChecked] = useState(false);
 
   useEffect(() => {
-    if (supabaseUser) {
+    if (supabaseUser && !hasChecked) {
       checkAndGenerateAdvice();
+      setHasChecked(true);
+    } else if (!supabaseUser) {
+      setHasChecked(false);
     }
-  }, [supabaseUser]);
+  }, [supabaseUser?.id]);
 
   const checkAndGenerateAdvice = async () => {
     if (!supabaseUser) {

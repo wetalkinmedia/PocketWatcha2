@@ -37,6 +37,7 @@ export function BudgetOverview({ onNavigate }: BudgetOverviewProps) {
   const [currentTip, setCurrentTip] = useState<FinancialTip | null>(null);
   const [loading, setLoading] = useState(true);
   const [hasProfile, setHasProfile] = useState(false);
+  const [hasChecked, setHasChecked] = useState(false);
   const [stats, setStats] = useState({
     todayRemaining: 0,
     weeklySpending: 0,
@@ -46,15 +47,17 @@ export function BudgetOverview({ onNavigate }: BudgetOverviewProps) {
 
   useEffect(() => {
     const initData = async () => {
-      if (supabaseUser) {
+      if (supabaseUser && !hasChecked) {
         await checkProfileCompletion();
-      } else {
+        setHasChecked(true);
+      } else if (!supabaseUser) {
         setLoading(false);
+        setHasChecked(false);
       }
     };
 
     initData();
-  }, [supabaseUser]);
+  }, [supabaseUser?.id]);
 
   const checkProfileCompletion = async () => {
     if (!supabaseUser) {

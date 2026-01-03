@@ -31,12 +31,16 @@ export function BudgetAllocator() {
   const [saveMessage, setSaveMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
   const [loading, setLoading] = useState(true);
   const [hasProfile, setHasProfile] = useState(false);
+  const [hasChecked, setHasChecked] = useState(false);
 
   useEffect(() => {
-    if (supabaseUser) {
+    if (supabaseUser && !hasChecked) {
       checkAndLoadData();
+      setHasChecked(true);
+    } else if (!supabaseUser) {
+      setHasChecked(false);
     }
-  }, [supabaseUser]);
+  }, [supabaseUser?.id]);
 
   const checkAndLoadData = async () => {
     if (!supabaseUser) {

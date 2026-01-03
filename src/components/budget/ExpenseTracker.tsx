@@ -27,6 +27,7 @@ export function ExpenseTracker() {
   const [categories, setCategories] = useState<BudgetCategory[]>([]);
   const [loading, setLoading] = useState(true);
   const [hasProfile, setHasProfile] = useState(false);
+  const [hasChecked, setHasChecked] = useState(false);
   const [showAddForm, setShowAddForm] = useState(false);
   const [filterCategory, setFilterCategory] = useState<string>('all');
   const [searchTerm, setSearchTerm] = useState('');
@@ -39,10 +40,13 @@ export function ExpenseTracker() {
   });
 
   useEffect(() => {
-    if (supabaseUser) {
+    if (supabaseUser && !hasChecked) {
       checkAndLoadData();
+      setHasChecked(true);
+    } else if (!supabaseUser) {
+      setHasChecked(false);
     }
-  }, [supabaseUser]);
+  }, [supabaseUser?.id]);
 
   const checkAndLoadData = async () => {
     if (!supabaseUser) {

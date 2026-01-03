@@ -39,6 +39,7 @@ export function AnalyticsView() {
   const [trendData, setTrendData] = useState<TrendData[]>([]);
   const [loading, setLoading] = useState(true);
   const [hasProfile, setHasProfile] = useState(false);
+  const [hasChecked, setHasChecked] = useState(false);
   const [stats, setStats] = useState({
     totalSpent: 0,
     totalBudget: 0,
@@ -47,10 +48,19 @@ export function AnalyticsView() {
   });
 
   useEffect(() => {
-    if (supabaseUser) {
+    if (supabaseUser && !hasChecked) {
       checkAndLoadAnalytics();
+      setHasChecked(true);
+    } else if (!supabaseUser) {
+      setHasChecked(false);
     }
-  }, [supabaseUser, timeRange]);
+  }, [supabaseUser?.id]);
+
+  useEffect(() => {
+    if (hasProfile && supabaseUser) {
+      loadAnalytics();
+    }
+  }, [timeRange]);
 
   const checkAndLoadAnalytics = async () => {
     if (!supabaseUser) {
