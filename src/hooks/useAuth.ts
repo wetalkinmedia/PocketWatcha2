@@ -47,12 +47,16 @@ export function useAuth() {
 
       // Listen for auth changes
       const { data } = supabase.auth.onAuthStateChange((event, session) => {
-        console.log('[useAuth] Auth state change:', event, 'User ID:', session?.user?.id || 'none');
+        // Ignore TOKEN_REFRESHED events to prevent unnecessary reloads
+        if (event === 'TOKEN_REFRESHED') {
+          return;
+        }
+
         (async () => {
           if (session?.user) {
             await loadUserProfile(session.user);
           } else {
-            console.log('[useAuth] No session, setting unauthenticated state');
+            loadedUserIdRef.current = null;
             setAuthState({
               isAuthenticated: false,
               user: null,
@@ -72,14 +76,19 @@ export function useAuth() {
   }, []);
 
   const loadUserProfile = async (supabaseUser: User) => {
-    // Skip if we already loaded this user
+    // Skip if we already loaded this user AND auth state is properly set
     if (loadedUserIdRef.current === supabaseUser.id) {
-      console.log('[useAuth] SKIPPING - User profile already loaded for:', supabaseUser.id);
+      // Ensure loading is false without triggering unnecessary updates
+      setAuthState(prev => {
+        if (prev.loading === false && prev.isAuthenticated && prev.supabaseUser?.id === supabaseUser.id) {
+          return prev; // Return same reference to prevent re-render
+        }
+        return { ...prev, loading: false };
+      });
       return;
     }
 
     try {
-      console.log('[useAuth] Loading profile for user:', supabaseUser.id);
       loadedUserIdRef.current = supabaseUser.id;
 
       const { data: profile, error } = await supabase
@@ -89,19 +98,18 @@ export function useAuth() {
         .maybeSingle();
 
       if (error) {
-        console.error('[useAuth] Error loading profile:', error);
+        console.error('Error loading profile:', error);
         loadedUserIdRef.current = null;
-        setAuthState(prev => ({
+        setAuthState({
           isAuthenticated: false,
           user: null,
           supabaseUser,
           loading: false
-        }));
+        });
         return;
       }
 
       if (profile) {
-        console.log('[useAuth] Profile loaded successfully');
 
         let isAdmin = false;
         try {
@@ -115,30 +123,25 @@ export function useAuth() {
             isAdmin = !!adminCheck;
           }
         } catch (adminError) {
-          console.warn('[useAuth] Admin check failed, defaulting to non-admin:', adminError);
+          console.warn('Admin check failed, defaulting to non-admin:', adminError);
         }
 
-        console.log('[useAuth] Setting auth state with profile data');
-        setAuthState(prev => {
-          const newState = {
-            isAuthenticated: true,
-            user: {
-              firstName: profile.first_name,
-              lastName: profile.last_name,
-              age: profile.age,
-              salary: profile.salary,
-              zipCode: profile.zip_code,
-              relationshipStatus: profile.relationship_status,
-              occupation: profile.occupation,
-              phoneNumber: profile.phone_number,
-              email: supabaseUser.email || '',
-              isAdmin
-            },
-            supabaseUser,
-            loading: false
-          };
-          console.log('[useAuth] Auth state updated');
-          return newState;
+        setAuthState({
+          isAuthenticated: true,
+          user: {
+            firstName: profile.first_name,
+            lastName: profile.last_name,
+            age: profile.age,
+            salary: profile.salary,
+            zipCode: profile.zip_code,
+            relationshipStatus: profile.relationship_status,
+            occupation: profile.occupation,
+            phoneNumber: profile.phone_number,
+            email: supabaseUser.email || '',
+            isAdmin
+          },
+          supabaseUser,
+          loading: false
         });
       } else {
         console.warn('No profile found, will retry in a moment...');

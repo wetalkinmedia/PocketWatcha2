@@ -49,11 +49,8 @@ export function Dashboard() {
     totalHoursLearned: 0
   });
   const [loading, setLoading] = useState(true);
-  const loadCountRef = React.useRef(0);
 
   useEffect(() => {
-    loadCountRef.current++;
-    console.log(`[Dashboard] useEffect #${loadCountRef.current}, user ID:`, supabaseUser?.id);
     if (supabaseUser) {
       loadDashboardData();
     }

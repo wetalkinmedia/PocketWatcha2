@@ -32,18 +32,13 @@ export function BudgetAllocator() {
   const [saveMessage, setSaveMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
   const [loading, setLoading] = useState(true);
   const [hasProfile, setHasProfile] = useState(false);
-  const effectCountRef = useRef(0);
 
   useEffect(() => {
-    effectCountRef.current++;
-    console.log(`[BudgetAllocator] useEffect #${effectCountRef.current}, user ID:`, supabaseUser?.id, 'hasChecked:', hasCheckedRef.current);
-
     if (!supabaseUser) {
       return;
     }
 
     if (hasCheckedRef.current) {
-      console.log('[BudgetAllocator] Already checked, returning early');
       return;
     }
 
