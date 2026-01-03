@@ -93,13 +93,20 @@ export function useAuth() {
       if (profile) {
         console.log('Profile loaded successfully:', profile);
 
-        const { data: adminCheck } = await supabase
-          .from('admin_users')
-          .select('user_id')
-          .eq('user_id', supabaseUser.id)
-          .maybeSingle();
+        let isAdmin = false;
+        try {
+          const { data: adminCheck, error: adminError } = await supabase
+            .from('admin_users')
+            .select('user_id')
+            .eq('user_id', supabaseUser.id)
+            .maybeSingle();
 
-        const isAdmin = !!adminCheck;
+          if (!adminError) {
+            isAdmin = !!adminCheck;
+          }
+        } catch (adminError) {
+          console.warn('Admin check failed, defaulting to non-admin:', adminError);
+        }
         console.log('Admin check result:', isAdmin);
 
         setAuthState({
@@ -131,13 +138,20 @@ export function useAuth() {
         if (retryProfile) {
           console.log('Profile loaded on retry:', retryProfile);
 
-          const { data: adminCheck } = await supabase
-            .from('admin_users')
-            .select('user_id')
-            .eq('user_id', supabaseUser.id)
-            .maybeSingle();
+          let isAdmin = false;
+          try {
+            const { data: adminCheck, error: adminError } = await supabase
+              .from('admin_users')
+              .select('user_id')
+              .eq('user_id', supabaseUser.id)
+              .maybeSingle();
 
-          const isAdmin = !!adminCheck;
+            if (!adminError) {
+              isAdmin = !!adminCheck;
+            }
+          } catch (adminError) {
+            console.warn('Admin check failed, defaulting to non-admin:', adminError);
+          }
           console.log('Admin check result:', isAdmin);
 
           setAuthState({
