@@ -34,12 +34,16 @@ export function BudgetAllocator() {
   const [hasProfile, setHasProfile] = useState(false);
 
   useEffect(() => {
-    if (supabaseUser && !hasCheckedRef.current) {
-      hasCheckedRef.current = true;
-      checkAndLoadData();
-    } else if (!supabaseUser) {
-      hasCheckedRef.current = false;
+    if (!supabaseUser) {
+      return;
     }
+
+    if (hasCheckedRef.current) {
+      return;
+    }
+
+    hasCheckedRef.current = true;
+    checkAndLoadData();
   }, [supabaseUser?.id]);
 
   const checkAndLoadData = async () => {

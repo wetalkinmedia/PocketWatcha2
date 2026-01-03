@@ -46,17 +46,17 @@ export function BudgetOverview({ onNavigate }: BudgetOverviewProps) {
   });
 
   useEffect(() => {
-    const initData = async () => {
-      if (supabaseUser && !hasCheckedRef.current) {
-        hasCheckedRef.current = true;
-        await checkProfileCompletion();
-      } else if (!supabaseUser) {
-        hasCheckedRef.current = false;
-        setLoading(false);
-      }
-    };
+    if (!supabaseUser) {
+      setLoading(false);
+      return;
+    }
 
-    initData();
+    if (hasCheckedRef.current) {
+      return;
+    }
+
+    hasCheckedRef.current = true;
+    checkProfileCompletion();
   }, [supabaseUser?.id]);
 
   const checkProfileCompletion = async () => {

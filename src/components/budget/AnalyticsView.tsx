@@ -48,12 +48,16 @@ export function AnalyticsView() {
   });
 
   useEffect(() => {
-    if (supabaseUser && !hasCheckedRef.current) {
-      hasCheckedRef.current = true;
-      checkAndLoadAnalytics();
-    } else if (!supabaseUser) {
-      hasCheckedRef.current = false;
+    if (!supabaseUser) {
+      return;
     }
+
+    if (hasCheckedRef.current) {
+      return;
+    }
+
+    hasCheckedRef.current = true;
+    checkAndLoadAnalytics();
   }, [supabaseUser?.id]);
 
   useEffect(() => {

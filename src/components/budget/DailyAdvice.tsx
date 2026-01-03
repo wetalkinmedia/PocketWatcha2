@@ -19,12 +19,16 @@ export function DailyAdvice() {
   const [hasProfile, setHasProfile] = useState(false);
 
   useEffect(() => {
-    if (supabaseUser && !hasCheckedRef.current) {
-      hasCheckedRef.current = true;
-      checkAndGenerateAdvice();
-    } else if (!supabaseUser) {
-      hasCheckedRef.current = false;
+    if (!supabaseUser) {
+      return;
     }
+
+    if (hasCheckedRef.current) {
+      return;
+    }
+
+    hasCheckedRef.current = true;
+    checkAndGenerateAdvice();
   }, [supabaseUser?.id]);
 
   const checkAndGenerateAdvice = async () => {
