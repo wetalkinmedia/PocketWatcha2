@@ -32,10 +32,11 @@ interface BudgetOverviewProps {
 }
 
 export function BudgetOverview({ onNavigate }: BudgetOverviewProps) {
-  const { supabaseUser } = useAuth();
+  const { supabaseUser, user } = useAuth();
   const [budgets, setBudgets] = useState<UserBudget[]>([]);
   const [currentTip, setCurrentTip] = useState<FinancialTip | null>(null);
   const [loading, setLoading] = useState(true);
+  const [hasProfile, setHasProfile] = useState(false);
   const [stats, setStats] = useState({
     todayRemaining: 0,
     weeklySpending: 0,
@@ -46,10 +47,7 @@ export function BudgetOverview({ onNavigate }: BudgetOverviewProps) {
   useEffect(() => {
     const initData = async () => {
       if (supabaseUser) {
-        await Promise.all([
-          loadBudgetData(),
-          loadDailyTip()
-        ]);
+        await checkProfileCompletion();
       } else {
         setLoading(false);
       }
@@ -57,6 +55,45 @@ export function BudgetOverview({ onNavigate }: BudgetOverviewProps) {
 
     initData();
   }, [supabaseUser]);
+
+  const checkProfileCompletion = async () => {
+    if (!supabaseUser) {
+      setHasProfile(false);
+      setLoading(false);
+      return;
+    }
+
+    try {
+      const { data, error } = await supabase
+        .from('user_profiles')
+        .select('*')
+        .eq('id', supabaseUser.id)
+        .maybeSingle();
+
+      if (error) throw error;
+
+      const profileComplete = data &&
+        data.first_name &&
+        data.last_name &&
+        data.age > 0 &&
+        data.annual_salary > 0;
+
+      setHasProfile(!!profileComplete);
+
+      if (profileComplete) {
+        await Promise.all([
+          loadBudgetData(),
+          loadDailyTip()
+        ]);
+      } else {
+        setLoading(false);
+      }
+    } catch (error) {
+      console.error('Error checking profile:', error);
+      setHasProfile(false);
+      setLoading(false);
+    }
+  };
 
   const loadBudgetData = async () => {
     if (!supabaseUser) {
@@ -176,6 +213,36 @@ export function BudgetOverview({ onNavigate }: BudgetOverviewProps) {
     return (
       <div className="flex items-center justify-center h-64">
         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+      </div>
+    );
+  }
+
+  if (!hasProfile) {
+    return (
+      <div className="max-w-2xl mx-auto mt-12">
+        <div className="bg-gradient-to-br from-blue-50 to-purple-50 border-2 border-blue-200 rounded-2xl p-8 text-center shadow-lg">
+          <div className="bg-blue-500 text-white w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
+            <DollarSign size={32} />
+          </div>
+          <h2 className="text-2xl font-bold text-gray-900 mb-3">
+            Complete Your Profile First
+          </h2>
+          <p className="text-gray-700 mb-6 text-lg">
+            To use the budget tools, please complete your profile with your income and personal details.
+          </p>
+          <div className="bg-white rounded-lg p-4 mb-6 text-left">
+            <p className="font-semibold text-gray-900 mb-2">Required information:</p>
+            <ul className="space-y-1 text-gray-700">
+              <li>✓ First and Last Name</li>
+              <li>✓ Age</li>
+              <li>✓ Annual Salary</li>
+              <li>✓ Other profile details</li>
+            </ul>
+          </div>
+          <p className="text-sm text-gray-600">
+            Click your profile icon in the header to complete your profile setup.
+          </p>
+        </div>
       </div>
     );
   }
