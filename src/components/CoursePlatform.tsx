@@ -507,8 +507,8 @@ export function CoursePlatform({ isOpen, onClose }: CoursePlatformProps) {
     if (!selectedLesson) return null;
 
     return (
-      <div className="p-6 max-w-4xl mx-auto">
-        <div className="flex items-center gap-4 mb-6">
+      <div className="h-full flex flex-col">
+        <div className="flex items-center gap-4 px-6 py-4 bg-gray-50 border-b border-gray-200 flex-shrink-0">
           <button
             onClick={() => setSelectedLesson(null)}
             className="p-2 hover:bg-gray-100 rounded-full transition-colors"
@@ -538,10 +538,10 @@ export function CoursePlatform({ isOpen, onClose }: CoursePlatformProps) {
           </button>
         </div>
 
-        <div className="bg-white rounded-xl shadow-lg border border-gray-200 overflow-hidden">
-          <div className="flex h-[calc(100vh-250px)]">
-            {/* Left Panel - Content */}
-            <div className="w-1/2 overflow-y-auto border-r border-gray-200 p-8">
+        <div className="flex-1 flex overflow-hidden">
+          {/* Left Panel - Content */}
+          <div className="w-1/2 overflow-y-auto border-r border-gray-200 bg-white">
+            <div className="p-8">
               <div className="prose prose-lg max-w-none">
                 {selectedLesson.contentBlocks?.map((block, index) => (
                   <div key={block.id || index} className="mb-6">
@@ -603,110 +603,110 @@ export function CoursePlatform({ isOpen, onClose }: CoursePlatformProps) {
                 ))}
               </div>
             </div>
-
-            {/* Right Panel - Video */}
-            <div className="w-1/2 bg-black flex flex-col">
-              {selectedLesson.contentBlocks?.find(block => block.type === 'video') ? (
-                <>
-                  <div className="bg-yellow-600 text-white px-4 py-2 text-sm font-semibold text-center">
-                    📹 Demo Video - Replace with actual course video URL
-                  </div>
-                  <div className="flex-1 flex items-center justify-center p-8">
-                    <video
-                      controls
-                      className="w-full h-full rounded-lg"
-                      src={selectedLesson.contentBlocks.find(block => block.type === 'video')?.content.url}
-                    />
-                  </div>
-                </>
-              ) : (
-                <div className="flex-1 flex items-center justify-center text-gray-400 p-8">
-                  <div className="text-center">
-                    <Play size={64} className="mx-auto mb-4 opacity-50" />
-                    <p>No video available for this lesson</p>
-                  </div>
-                </div>
-              )}
-
-              {/* Video Chapters */}
-              {selectedLesson.contentBlocks?.find(block => block.type === 'video' && block.content.chapters) && (
-                <div className="bg-gray-900 p-4 max-h-48 overflow-y-auto">
-                  <h4 className="text-white font-semibold mb-3 text-sm">Chapters</h4>
-                  <div className="space-y-2">
-                    {selectedLesson.contentBlocks
-                      .find(block => block.type === 'video')
-                      ?.content.chapters?.map((chapter: any, idx: number) => (
-                        <button
-                          key={chapter.id}
-                          onClick={() => {
-                            const video = document.querySelector('video');
-                            if (video) video.currentTime = chapter.startTime;
-                          }}
-                          className="w-full text-left px-3 py-2 rounded bg-gray-800 hover:bg-gray-700 transition-colors"
-                        >
-                          <div className="flex items-start gap-2">
-                            <span className="text-blue-400 text-xs font-semibold mt-0.5">
-                              {idx + 1}
-                            </span>
-                            <div className="flex-1 min-w-0">
-                              <div className="text-white text-sm font-medium truncate">
-                                {chapter.title}
-                              </div>
-                              <div className="text-gray-400 text-xs mt-1">
-                                {Math.floor(chapter.startTime / 60)}:{String(chapter.startTime % 60).padStart(2, '0')}
-                              </div>
-                            </div>
-                          </div>
-                        </button>
-                      ))}
-                  </div>
-                </div>
-              )}
-            </div>
           </div>
 
-          <div className="bg-gray-50 p-6 border-t border-gray-200">
-            <div className="space-y-4">
-              <div className="flex items-center justify-between">
-                <div className="text-sm text-gray-600">
-                  {selectedLesson.contentBlocks?.some(block => block.type === 'quiz')
-                    ? `Assessment ${selectedModule?.lessons.findIndex(l => l.id === selectedLesson.id)! + 1} of ${selectedModule?.lessons.length}`
-                    : `Lesson ${selectedModule?.lessons.findIndex(l => l.id === selectedLesson.id)! + 1} of ${selectedModule?.lessons.length}`
-                  }
+          {/* Right Panel - Video */}
+          <div className="w-1/2 bg-black flex flex-col overflow-hidden">
+              {selectedLesson.contentBlocks?.find(block => block.type === 'video') ? (
+              <>
+                <div className="bg-yellow-600 text-white px-4 py-2 text-sm font-semibold text-center flex-shrink-0">
+                  📹 Demo Video - Replace with actual course video URL
                 </div>
-                {!selectedLesson.completed && (
-                  <button
-                    onClick={() => handleLessonComplete(selectedLesson.id)}
-                    className="bg-green-600 text-white px-6 py-2 rounded-lg hover:bg-green-700 transition-colors flex items-center gap-2"
-                  >
-                    <CheckCircle size={16} />
-                    Mark Complete
-                  </button>
-                )}
+                <div className="flex-1 flex items-center justify-center p-8 overflow-hidden">
+                  <video
+                    controls
+                    className="w-full h-full rounded-lg"
+                    src={selectedLesson.contentBlocks.find(block => block.type === 'video')?.content.url}
+                  />
+                </div>
+              </>
+            ) : (
+              <div className="flex-1 flex items-center justify-center text-gray-400 p-8">
+                <div className="text-center">
+                  <Play size={64} className="mx-auto mb-4 opacity-50" />
+                  <p>No video available for this lesson</p>
+                </div>
               </div>
+            )}
 
-              {selectedModule?.lessons.find((_, index) => index > selectedModule.lessons.findIndex(l => l.id === selectedLesson.id)) && (
+            {/* Video Chapters */}
+            {selectedLesson.contentBlocks?.find(block => block.type === 'video' && block.content.chapters) && (
+              <div className="bg-gray-900 p-4 max-h-48 overflow-y-auto flex-shrink-0">
+                <h4 className="text-white font-semibold mb-3 text-sm">Chapters</h4>
+                <div className="space-y-2">
+                  {selectedLesson.contentBlocks
+                    .find(block => block.type === 'video')
+                    ?.content.chapters?.map((chapter: any, idx: number) => (
+                      <button
+                        key={chapter.id}
+                        onClick={() => {
+                          const video = document.querySelector('video');
+                          if (video) video.currentTime = chapter.startTime;
+                        }}
+                        className="w-full text-left px-3 py-2 rounded bg-gray-800 hover:bg-gray-700 transition-colors"
+                      >
+                        <div className="flex items-start gap-2">
+                          <span className="text-blue-400 text-xs font-semibold mt-0.5">
+                            {idx + 1}
+                          </span>
+                          <div className="flex-1 min-w-0">
+                            <div className="text-white text-sm font-medium truncate">
+                              {chapter.title}
+                            </div>
+                            <div className="text-gray-400 text-xs mt-1">
+                              {Math.floor(chapter.startTime / 60)}:{String(chapter.startTime % 60).padStart(2, '0')}
+                            </div>
+                          </div>
+                        </div>
+                      </button>
+                    ))}
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+
+        <div className="bg-gray-50 p-6 border-t border-gray-200 flex-shrink-0">
+          <div className="space-y-4">
+            <div className="flex items-center justify-between">
+              <div className="text-sm text-gray-600">
+                {selectedLesson.contentBlocks?.some(block => block.type === 'quiz')
+                  ? `Assessment ${selectedModule?.lessons.findIndex(l => l.id === selectedLesson.id)! + 1} of ${selectedModule?.lessons.length}`
+                  : `Lesson ${selectedModule?.lessons.findIndex(l => l.id === selectedLesson.id)! + 1} of ${selectedModule?.lessons.length}`
+                }
+              </div>
+              {!selectedLesson.completed && (
                 <button
-                  onClick={() => {
-                    const currentIndex = selectedModule?.lessons.findIndex(l => l.id === selectedLesson.id) || 0;
-                    const nextLesson = selectedModule?.lessons[currentIndex + 1];
-                    if (nextLesson) {
-                      setSelectedLesson(nextLesson);
-                    }
-                  }}
-                  className="w-full bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors flex items-center justify-center gap-2 font-semibold"
+                  onClick={() => handleLessonComplete(selectedLesson.id)}
+                  className="bg-green-600 text-white px-6 py-2 rounded-lg hover:bg-green-700 transition-colors flex items-center gap-2"
                 >
-                  {(() => {
-                    const currentIndex = selectedModule?.lessons.findIndex(l => l.id === selectedLesson.id) || 0;
-                    const nextLesson = selectedModule?.lessons[currentIndex + 1];
-                    return nextLesson?.contentBlocks?.some(block => block.type === 'quiz')
-                      ? 'Start Assessment'
-                      : 'Next Lesson';
-                  })()}
-                  <ArrowRight size={16} />
+                  <CheckCircle size={16} />
+                  Mark Complete
                 </button>
               )}
             </div>
+
+            {selectedModule?.lessons.find((_, index) => index > selectedModule.lessons.findIndex(l => l.id === selectedLesson.id)) && (
+              <button
+                onClick={() => {
+                  const currentIndex = selectedModule?.lessons.findIndex(l => l.id === selectedLesson.id) || 0;
+                  const nextLesson = selectedModule?.lessons[currentIndex + 1];
+                  if (nextLesson) {
+                    setSelectedLesson(nextLesson);
+                  }
+                }}
+                className="w-full bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors flex items-center justify-center gap-2 font-semibold"
+              >
+                {(() => {
+                  const currentIndex = selectedModule?.lessons.findIndex(l => l.id === selectedLesson.id) || 0;
+                  const nextLesson = selectedModule?.lessons[currentIndex + 1];
+                  return nextLesson?.contentBlocks?.some(block => block.type === 'quiz')
+                    ? 'Start Assessment'
+                    : 'Next Lesson';
+                })()}
+                <ArrowRight size={16} />
+              </button>
+            )}
           </div>
         </div>
       </div>
@@ -715,7 +715,7 @@ export function CoursePlatform({ isOpen, onClose }: CoursePlatformProps) {
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-      <div className="bg-gray-50 w-full h-full overflow-y-auto">
+      <div className={`bg-gray-50 w-full h-full ${selectedLesson ? 'overflow-hidden' : 'overflow-y-auto'}`}>
         {selectedLesson ? renderLessonDetail() :
          selectedModule ? renderModuleDetail() :
          selectedCourse ? renderCourseDetail() :
