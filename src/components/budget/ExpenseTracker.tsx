@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Plus, Trash2, Calendar, Tag, DollarSign, Search, Filter } from 'lucide-react';
 import { supabase } from '../../lib/supabase';
 import { useAuth } from '../../hooks/useAuth';
@@ -22,8 +22,7 @@ interface Expense {
 }
 
 export function ExpenseTracker() {
-  const { supabaseUser } = useAuth();
-  const hasCheckedRef = useRef(false);
+  const { supabaseUser, user } = useAuth();
   const [expenses, setExpenses] = useState<Expense[]>([]);
   const [categories, setCategories] = useState<BudgetCategory[]>([]);
   const [loading, setLoading] = useState(true);
@@ -41,16 +40,13 @@ export function ExpenseTracker() {
 
   useEffect(() => {
     if (!supabaseUser?.id) {
+      setLoading(false);
+      setHasProfile(false);
       return;
     }
 
-    if (hasCheckedRef.current) {
-      return;
-    }
-
-    hasCheckedRef.current = true;
     checkAndLoadData();
-  }, [supabaseUser?.id]);
+  }, [supabaseUser?.id, user]);
 
   const checkAndLoadData = async () => {
     if (!supabaseUser) {
