@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useCallback } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
   BarChart,
   Bar,
@@ -64,7 +64,7 @@ export function AnalyticsView() {
     if (hasProfile && supabaseUser && hasCheckedRef.current) {
       loadAnalytics();
     }
-  }, [hasProfile, loadAnalytics]);
+  }, [hasProfile, timeRange]);
 
   const checkAndLoadAnalytics = async () => {
     if (!supabaseUser) {
@@ -105,7 +105,7 @@ export function AnalyticsView() {
     }
   };
 
-  const loadAnalytics = useCallback(async () => {
+  const loadAnalytics = async () => {
     if (!supabaseUser) return;
 
     try {
@@ -206,7 +206,7 @@ export function AnalyticsView() {
     } finally {
       setLoading(false);
     }
-  }, [supabaseUser, timeRange]);
+  };
 
   const formatDate = (dateStr: string) => {
     const date = new Date(dateStr + 'T00:00:00');
