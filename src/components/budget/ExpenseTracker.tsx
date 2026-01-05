@@ -22,7 +22,7 @@ interface Expense {
 }
 
 export function ExpenseTracker() {
-  const { supabaseUser, user } = useAuth();
+  const { supabaseUser } = useAuth();
   const [expenses, setExpenses] = useState<Expense[]>([]);
   const [categories, setCategories] = useState<BudgetCategory[]>([]);
   const [loading, setLoading] = useState(true);
@@ -46,7 +46,7 @@ export function ExpenseTracker() {
     }
 
     checkAndLoadData();
-  }, [supabaseUser?.id, user]);
+  }, [supabaseUser?.id]);
 
   const checkAndLoadData = async () => {
     if (!supabaseUser) {

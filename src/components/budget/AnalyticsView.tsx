@@ -33,7 +33,7 @@ interface TrendData {
 }
 
 export function AnalyticsView() {
-  const { supabaseUser, user } = useAuth();
+  const { supabaseUser } = useAuth();
   const [timeRange, setTimeRange] = useState<'week' | 'month' | 'year'>('month');
   const [categoryData, setCategoryData] = useState<CategoryData[]>([]);
   const [trendData, setTrendData] = useState<TrendData[]>([]);
@@ -54,13 +54,13 @@ export function AnalyticsView() {
     }
 
     checkAndLoadAnalytics();
-  }, [supabaseUser?.id, user]);
+  }, [supabaseUser?.id]);
 
   useEffect(() => {
     if (hasProfile && supabaseUser?.id && !loading) {
       loadAnalytics();
     }
-  }, [timeRange, hasProfile, supabaseUser?.id]);
+  }, [timeRange]);
 
   const checkAndLoadAnalytics = async () => {
     if (!supabaseUser) {

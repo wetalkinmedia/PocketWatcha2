@@ -12,7 +12,7 @@ interface Advice {
 }
 
 export function DailyAdvice() {
-  const { supabaseUser, user } = useAuth();
+  const { supabaseUser } = useAuth();
   const [advice, setAdvice] = useState<Advice[]>([]);
   const [loading, setLoading] = useState(true);
   const [hasProfile, setHasProfile] = useState(false);
@@ -25,7 +25,7 @@ export function DailyAdvice() {
     }
 
     checkAndGenerateAdvice();
-  }, [supabaseUser?.id, user]);
+  }, [supabaseUser?.id]);
 
   const checkAndGenerateAdvice = async () => {
     if (!supabaseUser) {

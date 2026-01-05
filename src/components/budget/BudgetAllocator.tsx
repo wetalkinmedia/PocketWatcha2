@@ -22,7 +22,7 @@ interface BudgetAllocation {
 }
 
 export function BudgetAllocator() {
-  const { supabaseUser, user } = useAuth();
+  const { supabaseUser } = useAuth();
   const [categories, setCategories] = useState<BudgetCategory[]>([]);
   const [totalIncome, setTotalIncome] = useState<number>(0);
   const [incomeInputValue, setIncomeInputValue] = useState<string>('0');
@@ -40,7 +40,7 @@ export function BudgetAllocator() {
     }
 
     checkAndLoadData();
-  }, [supabaseUser?.id, user]);
+  }, [supabaseUser?.id]);
 
   const checkAndLoadData = async () => {
     if (!supabaseUser) {

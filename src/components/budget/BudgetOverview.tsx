@@ -32,7 +32,7 @@ interface BudgetOverviewProps {
 }
 
 export function BudgetOverview({ onNavigate }: BudgetOverviewProps) {
-  const { supabaseUser, user } = useAuth();
+  const { supabaseUser } = useAuth();
   const [budgets, setBudgets] = useState<UserBudget[]>([]);
   const [currentTip, setCurrentTip] = useState<FinancialTip | null>(null);
   const [loading, setLoading] = useState(true);
@@ -52,7 +52,7 @@ export function BudgetOverview({ onNavigate }: BudgetOverviewProps) {
     }
 
     checkProfileCompletion();
-  }, [supabaseUser?.id, user]);
+  }, [supabaseUser?.id]);
 
   const checkProfileCompletion = async () => {
     if (!supabaseUser) {
