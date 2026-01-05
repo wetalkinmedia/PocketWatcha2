@@ -277,18 +277,30 @@ function App() {
   };
 
   const handleCoursesClick = () => {
+    setShowDashboard(false);
+    setShowAdminDashboard(false);
+    setShowCourseAuthoring(false);
     setShowCoursePlatform(true);
   };
 
   const handleAuthoringClick = () => {
+    setShowDashboard(false);
+    setShowAdminDashboard(false);
+    setShowCoursePlatform(false);
     setShowCourseAuthoring(true);
   };
 
   const handleDashboardClick = () => {
+    setShowCoursePlatform(false);
+    setShowCourseAuthoring(false);
+    setShowAdminDashboard(false);
     setShowDashboard(true);
   };
 
   const handleAdminClick = () => {
+    setShowCoursePlatform(false);
+    setShowCourseAuthoring(false);
+    setShowDashboard(false);
     setShowAdminDashboard(true);
   };
 
