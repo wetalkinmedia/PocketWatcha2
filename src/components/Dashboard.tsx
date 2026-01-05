@@ -151,8 +151,9 @@ export function Dashboard() {
 
         {activeTab === 'finances' && (
           <div>
-            <div className="mb-6 overflow-x-auto">
-              <div className="flex gap-2 bg-white rounded-lg p-1 shadow-sm border border-gray-200 w-fit">
+            <div className="mb-6">
+              <div className="overflow-x-auto pb-2">
+                <div className="flex gap-2 bg-white rounded-lg p-1 shadow-sm border border-gray-200 w-fit min-w-full sm:min-w-0">
                 <button
                   onClick={() => setFinanceView('overview')}
                   className={`px-4 py-2 rounded-lg transition-all flex items-center gap-2 text-sm font-medium whitespace-nowrap ${
@@ -208,6 +209,7 @@ export function Dashboard() {
                   <BarChart3 size={16} />
                   Analytics
                 </button>
+                </div>
               </div>
             </div>
 
@@ -239,9 +241,9 @@ export function Dashboard() {
             <p className="text-sm text-gray-600">Courses Completed</p>
           </div>
 
-          <div className="bg-white rounded-xl shadow-md p-6 border-l-4 border-purple-500">
+          <div className="bg-white rounded-xl shadow-md p-6 border-l-4 border-teal-500">
             <div className="flex items-center justify-between mb-2">
-              <CheckCircle className="text-purple-500" size={24} />
+              <CheckCircle className="text-teal-500" size={24} />
               <span className="text-2xl font-bold text-gray-900">{stats.totalLessonsCompleted}</span>
             </div>
             <p className="text-sm text-gray-600">Lessons Completed</p>
@@ -362,7 +364,7 @@ export function Dashboard() {
           </div>
 
           <div className="space-y-6">
-            <div className="bg-gradient-to-br from-blue-600 to-purple-600 rounded-xl shadow-md p-6 text-white">
+            <div className="bg-gradient-to-br from-blue-600 to-cyan-600 rounded-xl shadow-md p-6 text-white">
               <h3 className="text-lg font-bold mb-4">Learning Streak</h3>
               <div className="text-center">
                 <div className="text-5xl font-bold mb-2">{stats.currentStreak}</div>

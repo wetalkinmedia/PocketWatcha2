@@ -249,7 +249,7 @@ export function AnalyticsView() {
   if (!hasProfile) {
     return (
       <div className="max-w-2xl mx-auto mt-12">
-        <div className="bg-gradient-to-br from-blue-50 to-purple-50 border-2 border-blue-200 rounded-2xl p-8 text-center shadow-lg">
+        <div className="bg-gradient-to-br from-blue-50 to-cyan-50 border-2 border-blue-200 rounded-2xl p-8 text-center shadow-lg">
           <div className="bg-blue-500 text-white w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
             <PieChartIcon size={32} />
           </div>
@@ -329,7 +329,7 @@ export function AnalyticsView() {
         <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-200">
           <div className="flex items-center justify-between mb-2">
             <span className="text-gray-600 text-sm font-medium">Total Budget</span>
-            <Calendar className="text-purple-500" size={20} />
+            <Calendar className="text-teal-500" size={20} />
           </div>
           <div className="text-2xl font-bold text-gray-900">${stats.totalBudget.toFixed(2)}</div>
         </div>
