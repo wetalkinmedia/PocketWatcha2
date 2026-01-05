@@ -61,10 +61,10 @@ export function AnalyticsView() {
   }, [supabaseUser?.id]);
 
   useEffect(() => {
-    if (hasProfile && supabaseUser?.id && hasCheckedRef.current) {
+    if (hasProfile && supabaseUser?.id && hasCheckedRef.current && !loading) {
       loadAnalytics();
     }
-  }, [hasProfile, timeRange, supabaseUser?.id]);
+  }, [timeRange]);
 
   const checkAndLoadAnalytics = async () => {
     if (!supabaseUser) {

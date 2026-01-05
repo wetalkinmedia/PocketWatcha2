@@ -77,14 +77,14 @@ export function useAuth() {
 
   const loadUserProfile = async (supabaseUser: User) => {
     // Skip if we already loaded this user AND auth state is properly set
+    if (loadedUserIdRef.current === supabaseUser.id && authState.isAuthenticated && !authState.loading) {
+      console.log('Profile already loaded for user:', supabaseUser.id);
+      return;
+    }
+
+    // Prevent concurrent profile loads
     if (loadedUserIdRef.current === supabaseUser.id) {
-      // Ensure loading is false without triggering unnecessary updates
-      setAuthState(prev => {
-        if (prev.loading === false && prev.isAuthenticated && prev.supabaseUser?.id === supabaseUser.id) {
-          return prev; // Return same reference to prevent re-render
-        }
-        return { ...prev, loading: false };
-      });
+      console.log('Profile load already in progress for user:', supabaseUser.id);
       return;
     }
 
@@ -359,10 +359,10 @@ export function useAuth() {
         return { success: false, message: `Profile update failed: ${error.message}` };
       }
 
-      // Reset the ref so profile will be reloaded on next auth state change
-      loadedUserIdRef.current = null;
-      // Reload the profile to ensure we have the latest data
-      await loadUserProfile(authState.supabaseUser);
+      // Reload the profile to ensure we have the latest data (without resetting ref)
+      if (authState.supabaseUser) {
+        await loadUserProfile(authState.supabaseUser);
+      }
 
       return { success: true, message: 'Profile updated successfully!' };
     } catch (error: any) {
