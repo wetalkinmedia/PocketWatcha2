@@ -47,8 +47,6 @@ export function useAuth() {
 
       // Listen for auth changes
       const { data } = supabase.auth.onAuthStateChange((event, session) => {
-        console.log('Auth state change event:', event, 'has session:', !!session);
-
         // Ignore TOKEN_REFRESHED events to prevent unnecessary reloads
         if (event === 'TOKEN_REFRESHED') {
           return;
@@ -58,15 +56,13 @@ export function useAuth() {
           if (session?.user) {
             await loadUserProfile(session.user);
           } else {
-            if (event === 'SIGNED_OUT' || event === 'USER_DELETED') {
-              loadedUserIdRef.current = null;
-              setAuthState({
-                isAuthenticated: false,
-                user: null,
-                supabaseUser: null,
-                loading: false
-              });
-            }
+            loadedUserIdRef.current = null;
+            setAuthState({
+              isAuthenticated: false,
+              user: null,
+              supabaseUser: null,
+              loading: false
+            });
           }
         })();
       });
@@ -357,10 +353,14 @@ export function useAuth() {
         return { success: false, message: `Profile update failed: ${error.message}` };
       }
 
-      // Reload the profile to ensure we have the latest data (without resetting ref)
-      if (authState.supabaseUser) {
-        await loadUserProfile(authState.supabaseUser);
-      }
+      // Update local state with new profile data
+      setAuthState(prev => ({
+        ...prev,
+        user: {
+          ...prev.user!,
+          ...updatedProfile
+        }
+      }));
 
       return { success: true, message: 'Profile updated successfully!' };
     } catch (error: any) {
