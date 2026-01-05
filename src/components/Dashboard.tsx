@@ -51,7 +51,7 @@ export function Dashboard() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    if (supabaseUser) {
+    if (supabaseUser?.id) {
       loadDashboardData();
     }
   }, [supabaseUser?.id]);

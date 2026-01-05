@@ -40,7 +40,7 @@ export function ExpenseTracker() {
   });
 
   useEffect(() => {
-    if (!supabaseUser) {
+    if (!supabaseUser?.id) {
       return;
     }
 

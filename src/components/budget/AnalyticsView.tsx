@@ -48,7 +48,7 @@ export function AnalyticsView() {
   });
 
   useEffect(() => {
-    if (!supabaseUser) {
+    if (!supabaseUser?.id) {
       return;
     }
 
@@ -61,10 +61,10 @@ export function AnalyticsView() {
   }, [supabaseUser?.id]);
 
   useEffect(() => {
-    if (hasProfile && supabaseUser && hasCheckedRef.current) {
+    if (hasProfile && supabaseUser?.id && hasCheckedRef.current) {
       loadAnalytics();
     }
-  }, [hasProfile, timeRange]);
+  }, [hasProfile, timeRange, supabaseUser?.id]);
 
   const checkAndLoadAnalytics = async () => {
     if (!supabaseUser) {

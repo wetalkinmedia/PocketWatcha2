@@ -19,7 +19,7 @@ export function DailyAdvice() {
   const [hasProfile, setHasProfile] = useState(false);
 
   useEffect(() => {
-    if (!supabaseUser) {
+    if (!supabaseUser?.id) {
       return;
     }
 

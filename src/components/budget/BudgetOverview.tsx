@@ -46,7 +46,7 @@ export function BudgetOverview({ onNavigate }: BudgetOverviewProps) {
   });
 
   useEffect(() => {
-    if (!supabaseUser) {
+    if (!supabaseUser?.id) {
       setLoading(false);
       return;
     }
