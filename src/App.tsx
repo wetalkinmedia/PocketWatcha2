@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { Routes, Route } from 'react-router-dom';
+import { GraduationCap, Edit } from 'lucide-react';
 import { LoginPopup } from './components/LoginPopup';
 import { UserProfile } from './components/UserProfile';
 import { TestPanel } from './components/TestPanel';
