@@ -443,25 +443,65 @@ function App() {
 
         {showDashboard && (
           <div className="fixed inset-0 bg-white z-50 overflow-y-auto overflow-x-hidden">
+            <div className="sticky top-0 z-20 bg-white shadow-sm">
+              <div className="flex items-center justify-between p-4 border-b">
+                <button
+                  onClick={() => setShowDashboard(false)}
+                  className="bg-gray-100 px-4 py-2 rounded-lg hover:bg-gray-200 transition-colors"
+                >
+                  ← Back to Calculator
+                </button>
+                <div className="flex gap-2">
+                  <button
+                    onClick={handleCoursesClick}
+                    className="bg-blue-100 text-blue-700 px-4 py-2 rounded-lg hover:bg-blue-200 transition-colors flex items-center gap-2"
+                  >
+                    <GraduationCap size={16} />
+                    AI Courses
+                  </button>
+                  <button
+                    onClick={handleAuthoringClick}
+                    className="bg-green-100 text-green-700 px-4 py-2 rounded-lg hover:bg-green-200 transition-colors flex items-center gap-2"
+                  >
+                    <Edit size={16} />
+                    Create Course
+                  </button>
+                </div>
+              </div>
+            </div>
             <Dashboard />
-            <button
-              onClick={() => setShowDashboard(false)}
-              className="fixed top-4 right-4 bg-white px-4 py-2 rounded-lg shadow-lg hover:bg-gray-100 transition-colors z-10"
-            >
-              ← Back to Calculator
-            </button>
           </div>
         )}
 
         {showAdminDashboard && (
           <div className="fixed inset-0 bg-white z-50 overflow-y-auto overflow-x-hidden">
+            <div className="sticky top-0 z-20 bg-white shadow-sm">
+              <div className="flex items-center justify-between p-4 border-b">
+                <button
+                  onClick={() => setShowAdminDashboard(false)}
+                  className="bg-gray-100 px-4 py-2 rounded-lg hover:bg-gray-200 transition-colors"
+                >
+                  ← Back to Calculator
+                </button>
+                <div className="flex gap-2">
+                  <button
+                    onClick={handleCoursesClick}
+                    className="bg-blue-100 text-blue-700 px-4 py-2 rounded-lg hover:bg-blue-200 transition-colors flex items-center gap-2"
+                  >
+                    <GraduationCap size={16} />
+                    AI Courses
+                  </button>
+                  <button
+                    onClick={handleAuthoringClick}
+                    className="bg-green-100 text-green-700 px-4 py-2 rounded-lg hover:bg-green-200 transition-colors flex items-center gap-2"
+                  >
+                    <Edit size={16} />
+                    Create Course
+                  </button>
+                </div>
+              </div>
+            </div>
             <AdminDashboard />
-            <button
-              onClick={() => setShowAdminDashboard(false)}
-              className="fixed top-4 right-4 bg-white px-4 py-2 rounded-lg shadow-lg hover:bg-gray-100 transition-colors z-10"
-            >
-              ← Back to Calculator
-            </button>
           </div>
         )}
 
