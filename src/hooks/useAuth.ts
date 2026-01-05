@@ -47,6 +47,8 @@ export function useAuth() {
 
       // Listen for auth changes
       const { data } = supabase.auth.onAuthStateChange((event, session) => {
+        console.log('Auth state change event:', event, 'has session:', !!session);
+
         // Ignore TOKEN_REFRESHED events to prevent unnecessary reloads
         if (event === 'TOKEN_REFRESHED') {
           return;
@@ -56,13 +58,15 @@ export function useAuth() {
           if (session?.user) {
             await loadUserProfile(session.user);
           } else {
-            loadedUserIdRef.current = null;
-            setAuthState({
-              isAuthenticated: false,
-              user: null,
-              supabaseUser: null,
-              loading: false
-            });
+            if (event === 'SIGNED_OUT' || event === 'USER_DELETED') {
+              loadedUserIdRef.current = null;
+              setAuthState({
+                isAuthenticated: false,
+                user: null,
+                supabaseUser: null,
+                loading: false
+              });
+            }
           }
         })();
       });
@@ -76,15 +80,9 @@ export function useAuth() {
   }, []);
 
   const loadUserProfile = async (supabaseUser: User) => {
-    // Skip if we already loaded this user AND auth state is properly set
-    if (loadedUserIdRef.current === supabaseUser.id && authState.isAuthenticated && !authState.loading) {
-      console.log('Profile already loaded for user:', supabaseUser.id);
-      return;
-    }
-
-    // Prevent concurrent profile loads
+    // Skip if we already loaded this user
     if (loadedUserIdRef.current === supabaseUser.id) {
-      console.log('Profile load already in progress for user:', supabaseUser.id);
+      console.log('Profile already loaded for user:', supabaseUser.id);
       return;
     }
 
