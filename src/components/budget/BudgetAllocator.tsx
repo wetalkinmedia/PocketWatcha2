@@ -31,14 +31,18 @@ export function BudgetAllocator() {
   const [saveMessage, setSaveMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
   const [loading, setLoading] = useState(true);
   const [hasProfile, setHasProfile] = useState(false);
+  const loadedRef = React.useRef(false);
 
   useEffect(() => {
     if (!supabaseUser?.id) {
       setLoading(false);
       setHasProfile(false);
+      loadedRef.current = false;
       return;
     }
 
+    if (loadedRef.current) return;
+    loadedRef.current = true;
     checkAndLoadData();
   }, [supabaseUser?.id]);
 

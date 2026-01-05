@@ -43,14 +43,18 @@ export function BudgetOverview({ onNavigate }: BudgetOverviewProps) {
     savingsGoal: 0,
     savingsProgress: 0
   });
+  const loadedRef = React.useRef(false);
 
   useEffect(() => {
     if (!supabaseUser?.id) {
       setLoading(false);
       setHasProfile(false);
+      loadedRef.current = false;
       return;
     }
 
+    if (loadedRef.current) return;
+    loadedRef.current = true;
     checkProfileCompletion();
   }, [supabaseUser?.id]);
 

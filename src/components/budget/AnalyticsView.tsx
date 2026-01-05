@@ -45,19 +45,23 @@ export function AnalyticsView() {
     avgDaily: 0,
     topCategory: ''
   });
+  const initialLoadRef = React.useRef(false);
 
   useEffect(() => {
     if (!supabaseUser?.id) {
       setLoading(false);
       setHasProfile(false);
+      initialLoadRef.current = false;
       return;
     }
 
+    if (initialLoadRef.current) return;
+    initialLoadRef.current = true;
     checkAndLoadAnalytics();
   }, [supabaseUser?.id]);
 
   useEffect(() => {
-    if (hasProfile && supabaseUser?.id && !loading) {
+    if (hasProfile && supabaseUser?.id && initialLoadRef.current) {
       loadAnalytics();
     }
   }, [timeRange]);

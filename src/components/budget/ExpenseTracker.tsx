@@ -30,6 +30,7 @@ export function ExpenseTracker() {
   const [showAddForm, setShowAddForm] = useState(false);
   const [filterCategory, setFilterCategory] = useState<string>('all');
   const [searchTerm, setSearchTerm] = useState('');
+  const loadedRef = React.useRef(false);
 
   const [newExpense, setNewExpense] = useState({
     category_id: '',
@@ -42,9 +43,12 @@ export function ExpenseTracker() {
     if (!supabaseUser?.id) {
       setLoading(false);
       setHasProfile(false);
+      loadedRef.current = false;
       return;
     }
 
+    if (loadedRef.current) return;
+    loadedRef.current = true;
     checkAndLoadData();
   }, [supabaseUser?.id]);
 
