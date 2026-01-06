@@ -48,7 +48,9 @@ export function AnalyticsView() {
   const initialLoadRef = React.useRef(false);
 
   useEffect(() => {
-    if (!supabaseUser?.id) {
+    const userId = supabaseUser?.id;
+
+    if (!userId) {
       setLoading(false);
       setHasProfile(false);
       initialLoadRef.current = false;
@@ -62,8 +64,11 @@ export function AnalyticsView() {
 
   useEffect(() => {
     if (hasProfile && supabaseUser?.id && initialLoadRef.current) {
+      setLoading(true);
       loadAnalytics();
     }
+    // Only re-run when timeRange changes, not when user/profile changes
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [timeRange]);
 
   const checkAndLoadAnalytics = async () => {

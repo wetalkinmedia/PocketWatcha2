@@ -19,7 +19,9 @@ export function DailyAdvice() {
   const loadedRef = React.useRef(false);
 
   useEffect(() => {
-    if (!supabaseUser?.id) {
+    const userId = supabaseUser?.id;
+
+    if (!userId) {
       setLoading(false);
       setHasProfile(false);
       loadedRef.current = false;

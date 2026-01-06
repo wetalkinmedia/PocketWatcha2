@@ -40,7 +40,9 @@ export function ExpenseTracker() {
   });
 
   useEffect(() => {
-    if (!supabaseUser?.id) {
+    const userId = supabaseUser?.id;
+
+    if (!userId) {
       setLoading(false);
       setHasProfile(false);
       loadedRef.current = false;
