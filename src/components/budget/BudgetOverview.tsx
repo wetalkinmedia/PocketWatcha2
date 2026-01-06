@@ -57,59 +57,49 @@ export function BudgetOverview({ onNavigate }: BudgetOverviewProps) {
 
     if (loadedRef.current) return;
     loadedRef.current = true;
+
+    const checkProfileCompletion = async () => {
+      try {
+        const { data, error } = await supabase
+          .from('user_profiles')
+          .select('*')
+          .eq('id', userId)
+          .maybeSingle();
+
+        if (error) throw error;
+
+        const profileComplete = data &&
+          data.first_name &&
+          data.last_name &&
+          data.age > 0 &&
+          data.salary > 0 &&
+          data.zip_code &&
+          data.phone_number &&
+          data.relationship_status &&
+          data.occupation;
+
+        setHasProfile(!!profileComplete);
+
+        if (profileComplete) {
+          await Promise.all([
+            loadBudgetData(userId),
+            loadDailyTip()
+          ]);
+        } else {
+          setLoading(false);
+        }
+      } catch (error) {
+        console.error('Error checking profile:', error);
+        setHasProfile(false);
+        setLoading(false);
+      }
+    };
+
     checkProfileCompletion();
   }, [supabaseUser?.id]);
 
-  const checkProfileCompletion = async () => {
-    if (!supabaseUser) {
-      setHasProfile(false);
-      setLoading(false);
-      return;
-    }
-
-    try {
-      const { data, error } = await supabase
-        .from('user_profiles')
-        .select('*')
-        .eq('id', supabaseUser.id)
-        .maybeSingle();
-
-      if (error) throw error;
-
-      const profileComplete = data &&
-        data.first_name &&
-        data.last_name &&
-        data.age > 0 &&
-        data.salary > 0 &&
-        data.zip_code &&
-        data.phone_number &&
-        data.relationship_status &&
-        data.occupation;
-
-      setHasProfile(!!profileComplete);
-
-      if (profileComplete) {
-        await Promise.all([
-          loadBudgetData(),
-          loadDailyTip()
-        ]);
-      } else {
-        setLoading(false);
-      }
-    } catch (error) {
-      console.error('Error checking profile:', error);
-      setHasProfile(false);
-      setLoading(false);
-    }
-  };
-
-  const loadBudgetData = async () => {
-    if (!supabaseUser) {
-      setLoading(false);
-      return;
-    }
-
-    console.log('Loading budget data for user:', supabaseUser.id);
+  const loadBudgetData = async (userId: string) => {
+    console.log('Loading budget data for user:', userId);
     try {
       const startOfMonth = new Date();
       startOfMonth.setDate(1);
@@ -128,7 +118,7 @@ export function BudgetOverview({ onNavigate }: BudgetOverviewProps) {
           *,
           category:budget_categories(*)
         `)
-        .eq('user_id', supabaseUser.id);
+        .eq('user_id', userId);
 
       if (budgetError) {
         console.error('Budget data error:', budgetError);
@@ -140,7 +130,7 @@ export function BudgetOverview({ onNavigate }: BudgetOverviewProps) {
       const { data: expensesData, error: expensesError } = await supabase
         .from('expenses')
         .select('*')
-        .eq('user_id', supabaseUser.id)
+        .eq('user_id', userId)
         .gte('expense_date', startOfMonth.toISOString().split('T')[0]);
 
       if (expensesError) throw expensesError;

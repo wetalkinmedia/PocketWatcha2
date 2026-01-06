@@ -47,6 +47,8 @@ export function AnalyticsView() {
   });
   const initialLoadRef = React.useRef(false);
 
+  const userIdRef = React.useRef<string | null>(null);
+
   useEffect(() => {
     const userId = supabaseUser?.id;
 
@@ -54,65 +56,61 @@ export function AnalyticsView() {
       setLoading(false);
       setHasProfile(false);
       initialLoadRef.current = false;
+      userIdRef.current = null;
       return;
     }
 
     if (initialLoadRef.current) return;
     initialLoadRef.current = true;
+    userIdRef.current = userId;
+
+    const checkAndLoadAnalytics = async () => {
+      try {
+        const { data, error } = await supabase
+          .from('user_profiles')
+          .select('*')
+          .eq('id', userId)
+          .maybeSingle();
+
+        if (error) throw error;
+
+        const profileComplete = data &&
+          data.first_name &&
+          data.last_name &&
+          data.age > 0 &&
+          data.salary > 0 &&
+          data.zip_code &&
+          data.phone_number &&
+          data.relationship_status &&
+          data.occupation;
+
+        setHasProfile(!!profileComplete);
+
+        if (profileComplete) {
+          await loadAnalytics(userId);
+        } else {
+          setLoading(false);
+        }
+      } catch (error) {
+        console.error('Error checking profile:', error);
+        setHasProfile(false);
+        setLoading(false);
+      }
+    };
+
     checkAndLoadAnalytics();
   }, [supabaseUser?.id]);
 
   useEffect(() => {
-    if (hasProfile && supabaseUser?.id && initialLoadRef.current) {
+    if (hasProfile && userIdRef.current && initialLoadRef.current) {
       setLoading(true);
-      loadAnalytics();
+      loadAnalytics(userIdRef.current);
     }
     // Only re-run when timeRange changes, not when user/profile changes
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [timeRange]);
 
-  const checkAndLoadAnalytics = async () => {
-    if (!supabaseUser) {
-      setLoading(false);
-      return;
-    }
-
-    try {
-      const { data, error } = await supabase
-        .from('user_profiles')
-        .select('*')
-        .eq('id', supabaseUser.id)
-        .maybeSingle();
-
-      if (error) throw error;
-
-      const profileComplete = data &&
-        data.first_name &&
-        data.last_name &&
-        data.age > 0 &&
-        data.salary > 0 &&
-        data.zip_code &&
-        data.phone_number &&
-        data.relationship_status &&
-        data.occupation;
-
-      setHasProfile(!!profileComplete);
-
-      if (profileComplete) {
-        await loadAnalytics();
-      } else {
-        setLoading(false);
-      }
-    } catch (error) {
-      console.error('Error checking profile:', error);
-      setHasProfile(false);
-      setLoading(false);
-    }
-  };
-
-  const loadAnalytics = async () => {
-    if (!supabaseUser) return;
-
+  const loadAnalytics = async (userId: string) => {
     try {
       const today = new Date();
       let startDate: Date;
@@ -138,11 +136,11 @@ export function AnalyticsView() {
             *,
             category:budget_categories(*)
           `)
-          .eq('user_id', supabaseUser.id),
+          .eq('user_id', userId),
         supabase
           .from('expenses')
           .select('*')
-          .eq('user_id', supabaseUser.id)
+          .eq('user_id', userId)
           .gte('expense_date', startDate.toISOString().split('T')[0])
           .order('expense_date', { ascending: true })
       ]);

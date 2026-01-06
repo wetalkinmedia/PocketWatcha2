@@ -51,48 +51,44 @@ export function ExpenseTracker() {
 
     if (loadedRef.current) return;
     loadedRef.current = true;
-    checkAndLoadData();
-  }, [supabaseUser?.id]);
 
-  const checkAndLoadData = async () => {
-    if (!supabaseUser) {
-      setLoading(false);
-      return;
-    }
+    const checkAndLoadData = async () => {
+      try {
+        const { data, error } = await supabase
+          .from('user_profiles')
+          .select('*')
+          .eq('id', userId)
+          .maybeSingle();
 
-    try {
-      const { data, error } = await supabase
-        .from('user_profiles')
-        .select('*')
-        .eq('id', supabaseUser.id)
-        .maybeSingle();
+        if (error) throw error;
 
-      if (error) throw error;
+        const profileComplete = data &&
+          data.first_name &&
+          data.last_name &&
+          data.age > 0 &&
+          data.salary > 0 &&
+          data.zip_code &&
+          data.phone_number &&
+          data.relationship_status &&
+          data.occupation;
 
-      const profileComplete = data &&
-        data.first_name &&
-        data.last_name &&
-        data.age > 0 &&
-        data.salary > 0 &&
-        data.zip_code &&
-        data.phone_number &&
-        data.relationship_status &&
-        data.occupation;
+        setHasProfile(!!profileComplete);
 
-      setHasProfile(!!profileComplete);
-
-      if (profileComplete) {
-        await loadCategories();
-        await loadExpenses();
-      } else {
+        if (profileComplete) {
+          await loadCategories();
+          await loadExpenses(userId);
+        } else {
+          setLoading(false);
+        }
+      } catch (error) {
+        console.error('Error checking profile:', error);
+        setHasProfile(false);
         setLoading(false);
       }
-    } catch (error) {
-      console.error('Error checking profile:', error);
-      setHasProfile(false);
-      setLoading(false);
-    }
-  };
+    };
+
+    checkAndLoadData();
+  }, [supabaseUser?.id]);
 
   const loadCategories = async () => {
     try {
@@ -108,8 +104,9 @@ export function ExpenseTracker() {
     }
   };
 
-  const loadExpenses = async () => {
-    if (!supabaseUser) return;
+  const loadExpenses = async (userId?: string) => {
+    const userIdToUse = userId || supabaseUser?.id;
+    if (!userIdToUse) return;
 
     try {
       const { data, error } = await supabase
@@ -118,7 +115,7 @@ export function ExpenseTracker() {
           *,
           category:budget_categories(*)
         `)
-        .eq('user_id', supabaseUser.id)
+        .eq('user_id', userIdToUse)
         .order('expense_date', { ascending: false })
         .order('created_at', { ascending: false });
 

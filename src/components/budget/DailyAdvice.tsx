@@ -30,50 +30,47 @@ export function DailyAdvice() {
 
     if (loadedRef.current) return;
     loadedRef.current = true;
+
+    const checkAndGenerateAdvice = async () => {
+      try {
+        const { data, error } = await supabase
+          .from('user_profiles')
+          .select('*')
+          .eq('id', userId)
+          .maybeSingle();
+
+        if (error) throw error;
+
+        const profileComplete = data &&
+          data.first_name &&
+          data.last_name &&
+          data.age > 0 &&
+          data.salary > 0 &&
+          data.zip_code &&
+          data.phone_number &&
+          data.relationship_status &&
+          data.occupation;
+
+        setHasProfile(!!profileComplete);
+
+        if (profileComplete) {
+          await generateAdvice(userId);
+        } else {
+          setLoading(false);
+        }
+      } catch (error) {
+        console.error('Error checking profile:', error);
+        setHasProfile(false);
+        setLoading(false);
+      }
+    };
+
     checkAndGenerateAdvice();
   }, [supabaseUser?.id]);
 
-  const checkAndGenerateAdvice = async () => {
-    if (!supabaseUser) {
-      setLoading(false);
-      return;
-    }
-
-    try {
-      const { data, error } = await supabase
-        .from('user_profiles')
-        .select('*')
-        .eq('id', supabaseUser.id)
-        .maybeSingle();
-
-      if (error) throw error;
-
-      const profileComplete = data &&
-        data.first_name &&
-        data.last_name &&
-        data.age > 0 &&
-        data.salary > 0 &&
-        data.zip_code &&
-        data.phone_number &&
-        data.relationship_status &&
-        data.occupation;
-
-      setHasProfile(!!profileComplete);
-
-      if (profileComplete) {
-        await generateAdvice();
-      } else {
-        setLoading(false);
-      }
-    } catch (error) {
-      console.error('Error checking profile:', error);
-      setHasProfile(false);
-      setLoading(false);
-    }
-  };
-
-  const generateAdvice = async () => {
-    if (!supabaseUser) return;
+  const generateAdvice = async (userId?: string) => {
+    const userIdToUse = userId || supabaseUser?.id;
+    if (!userIdToUse) return;
 
     try {
       const today = new Date();
@@ -89,11 +86,11 @@ export function DailyAdvice() {
             *,
             category:budget_categories(*)
           `)
-          .eq('user_id', supabaseUser.id),
+          .eq('user_id', userIdToUse),
         supabase
           .from('expenses')
           .select('*')
-          .eq('user_id', supabaseUser.id)
+          .eq('user_id', userIdToUse)
           .gte('expense_date', startOfMonth.toISOString().split('T')[0])
       ]);
 

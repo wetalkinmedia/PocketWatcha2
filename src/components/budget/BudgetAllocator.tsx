@@ -45,54 +45,51 @@ export function BudgetAllocator() {
 
     if (loadedRef.current) return;
     loadedRef.current = true;
-    checkAndLoadData();
-  }, [supabaseUser?.id]);
 
-  const checkAndLoadData = async () => {
-    if (!supabaseUser) {
-      setLoading(false);
-      return;
-    }
+    const checkAndLoadData = async () => {
+      try {
+        const { data, error } = await supabase
+          .from('user_profiles')
+          .select('*')
+          .eq('id', userId)
+          .maybeSingle();
 
-    try {
-      const { data, error } = await supabase
-        .from('user_profiles')
-        .select('*')
-        .eq('id', supabaseUser.id)
-        .maybeSingle();
+        if (error) throw error;
 
-      if (error) throw error;
+        const profileComplete = data &&
+          data.first_name &&
+          data.last_name &&
+          data.age > 0 &&
+          data.salary > 0 &&
+          data.zip_code &&
+          data.phone_number &&
+          data.relationship_status &&
+          data.occupation;
 
-      const profileComplete = data &&
-        data.first_name &&
-        data.last_name &&
-        data.age > 0 &&
-        data.salary > 0 &&
-        data.zip_code &&
-        data.phone_number &&
-        data.relationship_status &&
-        data.occupation;
+        setHasProfile(!!profileComplete);
 
-      setHasProfile(!!profileComplete);
-
-      if (profileComplete) {
-        await loadData();
-      } else {
+        if (profileComplete) {
+          await loadData(userId);
+        } else {
+          setLoading(false);
+        }
+      } catch (error) {
+        console.error('Error checking profile:', error);
+        setHasProfile(false);
         setLoading(false);
       }
-    } catch (error) {
-      console.error('Error checking profile:', error);
-      setHasProfile(false);
-      setLoading(false);
-    }
-  };
+    };
+
+    checkAndLoadData();
+  }, [supabaseUser?.id]);
 
   useEffect(() => {
     setIncomeInputValue(totalIncome.toString());
   }, [totalIncome]);
 
-  const loadData = async () => {
-    if (!supabaseUser) return;
+  const loadData = async (userId?: string) => {
+    const userIdToUse = userId || supabaseUser?.id;
+    if (!userIdToUse) return;
 
     try {
       const { data: categoriesData, error: categoriesError } = await supabase
@@ -110,7 +107,7 @@ export function BudgetAllocator() {
           *,
           category:budget_categories(*)
         `)
-        .eq('user_id', supabaseUser.id);
+        .eq('user_id', userIdToUse);
 
       if (budgetsError) throw budgetsError;
 

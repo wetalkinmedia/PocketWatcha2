@@ -62,39 +62,38 @@ export function Dashboard() {
 
     if (loadedRef.current) return;
     loadedRef.current = true;
+
+    const loadDashboardData = async () => {
+      try {
+        const [enrollmentsRes, progressRes] = await Promise.all([
+          supabase
+            .from('course_enrollments')
+            .select('*')
+            .eq('user_id', userId),
+          supabase
+            .from('lesson_progress')
+            .select('*')
+            .eq('user_id', userId)
+        ]);
+
+        if (enrollmentsRes.data) {
+          setEnrolledCourses(enrollmentsRes.data);
+        }
+
+        if (progressRes.data) {
+          setLessonProgress(progressRes.data);
+        }
+
+        calculateStats(enrollmentsRes.data || [], progressRes.data || []);
+      } catch (error) {
+        console.error('Error loading dashboard data:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
     loadDashboardData();
   }, [supabaseUser?.id]);
-
-  const loadDashboardData = async () => {
-    if (!supabaseUser) return;
-
-    try {
-      const [enrollmentsRes, progressRes] = await Promise.all([
-        supabase
-          .from('course_enrollments')
-          .select('*')
-          .eq('user_id', supabaseUser.id),
-        supabase
-          .from('lesson_progress')
-          .select('*')
-          .eq('user_id', supabaseUser.id)
-      ]);
-
-      if (enrollmentsRes.data) {
-        setEnrolledCourses(enrollmentsRes.data);
-      }
-
-      if (progressRes.data) {
-        setLessonProgress(progressRes.data);
-      }
-
-      calculateStats(enrollmentsRes.data || [], progressRes.data || []);
-    } catch (error) {
-      console.error('Error loading dashboard data:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
 
   const calculateStats = (enrollments: CourseProgress[], progress: LessonProgressData[]) => {
     const completedCourses = enrollments.filter(e => e.completed_at !== null).length;
