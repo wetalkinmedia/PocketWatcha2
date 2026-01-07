@@ -44,13 +44,23 @@ export function BudgetOverview({ onNavigate }: BudgetOverviewProps) {
     savingsProgress: 0
   });
   const loadedRef = React.useRef(false);
+  const mountedRef = React.useRef(true);
+
+  useEffect(() => {
+    mountedRef.current = true;
+    return () => {
+      mountedRef.current = false;
+    };
+  }, []);
 
   useEffect(() => {
     const userId = supabaseUser?.id;
 
     if (!userId) {
-      setLoading(false);
-      setHasProfile(false);
+      if (mountedRef.current) {
+        setLoading(false);
+        setHasProfile(false);
+      }
       loadedRef.current = false;
       return;
     }
@@ -66,6 +76,7 @@ export function BudgetOverview({ onNavigate }: BudgetOverviewProps) {
           .eq('id', userId)
           .maybeSingle();
 
+        if (!mountedRef.current) return;
         if (error) throw error;
 
         const profileComplete = data &&
@@ -86,12 +97,16 @@ export function BudgetOverview({ onNavigate }: BudgetOverviewProps) {
             loadDailyTip()
           ]);
         } else {
-          setLoading(false);
+          if (mountedRef.current) {
+            setLoading(false);
+          }
         }
       } catch (error) {
         console.error('Error checking profile:', error);
-        setHasProfile(false);
-        setLoading(false);
+        if (mountedRef.current) {
+          setHasProfile(false);
+          setLoading(false);
+        }
       }
     };
 
@@ -120,6 +135,8 @@ export function BudgetOverview({ onNavigate }: BudgetOverviewProps) {
         `)
         .eq('user_id', userId);
 
+      if (!mountedRef.current) return;
+
       if (budgetError) {
         console.error('Budget data error:', budgetError);
         throw budgetError;
@@ -132,6 +149,8 @@ export function BudgetOverview({ onNavigate }: BudgetOverviewProps) {
         .select('*')
         .eq('user_id', userId)
         .gte('expense_date', startOfMonth.toISOString().split('T')[0]);
+
+      if (!mountedRef.current) return;
 
       if (expensesError) throw expensesError;
 
@@ -161,17 +180,21 @@ export function BudgetOverview({ onNavigate }: BudgetOverviewProps) {
       const savingsGoal = savingsBudget?.monthly_amount || 0;
       const savingsProgress = savingsBudget ? (savingsBudget.spent / savingsBudget.monthly_amount) * 100 : 0;
 
-      setStats({
-        todayRemaining,
-        weeklySpending,
-        savingsGoal,
-        savingsProgress
-      });
+      if (mountedRef.current) {
+        setStats({
+          todayRemaining,
+          weeklySpending,
+          savingsGoal,
+          savingsProgress
+        });
+      }
 
     } catch (error) {
       console.error('Error loading budget data:', error);
     } finally {
-      setLoading(false);
+      if (mountedRef.current) {
+        setLoading(false);
+      }
     }
   };
 
@@ -189,7 +212,7 @@ export function BudgetOverview({ onNavigate }: BudgetOverviewProps) {
       }
 
       console.log('Tips loaded:', data?.length || 0);
-      if (data && data.length > 0) {
+      if (mountedRef.current && data && data.length > 0) {
         const dayOfYear = Math.floor((Date.now() - new Date(new Date().getFullYear(), 0, 0).getTime()) / 86400000);
         const tipIndex = dayOfYear % data.length;
         setCurrentTip(data[tipIndex]);

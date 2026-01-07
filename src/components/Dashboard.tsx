@@ -50,6 +50,14 @@ export function Dashboard() {
   });
   const [loading, setLoading] = useState(true);
   const loadedRef = React.useRef(false);
+  const mountedRef = React.useRef(true);
+
+  useEffect(() => {
+    mountedRef.current = true;
+    return () => {
+      mountedRef.current = false;
+    };
+  }, []);
 
   useEffect(() => {
     const userId = supabaseUser?.id;
@@ -76,6 +84,8 @@ export function Dashboard() {
             .eq('user_id', userId)
         ]);
 
+        if (!mountedRef.current) return;
+
         if (enrollmentsRes.data) {
           setEnrolledCourses(enrollmentsRes.data);
         }
@@ -88,7 +98,9 @@ export function Dashboard() {
       } catch (error) {
         console.error('Error loading dashboard data:', error);
       } finally {
-        setLoading(false);
+        if (mountedRef.current) {
+          setLoading(false);
+        }
       }
     };
 
