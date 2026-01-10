@@ -69,11 +69,18 @@ export function useAuth() {
           return;
         }
 
+        // Only handle SIGNED_IN and SIGNED_OUT events to prevent loops
+        if (event !== 'SIGNED_IN' && event !== 'SIGNED_OUT' && event !== 'USER_UPDATED') {
+          console.log('Ignoring event:', event);
+          return;
+        }
+
         (async () => {
           if (session?.user) {
             await loadUserProfile(session.user);
           } else {
             loadedUserIdRef.current = null;
+            loadingRef.current = false;
             setAuthState({
               isAuthenticated: false,
               user: null,
@@ -92,6 +99,8 @@ export function useAuth() {
     }
   }, []);
 
+  const loadingRef = useRef(false);
+
   const loadUserProfile = async (supabaseUser: User) => {
     // Skip if we already loaded this user
     if (loadedUserIdRef.current === supabaseUser.id) {
@@ -99,7 +108,14 @@ export function useAuth() {
       return;
     }
 
+    // Skip if already loading to prevent concurrent calls
+    if (loadingRef.current) {
+      console.log('Profile loading already in progress');
+      return;
+    }
+
     try {
+      loadingRef.current = true;
       loadedUserIdRef.current = supabaseUser.id;
 
       const { data: profile, error } = await supabase
@@ -111,6 +127,7 @@ export function useAuth() {
       if (error) {
         console.error('Error loading profile:', error);
         loadedUserIdRef.current = null;
+        loadingRef.current = false;
         setAuthState({
           isAuthenticated: false,
           user: null,
@@ -219,6 +236,8 @@ export function useAuth() {
         supabaseUser,
         loading: false
       });
+    } finally {
+      loadingRef.current = false;
     }
   };
 
