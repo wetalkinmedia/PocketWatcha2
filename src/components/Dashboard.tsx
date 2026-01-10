@@ -53,14 +53,17 @@ export function Dashboard() {
   const mountedRef = React.useRef(true);
 
   useEffect(() => {
+    console.log('Dashboard component MOUNTED');
     mountedRef.current = true;
     return () => {
+      console.log('Dashboard component UNMOUNTING');
       mountedRef.current = false;
     };
   }, []);
 
   useEffect(() => {
     const userId = supabaseUser?.id;
+    console.log('Dashboard useEffect triggered, userId:', userId, 'loadedRef:', loadedRef.current);
 
     if (!userId) {
       setLoading(false);
@@ -68,8 +71,12 @@ export function Dashboard() {
       return;
     }
 
-    if (loadedRef.current) return;
+    if (loadedRef.current) {
+      console.log('Dashboard already loaded, skipping');
+      return;
+    }
     loadedRef.current = true;
+    console.log('Loading dashboard data...');
 
     const loadDashboardData = async () => {
       try {

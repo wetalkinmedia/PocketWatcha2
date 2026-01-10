@@ -18,6 +18,14 @@ export function useAuth() {
     loading: true
   });
   const loadedUserIdRef = useRef<string | null>(null);
+  const renderCountRef = useRef(0);
+
+  renderCountRef.current++;
+  console.log('useAuth render count:', renderCountRef.current, 'State:', {
+    isAuthenticated: authState.isAuthenticated,
+    userId: authState.supabaseUser?.id,
+    loading: authState.loading
+  });
 
   useEffect(() => {
     // Initialize auth in background without blocking UI
@@ -47,8 +55,17 @@ export function useAuth() {
 
       // Listen for auth changes
       const { data } = supabase.auth.onAuthStateChange((event, session) => {
+        console.log('Auth state change event:', event, 'User ID:', session?.user?.id);
+
         // Ignore TOKEN_REFRESHED events to prevent unnecessary reloads
         if (event === 'TOKEN_REFRESHED') {
+          console.log('Ignoring TOKEN_REFRESHED event');
+          return;
+        }
+
+        // Ignore INITIAL_SESSION since we already handle it with getSession
+        if (event === 'INITIAL_SESSION') {
+          console.log('Ignoring INITIAL_SESSION event');
           return;
         }
 

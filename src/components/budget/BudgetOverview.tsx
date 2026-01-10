@@ -47,14 +47,17 @@ export function BudgetOverview({ onNavigate }: BudgetOverviewProps) {
   const mountedRef = React.useRef(true);
 
   useEffect(() => {
+    console.log('BudgetOverview component MOUNTED');
     mountedRef.current = true;
     return () => {
+      console.log('BudgetOverview component UNMOUNTING');
       mountedRef.current = false;
     };
   }, []);
 
   useEffect(() => {
     const userId = supabaseUser?.id;
+    console.log('BudgetOverview useEffect triggered, userId:', userId, 'loadedRef:', loadedRef.current);
 
     if (!userId) {
       if (mountedRef.current) {
@@ -65,8 +68,12 @@ export function BudgetOverview({ onNavigate }: BudgetOverviewProps) {
       return;
     }
 
-    if (loadedRef.current) return;
+    if (loadedRef.current) {
+      console.log('BudgetOverview already loaded, skipping');
+      return;
+    }
     loadedRef.current = true;
+    console.log('Loading budget overview data...');
 
     const checkProfileCompletion = async () => {
       try {
