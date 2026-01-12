@@ -84,17 +84,17 @@ function App() {
   // Auto-populate form when user data becomes available after login
   // Use a ref to track if we've already populated to prevent overwriting user edits
   const hasPopulated = useRef(false);
+  const lastPopulatedUserId = useRef<string | null>(null);
 
   useEffect(() => {
-    console.log('Auth state changed:', {
-      isAuthenticated,
-      user: user ? `${user.firstName} ${user.lastName}` : null,
-      loading,
-      hasPopulated: hasPopulated.current
-    });
+    // Only run when loading is complete
+    if (loading) return;
 
-    if (isAuthenticated && user && !hasPopulated.current) {
-      console.log('Auto-populating form with user data:', user);
+    const userId = user?.email || null;
+
+    // Check if we need to populate
+    if (isAuthenticated && user && (!hasPopulated.current || lastPopulatedUserId.current !== userId)) {
+      console.log('Auto-populating form with user data');
       // Round to 2 decimal places and remove trailing zeros
       const monthlyIncome = Math.round((user.salary / 12) * 100) / 100;
       setIncome(monthlyIncome.toString());
@@ -114,12 +114,13 @@ function App() {
       }
 
       hasPopulated.current = true;
-      console.log('Form populated successfully');
-    } else if (!isAuthenticated) {
+      lastPopulatedUserId.current = userId;
+    } else if (!isAuthenticated && hasPopulated.current) {
       // Reset flag when user logs out
       hasPopulated.current = false;
+      lastPopulatedUserId.current = null;
     }
-  }, [isAuthenticated, user, loading]);
+  }, [isAuthenticated, loading, user?.email, user?.salary, user?.age, user?.relationshipStatus]);
 
 
   const handleCalculate = useCallback(() => {
