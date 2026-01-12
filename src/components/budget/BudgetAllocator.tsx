@@ -21,8 +21,10 @@ interface BudgetAllocation {
   recommended_percentage: number;
 }
 
-export function BudgetAllocator() {
+export const BudgetAllocator = React.memo(function BudgetAllocator() {
   const { supabaseUser } = useAuth();
+  const userId = React.useMemo(() => supabaseUser?.id, [supabaseUser?.id]);
+
   const [categories, setCategories] = useState<BudgetCategory[]>([]);
   const [totalIncome, setTotalIncome] = useState<number>(0);
   const [incomeInputValue, setIncomeInputValue] = useState<string>('0');
@@ -32,19 +34,20 @@ export function BudgetAllocator() {
   const [loading, setLoading] = useState(true);
   const [hasProfile, setHasProfile] = useState(false);
   const loadedRef = React.useRef(false);
+  const loadedUserIdRef = React.useRef<string | null>(null);
 
   useEffect(() => {
-    const userId = supabaseUser?.id;
-
     if (!userId) {
       setLoading(false);
       setHasProfile(false);
       loadedRef.current = false;
+      loadedUserIdRef.current = null;
       return;
     }
 
-    if (loadedRef.current) return;
+    if (loadedRef.current && loadedUserIdRef.current === userId) return;
     loadedRef.current = true;
+    loadedUserIdRef.current = userId;
 
     const checkAndLoadData = async () => {
       try {
@@ -81,7 +84,7 @@ export function BudgetAllocator() {
     };
 
     checkAndLoadData();
-  }, [supabaseUser?.id]);
+  }, [userId]);
 
   useEffect(() => {
     setIncomeInputValue(totalIncome.toString());
@@ -520,4 +523,4 @@ export function BudgetAllocator() {
       </div>
     </div>
   );
-}
+});

@@ -31,8 +31,12 @@ interface BudgetOverviewProps {
   onNavigate?: (view: string) => void;
 }
 
-export function BudgetOverview({ onNavigate }: BudgetOverviewProps) {
+export const BudgetOverview = React.memo(function BudgetOverview({ onNavigate }: BudgetOverviewProps) {
   const { supabaseUser } = useAuth();
+
+  // Memoize the user ID to prevent re-renders when supabaseUser object changes
+  const userId = React.useMemo(() => supabaseUser?.id, [supabaseUser?.id]);
+
   const [budgets, setBudgets] = useState<UserBudget[]>([]);
   const [currentTip, setCurrentTip] = useState<FinancialTip | null>(null);
   const [loading, setLoading] = useState(true);
@@ -44,6 +48,7 @@ export function BudgetOverview({ onNavigate }: BudgetOverviewProps) {
     savingsProgress: 0
   });
   const loadedRef = React.useRef(false);
+  const loadedUserIdRef = React.useRef<string | null>(null);
   const mountedRef = React.useRef(true);
 
   useEffect(() => {
@@ -56,7 +61,6 @@ export function BudgetOverview({ onNavigate }: BudgetOverviewProps) {
   }, []);
 
   useEffect(() => {
-    const userId = supabaseUser?.id;
     console.log('BudgetOverview useEffect triggered, userId:', userId, 'loadedRef:', loadedRef.current);
 
     if (!userId) {
@@ -65,14 +69,18 @@ export function BudgetOverview({ onNavigate }: BudgetOverviewProps) {
         setHasProfile(false);
       }
       loadedRef.current = false;
+      loadedUserIdRef.current = null;
       return;
     }
 
-    if (loadedRef.current) {
-      console.log('BudgetOverview already loaded, skipping');
+    // Skip if we already loaded this user's data
+    if (loadedRef.current && loadedUserIdRef.current === userId) {
+      console.log('BudgetOverview already loaded for this user, skipping');
       return;
     }
+
     loadedRef.current = true;
+    loadedUserIdRef.current = userId;
     console.log('Loading budget overview data...');
 
     const checkProfileCompletion = async () => {
@@ -118,7 +126,7 @@ export function BudgetOverview({ onNavigate }: BudgetOverviewProps) {
     };
 
     checkProfileCompletion();
-  }, [supabaseUser?.id]);
+  }, [userId]);
 
   const loadBudgetData = async (userId: string) => {
     console.log('Loading budget data for user:', userId);
@@ -446,4 +454,4 @@ export function BudgetOverview({ onNavigate }: BudgetOverviewProps) {
       </div>
     </div>
   );
-}
+});

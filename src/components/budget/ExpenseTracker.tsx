@@ -21,8 +21,10 @@ interface Expense {
   category: BudgetCategory;
 }
 
-export function ExpenseTracker() {
+export const ExpenseTracker = React.memo(function ExpenseTracker() {
   const { supabaseUser } = useAuth();
+  const userId = React.useMemo(() => supabaseUser?.id, [supabaseUser?.id]);
+
   const [expenses, setExpenses] = useState<Expense[]>([]);
   const [categories, setCategories] = useState<BudgetCategory[]>([]);
   const [loading, setLoading] = useState(true);
@@ -31,6 +33,7 @@ export function ExpenseTracker() {
   const [filterCategory, setFilterCategory] = useState<string>('all');
   const [searchTerm, setSearchTerm] = useState('');
   const loadedRef = React.useRef(false);
+  const loadedUserIdRef = React.useRef<string | null>(null);
 
   const [newExpense, setNewExpense] = useState({
     category_id: '',
@@ -40,17 +43,17 @@ export function ExpenseTracker() {
   });
 
   useEffect(() => {
-    const userId = supabaseUser?.id;
-
     if (!userId) {
       setLoading(false);
       setHasProfile(false);
       loadedRef.current = false;
+      loadedUserIdRef.current = null;
       return;
     }
 
-    if (loadedRef.current) return;
+    if (loadedRef.current && loadedUserIdRef.current === userId) return;
     loadedRef.current = true;
+    loadedUserIdRef.current = userId;
 
     const checkAndLoadData = async () => {
       try {
@@ -88,7 +91,7 @@ export function ExpenseTracker() {
     };
 
     checkAndLoadData();
-  }, [supabaseUser?.id]);
+  }, [userId]);
 
   const loadCategories = async () => {
     try {
@@ -450,4 +453,4 @@ export function ExpenseTracker() {
       </div>
     </div>
   );
-}
+});

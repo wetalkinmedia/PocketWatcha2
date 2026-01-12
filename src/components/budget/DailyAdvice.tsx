@@ -11,25 +11,28 @@ interface Advice {
   action?: string;
 }
 
-export function DailyAdvice() {
+export const DailyAdvice = React.memo(function DailyAdvice() {
   const { supabaseUser } = useAuth();
+  const userId = React.useMemo(() => supabaseUser?.id, [supabaseUser?.id]);
+
   const [advice, setAdvice] = useState<Advice[]>([]);
   const [loading, setLoading] = useState(true);
   const [hasProfile, setHasProfile] = useState(false);
   const loadedRef = React.useRef(false);
+  const loadedUserIdRef = React.useRef<string | null>(null);
 
   useEffect(() => {
-    const userId = supabaseUser?.id;
-
     if (!userId) {
       setLoading(false);
       setHasProfile(false);
       loadedRef.current = false;
+      loadedUserIdRef.current = null;
       return;
     }
 
-    if (loadedRef.current) return;
+    if (loadedRef.current && loadedUserIdRef.current === userId) return;
     loadedRef.current = true;
+    loadedUserIdRef.current = userId;
 
     const checkAndGenerateAdvice = async () => {
       try {
@@ -66,7 +69,7 @@ export function DailyAdvice() {
     };
 
     checkAndGenerateAdvice();
-  }, [supabaseUser?.id]);
+  }, [userId]);
 
   const generateAdvice = async (userId?: string) => {
     const userIdToUse = userId || supabaseUser?.id;
@@ -384,4 +387,4 @@ export function DailyAdvice() {
       </div>
     </div>
   );
-}
+});

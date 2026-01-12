@@ -32,8 +32,10 @@ interface TrendData {
   budget: number;
 }
 
-export function AnalyticsView() {
+export const AnalyticsView = React.memo(function AnalyticsView() {
   const { supabaseUser } = useAuth();
+  const userId = React.useMemo(() => supabaseUser?.id, [supabaseUser?.id]);
+
   const [timeRange, setTimeRange] = useState<'week' | 'month' | 'year'>('month');
   const [categoryData, setCategoryData] = useState<CategoryData[]>([]);
   const [trendData, setTrendData] = useState<TrendData[]>([]);
@@ -46,23 +48,20 @@ export function AnalyticsView() {
     topCategory: ''
   });
   const initialLoadRef = React.useRef(false);
-
-  const userIdRef = React.useRef<string | null>(null);
+  const loadedUserIdRef = React.useRef<string | null>(null);
 
   useEffect(() => {
-    const userId = supabaseUser?.id;
-
     if (!userId) {
       setLoading(false);
       setHasProfile(false);
       initialLoadRef.current = false;
-      userIdRef.current = null;
+      loadedUserIdRef.current = null;
       return;
     }
 
-    if (initialLoadRef.current) return;
+    if (initialLoadRef.current && loadedUserIdRef.current === userId) return;
     initialLoadRef.current = true;
-    userIdRef.current = userId;
+    loadedUserIdRef.current = userId;
 
     const checkAndLoadAnalytics = async () => {
       try {
@@ -99,12 +98,12 @@ export function AnalyticsView() {
     };
 
     checkAndLoadAnalytics();
-  }, [supabaseUser?.id]);
+  }, [userId]);
 
   useEffect(() => {
-    if (hasProfile && userIdRef.current && initialLoadRef.current) {
+    if (hasProfile && loadedUserIdRef.current && initialLoadRef.current) {
       setLoading(true);
-      loadAnalytics(userIdRef.current);
+      loadAnalytics(loadedUserIdRef.current);
     }
     // Only re-run when timeRange changes, not when user/profile changes
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -500,4 +499,4 @@ export function AnalyticsView() {
       </div>
     </div>
   );
-}
+});
