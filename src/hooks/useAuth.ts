@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useCallback } from 'react';
+import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import { supabase } from '../lib/supabase';
 import type { User } from '@supabase/supabase-js';
 import { UserProfile } from '../types';
@@ -203,9 +203,9 @@ export function useAuth() {
       mounted = false;
       authSubscription?.unsubscribe();
     };
-  }, [loadUserProfile]);
+  }, []);
 
-  const login = async (email: string, password: string): Promise<{ success: boolean; message: string }> => {
+  const login = useCallback(async (email: string, password: string): Promise<{ success: boolean; message: string }> => {
     try {
       console.log('Attempting login for:', email);
       const { data, error } = await supabase.auth.signInWithPassword({
@@ -228,9 +228,9 @@ export function useAuth() {
       console.error('Login error:', error);
       return { success: false, message: 'Login failed. Please try again.' };
     }
-  };
+  }, []);
 
-  const register = async (email: string, password: string, profile: Omit<UserProfile, 'email'>): Promise<{ success: boolean; message: string }> => {
+  const register = useCallback(async (email: string, password: string, profile: Omit<UserProfile, 'email'>): Promise<{ success: boolean; message: string }> => {
     try {
       // Validate email format
       if (!email || !email.includes('@')) {
@@ -282,9 +282,9 @@ export function useAuth() {
       console.error('Registration error:', error);
       return { success: false, message: error?.message || 'Registration failed. Please try again.' };
     }
-  };
+  }, [loadUserProfile]);
 
-  const logout = async () => {
+  const logout = useCallback(async () => {
     try {
       await supabase.auth.signOut();
       loadedUserIdRef.current = null;
@@ -299,9 +299,9 @@ export function useAuth() {
     } catch (error) {
       console.error('Logout error:', error);
     }
-  };
+  }, []);
 
-  const updateProfile = async (updatedProfile: Partial<UserProfile>): Promise<{ success: boolean; message: string }> => {
+  const updateProfile = useCallback(async (updatedProfile: Partial<UserProfile>): Promise<{ success: boolean; message: string }> => {
     try {
       if (!authState.supabaseUser) {
         return { success: false, message: 'Not authenticated' };
@@ -341,13 +341,35 @@ export function useAuth() {
       console.error('Profile update error:', error);
       return { success: false, message: `Profile update failed: ${error?.message || 'Please try again.'}` };
     }
-  };
+  }, [authState.supabaseUser]);
 
-  return {
-    ...authState,
+  // Memoize the return value to prevent unnecessary re-renders
+  const memoizedUser = useMemo(() => authState.user, [
+    authState.user?.email,
+    authState.user?.firstName,
+    authState.user?.lastName,
+    authState.user?.age,
+    authState.user?.salary,
+    authState.user?.isAdmin
+  ]);
+
+  return useMemo(() => ({
+    isAuthenticated: authState.isAuthenticated,
+    user: memoizedUser,
+    supabaseUser: authState.supabaseUser,
+    loading: authState.loading,
     login,
     register,
     logout,
     updateProfile
-  };
+  }), [
+    authState.isAuthenticated,
+    memoizedUser,
+    authState.supabaseUser,
+    authState.loading,
+    login,
+    register,
+    logout,
+    updateProfile
+  ]);
 }

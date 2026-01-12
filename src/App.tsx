@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback, useRef } from 'react';
+import React, { useState, useEffect, useCallback, useRef, useMemo } from 'react';
 import { Routes, Route } from 'react-router-dom';
 import { GraduationCap, Edit } from 'lucide-react';
 import { LoginPopup } from './components/LoginPopup';
@@ -86,41 +86,51 @@ function App() {
   const hasPopulated = useRef(false);
   const lastPopulatedUserId = useRef<string | null>(null);
 
+  // Memoize user properties to prevent re-renders
+  const userEmail = useMemo(() => user?.email, [user?.email]);
+  const userSalary = useMemo(() => user?.salary, [user?.salary]);
+  const userAge = useMemo(() => user?.age, [user?.age]);
+  const userRelationship = useMemo(() => user?.relationshipStatus, [user?.relationshipStatus]);
+
   useEffect(() => {
     // Only run when loading is complete
     if (loading) return;
+    if (!isAuthenticated) {
+      if (hasPopulated.current) {
+        hasPopulated.current = false;
+        lastPopulatedUserId.current = null;
+      }
+      return;
+    }
+    if (!user) return;
 
-    const userId = user?.email || null;
+    const userId = userEmail || null;
 
     // Check if we need to populate
-    if (isAuthenticated && user && (!hasPopulated.current || lastPopulatedUserId.current !== userId)) {
+    if (!hasPopulated.current || lastPopulatedUserId.current !== userId) {
       console.log('Auto-populating form with user data');
       // Round to 2 decimal places and remove trailing zeros
-      const monthlyIncome = Math.round((user.salary / 12) * 100) / 100;
+      const monthlyIncome = Math.round((userSalary / 12) * 100) / 100;
       setIncome(monthlyIncome.toString());
 
       // Map age to age group
-      if (user.age >= 18 && user.age <= 25) setAge('18-25');
-      else if (user.age >= 26 && user.age <= 35) setAge('26-35');
-      else if (user.age >= 36 && user.age <= 45) setAge('36-45');
-      else if (user.age >= 46 && user.age <= 55) setAge('46-55');
-      else if (user.age >= 56) setAge('56+');
+      if (userAge >= 18 && userAge <= 25) setAge('18-25');
+      else if (userAge >= 26 && userAge <= 35) setAge('26-35');
+      else if (userAge >= 36 && userAge <= 45) setAge('36-45');
+      else if (userAge >= 46 && userAge <= 55) setAge('46-55');
+      else if (userAge >= 56) setAge('56+');
 
       // Map relationship status to demographic
-      if (user.relationshipStatus === 'married') {
+      if (userRelationship === 'married') {
         setDemographic('couple');
-      } else if (user.relationshipStatus === 'single') {
+      } else if (userRelationship === 'single') {
         setDemographic('single');
       }
 
       hasPopulated.current = true;
       lastPopulatedUserId.current = userId;
-    } else if (!isAuthenticated && hasPopulated.current) {
-      // Reset flag when user logs out
-      hasPopulated.current = false;
-      lastPopulatedUserId.current = null;
     }
-  }, [isAuthenticated, loading, user?.email, user?.salary, user?.age, user?.relationshipStatus]);
+  }, [isAuthenticated, loading, userEmail, userSalary, userAge, userRelationship]);
 
 
   const handleCalculate = useCallback(() => {

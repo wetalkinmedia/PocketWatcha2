@@ -34,8 +34,12 @@ interface DashboardStats {
   totalHoursLearned: number;
 }
 
-export function Dashboard() {
+export const Dashboard = React.memo(function Dashboard() {
   const { supabaseUser } = useAuth();
+
+  // Memoize the user ID to prevent re-renders when supabaseUser object changes
+  const userId = React.useMemo(() => supabaseUser?.id, [supabaseUser?.id]);
+
   const [activeTab, setActiveTab] = useState<'learning' | 'finances'>('finances');
   const [financeView, setFinanceView] = useState<'overview' | 'allocator' | 'expenses' | 'advice' | 'analytics'>('overview');
   const [enrolledCourses, setEnrolledCourses] = useState<CourseProgress[]>([]);
@@ -51,6 +55,7 @@ export function Dashboard() {
   const [loading, setLoading] = useState(true);
   const loadedRef = React.useRef(false);
   const mountedRef = React.useRef(true);
+  const loadedUserIdRef = React.useRef<string | null>(null);
 
   useEffect(() => {
     console.log('Dashboard component MOUNTED');
@@ -62,20 +67,23 @@ export function Dashboard() {
   }, []);
 
   useEffect(() => {
-    const userId = supabaseUser?.id;
     console.log('Dashboard useEffect triggered, userId:', userId, 'loadedRef:', loadedRef.current);
 
     if (!userId) {
       setLoading(false);
       loadedRef.current = false;
+      loadedUserIdRef.current = null;
       return;
     }
 
-    if (loadedRef.current) {
-      console.log('Dashboard already loaded, skipping');
+    // Skip if we already loaded this user's data
+    if (loadedRef.current && loadedUserIdRef.current === userId) {
+      console.log('Dashboard already loaded for this user, skipping');
       return;
     }
+
     loadedRef.current = true;
+    loadedUserIdRef.current = userId;
     console.log('Loading dashboard data...');
 
     const loadDashboardData = async () => {
@@ -112,7 +120,7 @@ export function Dashboard() {
     };
 
     loadDashboardData();
-  }, [supabaseUser?.id]);
+  }, [userId]);
 
   const calculateStats = (enrollments: CourseProgress[], progress: LessonProgressData[]) => {
     const completedCourses = enrollments.filter(e => e.completed_at !== null).length;
@@ -440,4 +448,4 @@ export function Dashboard() {
       </div>
     </div>
   );
-}
+});
