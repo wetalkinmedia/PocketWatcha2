@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { supabase } from '../lib/supabase';
 import type { User } from '@supabase/supabase-js';
 import { UserProfile } from '../types';
@@ -17,91 +17,11 @@ export function useAuth() {
     supabaseUser: null,
     loading: true
   });
+
   const loadedUserIdRef = useRef<string | null>(null);
-  const renderCountRef = useRef(0);
-
-  renderCountRef.current++;
-  console.log('useAuth render count:', renderCountRef.current, 'State:', {
-    isAuthenticated: authState.isAuthenticated,
-    userId: authState.supabaseUser?.id,
-    loading: authState.loading
-  });
-
-  useEffect(() => {
-    // Initialize auth in background without blocking UI
-    try {
-      // Get initial session in background
-      supabase.auth.getSession().then(({ data: { session } }) => {
-        console.log('Initial session check:', session ? 'Session found' : 'No session');
-        if (session?.user) {
-          loadUserProfile(session.user);
-        } else {
-          setAuthState({
-            isAuthenticated: false,
-            user: null,
-            supabaseUser: null,
-            loading: false
-          });
-        }
-      }).catch(error => {
-        console.warn('Auth session check failed:', error);
-        setAuthState({
-          isAuthenticated: false,
-          user: null,
-          supabaseUser: null,
-          loading: false
-        });
-      });
-
-      // Listen for auth changes
-      const { data } = supabase.auth.onAuthStateChange((event, session) => {
-        console.log('Auth state change event:', event, 'User ID:', session?.user?.id);
-
-        // Ignore TOKEN_REFRESHED events to prevent unnecessary reloads
-        if (event === 'TOKEN_REFRESHED') {
-          console.log('Ignoring TOKEN_REFRESHED event');
-          return;
-        }
-
-        // Ignore INITIAL_SESSION since we already handle it with getSession
-        if (event === 'INITIAL_SESSION') {
-          console.log('Ignoring INITIAL_SESSION event');
-          return;
-        }
-
-        // Only handle SIGNED_IN and SIGNED_OUT events to prevent loops
-        if (event !== 'SIGNED_IN' && event !== 'SIGNED_OUT' && event !== 'USER_UPDATED') {
-          console.log('Ignoring event:', event);
-          return;
-        }
-
-        (async () => {
-          if (session?.user) {
-            await loadUserProfile(session.user);
-          } else {
-            loadedUserIdRef.current = null;
-            loadingRef.current = false;
-            setAuthState({
-              isAuthenticated: false,
-              user: null,
-              supabaseUser: null,
-              loading: false
-            });
-          }
-        })();
-      });
-      
-      return () => {
-        data.subscription?.unsubscribe();
-      };
-    } catch (error) {
-      console.warn('Auth listener setup failed:', error);
-    }
-  }, []);
-
   const loadingRef = useRef(false);
 
-  const loadUserProfile = async (supabaseUser: User) => {
+  const loadUserProfile = useCallback(async (supabaseUser: User) => {
     // Skip if we already loaded this user
     if (loadedUserIdRef.current === supabaseUser.id) {
       console.log('Profile already loaded for user:', supabaseUser.id);
@@ -138,7 +58,6 @@ export function useAuth() {
       }
 
       if (profile) {
-
         let isAdmin = false;
         try {
           const { data: adminCheck, error: adminError } = await supabase
@@ -172,7 +91,7 @@ export function useAuth() {
           loading: false
         });
       } else {
-        console.warn('No profile found, will retry in a moment...');
+        console.warn('No profile found, will retry once...');
         await new Promise(resolve => setTimeout(resolve, 500));
         const { data: retryProfile } = await supabase
           .from('user_profiles')
@@ -181,7 +100,7 @@ export function useAuth() {
           .maybeSingle();
 
         if (retryProfile) {
-          console.log('Profile loaded on retry:', retryProfile);
+          console.log('Profile loaded on retry');
 
           let isAdmin = false;
           try {
@@ -197,7 +116,6 @@ export function useAuth() {
           } catch (adminError) {
             console.warn('Admin check failed, defaulting to non-admin:', adminError);
           }
-          console.log('Admin check result:', isAdmin);
 
           setAuthState({
             isAuthenticated: true,
@@ -239,7 +157,78 @@ export function useAuth() {
     } finally {
       loadingRef.current = false;
     }
-  };
+  }, []);
+
+  useEffect(() => {
+    let mounted = true;
+
+    const initAuth = async () => {
+      try {
+        const { data: { session } } = await supabase.auth.getSession();
+
+        if (!mounted) return;
+
+        console.log('Initial session check:', session ? 'Session found' : 'No session');
+
+        if (session?.user) {
+          await loadUserProfile(session.user);
+        } else {
+          setAuthState({
+            isAuthenticated: false,
+            user: null,
+            supabaseUser: null,
+            loading: false
+          });
+        }
+      } catch (error) {
+        console.warn('Auth session check failed:', error);
+        if (mounted) {
+          setAuthState({
+            isAuthenticated: false,
+            user: null,
+            supabaseUser: null,
+            loading: false
+          });
+        }
+      }
+    };
+
+    initAuth();
+
+    // Listen for auth changes
+    const { data } = supabase.auth.onAuthStateChange((event, session) => {
+      if (!mounted) return;
+
+      console.log('Auth state change event:', event);
+
+      // Ignore TOKEN_REFRESHED and INITIAL_SESSION to prevent loops
+      if (event === 'TOKEN_REFRESHED' || event === 'INITIAL_SESSION') {
+        console.log('Ignoring event:', event);
+        return;
+      }
+
+      // Handle auth changes
+      if (event === 'SIGNED_IN' || event === 'USER_UPDATED') {
+        if (session?.user) {
+          loadUserProfile(session.user);
+        }
+      } else if (event === 'SIGNED_OUT') {
+        loadedUserIdRef.current = null;
+        loadingRef.current = false;
+        setAuthState({
+          isAuthenticated: false,
+          user: null,
+          supabaseUser: null,
+          loading: false
+        });
+      }
+    });
+
+    return () => {
+      mounted = false;
+      data.subscription?.unsubscribe();
+    };
+  }, [loadUserProfile]);
 
   const login = async (email: string, password: string): Promise<{ success: boolean; message: string }> => {
     try {
@@ -270,8 +259,6 @@ export function useAuth() {
   const register = async (email: string, password: string, profile: Omit<UserProfile, 'email'>): Promise<{ success: boolean; message: string }> => {
     try {
       console.log('Starting registration for:', email);
-      console.log('Password length:', password.length);
-      console.log('Profile data:', profile);
 
       // Validate email format
       if (!email || !email.includes('@')) {
@@ -284,7 +271,6 @@ export function useAuth() {
       }
 
       // Create auth user with profile data in metadata
-      // The database trigger will automatically create the profile
       const { data: authData, error: authError } = await supabase.auth.signUp({
         email: email.trim().toLowerCase(),
         password: password,
@@ -300,12 +286,6 @@ export function useAuth() {
             phone_number: profile.phoneNumber.trim()
           }
         }
-      });
-
-      console.log('Auth signup result:', {
-        user: authData?.user?.id,
-        session: !!authData?.session,
-        error: authError
       });
 
       if (authError) {
@@ -337,6 +317,7 @@ export function useAuth() {
     try {
       await supabase.auth.signOut();
       loadedUserIdRef.current = null;
+      loadingRef.current = false;
       setAuthState({
         isAuthenticated: false,
         user: null,
@@ -350,14 +331,6 @@ export function useAuth() {
 
   const updateProfile = async (updatedProfile: Partial<UserProfile>): Promise<{ success: boolean; message: string }> => {
     try {
-      console.log('updateProfile called with:', updatedProfile);
-      console.log('Current auth state:', {
-        isAuthenticated: authState.isAuthenticated,
-        hasUser: !!authState.user,
-        hasSupabaseUser: !!authState.supabaseUser,
-        supabaseUserId: authState.supabaseUser?.id
-      });
-
       if (!authState.supabaseUser) {
         console.error('No supabase user found');
         return { success: false, message: 'Not authenticated' };
@@ -373,16 +346,10 @@ export function useAuth() {
       if (updatedProfile.occupation !== undefined) updateData.occupation = updatedProfile.occupation;
       if (updatedProfile.phoneNumber !== undefined) updateData.phone_number = updatedProfile.phoneNumber;
 
-      console.log('Update data:', updateData);
-      console.log('Updating profile for user:', authState.supabaseUser.id);
-
-      const { data, error } = await supabase
+      const { error } = await supabase
         .from('user_profiles')
         .update(updateData)
-        .eq('id', authState.supabaseUser.id)
-        .select();
-
-      console.log('Update result:', { data, error });
+        .eq('id', authState.supabaseUser.id);
 
       if (error) {
         console.error('Profile update error:', error);
