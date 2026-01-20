@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { ChevronDown, Search } from 'lucide-react';
 import { cityGroups } from '../utils/cityData';
 
@@ -12,7 +12,6 @@ export const CitySelector = React.memo(function CitySelector({ value, onChange }
   const [searchTerm, setSearchTerm] = useState('');
   const containerRef = useRef<HTMLDivElement>(null);
   const searchInputRef = useRef<HTMLInputElement>(null);
-  const canCloseRef = useRef(false);
 
   let selectedCity = null;
   for (const group of cityGroups) {
@@ -32,72 +31,57 @@ export const CitySelector = React.memo(function CitySelector({ value, onChange }
   })).filter(group => group.cities.length > 0);
 
   useEffect(() => {
-    function handleClickOutside(event: MouseEvent) {
-      if (!canCloseRef.current) return;
-      if (containerRef.current && !containerRef.current.contains(event.target as Node)) {
-        setIsOpen(false);
-        setSearchTerm('');
-      }
-    }
+    if (!isOpen) return;
 
-    function handleKeyDown(event: KeyboardEvent) {
+    const handleKeyDown = (event: KeyboardEvent) => {
       if (event.key === 'Escape') {
         setIsOpen(false);
         setSearchTerm('');
       }
-      if (event.key === 'Enter' && !canCloseRef.current) {
-        canCloseRef.current = true;
-      }
-    }
+    };
 
-    if (isOpen) {
-      canCloseRef.current = false;
-      const timer = setTimeout(() => {
-        canCloseRef.current = true;
-      }, 600);
+    document.addEventListener('keydown', handleKeyDown);
+    setTimeout(() => searchInputRef.current?.focus(), 100);
 
-      document.addEventListener('mousedown', handleClickOutside);
-      document.addEventListener('keydown', handleKeyDown);
-      setTimeout(() => searchInputRef.current?.focus(), 100);
-
-      return () => {
-        clearTimeout(timer);
-        canCloseRef.current = false;
-        document.removeEventListener('mousedown', handleClickOutside);
-        document.removeEventListener('keydown', handleKeyDown);
-      };
-    }
+    return () => {
+      document.removeEventListener('keydown', handleKeyDown);
+    };
   }, [isOpen]);
 
-  const handleToggle = (e: React.MouseEvent) => {
+  const handleToggle = useCallback((e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    setIsOpen(!isOpen);
-  };
+    setIsOpen(prev => !prev);
+  }, []);
 
-  const handleSelect = (cityValue: string) => {
+  const handleSelect = useCallback((cityValue: string) => {
     onChange(cityValue);
     setIsOpen(false);
     setSearchTerm('');
-  };
+  }, [onChange]);
+
+  const handleModalClose = useCallback(() => {
+    setIsOpen(false);
+    setSearchTerm('');
+  }, []);
 
   return (
     <div className="relative" ref={containerRef}>
       <button
         type="button"
         onClick={handleToggle}
-        className="w-full p-4 border-2 border-gray-200 rounded-xl text-lg bg-white focus:border-blue-400 focus:ring-2 focus:ring-blue-100 transition-colors cursor-pointer flex items-center justify-between hover:border-blue-300"
+        className="w-full p-4 border-2 border-gray-200 rounded-xl text-lg bg-white focus:border-blue-400 focus:ring-2 focus:ring-blue-100 transition-colors cursor-pointer flex items-center justify-between hover:border-blue-300 relative z-10"
       >
         <span className={value ? 'text-gray-900' : 'text-gray-500'}>
           {selectedCity ? selectedCity.name : 'Select your location'}
         </span>
         <ChevronDown
-          className={`w-5 h-5 transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`}
+          className={`w-5 h-5 transition-transform duration-200 pointer-events-none ${isOpen ? 'rotate-180' : ''}`}
         />
       </button>
 
       {isOpen && (
-        <div className="fixed inset-0 z-[100] overflow-y-auto bg-black bg-opacity-50 flex items-start justify-center pt-20 pb-20" onClick={() => { setIsOpen(false); setSearchTerm(''); }}>
+        <div className="fixed inset-0 z-[100] overflow-y-auto bg-black bg-opacity-50 flex items-start justify-center pt-20 pb-20" onClick={handleModalClose}>
           <div className="relative w-full max-w-2xl mx-4 my-auto" onClick={(e) => e.stopPropagation()}>
             <div className="bg-white border-2 border-gray-200 rounded-xl shadow-2xl overflow-hidden">
               <div className="p-3 border-b border-gray-200 bg-gray-50">
