@@ -49,9 +49,13 @@ export const CitySelector = React.memo(function CitySelector({ value, onChange }
   }, [isOpen]);
 
   const handleToggle = useCallback((e: React.MouseEvent) => {
+    console.log('CitySelector button clicked');
     e.preventDefault();
     e.stopPropagation();
-    setIsOpen(prev => !prev);
+    setIsOpen(prev => {
+      console.log('Setting isOpen from', prev, 'to', !prev);
+      return !prev;
+    });
   }, []);
 
   const handleSelect = useCallback((cityValue: string) => {
@@ -67,10 +71,16 @@ export const CitySelector = React.memo(function CitySelector({ value, onChange }
 
   return (
     <div className="relative" ref={containerRef}>
-      <button
-        type="button"
+      <div
         onClick={handleToggle}
-        className="w-full p-4 border-2 border-gray-200 rounded-xl text-lg bg-white focus:border-blue-400 focus:ring-2 focus:ring-blue-100 transition-colors cursor-pointer flex items-center justify-between hover:border-blue-300 relative z-10"
+        className="w-full p-4 border-2 border-gray-200 rounded-xl text-lg bg-white focus:border-blue-400 focus:ring-2 focus:ring-blue-100 transition-colors cursor-pointer flex items-center justify-between hover:border-blue-300 relative"
+        role="button"
+        tabIndex={0}
+        onKeyDown={(e) => {
+          if (e.key === 'Enter' || e.key === ' ') {
+            handleToggle(e as any);
+          }
+        }}
       >
         <span className={value ? 'text-gray-900' : 'text-gray-500'}>
           {selectedCity ? selectedCity.name : 'Select your location'}
@@ -78,7 +88,7 @@ export const CitySelector = React.memo(function CitySelector({ value, onChange }
         <ChevronDown
           className={`w-5 h-5 transition-transform duration-200 pointer-events-none ${isOpen ? 'rotate-180' : ''}`}
         />
-      </button>
+      </div>
 
       {isOpen && (
         <div className="fixed inset-0 z-[100] overflow-y-auto bg-black bg-opacity-50 flex items-start justify-center pt-20 pb-20" onClick={handleModalClose}>
