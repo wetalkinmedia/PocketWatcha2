@@ -7,7 +7,7 @@ interface CitySelectorProps {
   onChange: (value: string) => void;
 }
 
-export function CitySelector({ value, onChange }: CitySelectorProps) {
+export const CitySelector = React.memo(function CitySelector({ value, onChange }: CitySelectorProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
   const containerRef = useRef<HTMLDivElement>(null);
@@ -148,4 +148,4 @@ export function CitySelector({ value, onChange }: CitySelectorProps) {
       )}
     </div>
   );
-}
+});
