@@ -49,13 +49,9 @@ export const CitySelector = React.memo(function CitySelector({ value, onChange }
   }, [isOpen]);
 
   const handleToggle = useCallback((e: React.MouseEvent) => {
-    console.log('CitySelector button clicked');
     e.preventDefault();
     e.stopPropagation();
-    setIsOpen(prev => {
-      console.log('Setting isOpen from', prev, 'to', !prev);
-      return !prev;
-    });
+    setIsOpen(prev => !prev);
   }, []);
 
   const handleSelect = useCallback((cityValue: string) => {

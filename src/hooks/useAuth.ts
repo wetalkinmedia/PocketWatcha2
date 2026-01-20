@@ -21,6 +21,7 @@ export function useAuth() {
   const loadedUserIdRef = useRef<string | null>(null);
   const loadingRef = useRef(false);
   const isInitializedRef = useRef(false);
+  const loadUserProfileRef = useRef<((user: User) => Promise<void>) | null>(null);
 
   const loadUserProfile = useCallback(async (supabaseUser: User) => {
     // Skip if we already loaded this user
@@ -120,11 +121,24 @@ export function useAuth() {
     }
   }, []);
 
+  // Store the function in a ref so useEffect can access latest version without re-running
+  useEffect(() => {
+    loadUserProfileRef.current = loadUserProfile;
+  }, [loadUserProfile]);
+
   useEffect(() => {
     let mounted = true;
     let authSubscription: any = null;
+    const hasRunRef = { current: false };
 
     const initAuth = async () => {
+      // Prevent multiple runs
+      if (hasRunRef.current) {
+        console.log('initAuth already ran, skipping');
+        return;
+      }
+      hasRunRef.current = true;
+
       try {
         const { data: { session } } = await supabase.auth.getSession();
 
@@ -132,9 +146,9 @@ export function useAuth() {
 
         console.log('Initial session check:', session ? 'Session found' : 'No session');
 
-        if (session?.user) {
-          await loadUserProfile(session.user);
-        } else {
+        if (session?.user && loadUserProfileRef.current) {
+          await loadUserProfileRef.current(session.user);
+        } else if (!session?.user) {
           setAuthState({
             isAuthenticated: false,
             user: null,
@@ -162,46 +176,51 @@ export function useAuth() {
       initAuth();
     }
 
-    // Listen for auth changes
-    const { data } = supabase.auth.onAuthStateChange((event, session) => {
-      if (!mounted) return;
+    // Listen for auth changes (only set up listener once)
+    if (!authSubscription) {
+      const { data } = supabase.auth.onAuthStateChange((event, session) => {
+        if (!mounted) return;
 
-      console.log('Auth state change event:', event);
+        console.log('Auth state change event:', event);
 
-      // Ignore these events to prevent loops
-      if (event === 'TOKEN_REFRESHED' || event === 'INITIAL_SESSION') {
-        return;
-      }
-
-      // Handle sign in
-      if (event === 'SIGNED_IN') {
-        if (session?.user) {
-          // Reset initialization flag to force reload
-          isInitializedRef.current = false;
-          loadedUserIdRef.current = null;
-          loadUserProfile(session.user);
+        // Ignore these events to prevent loops
+        if (event === 'TOKEN_REFRESHED' || event === 'INITIAL_SESSION') {
+          return;
         }
-      }
-      // Handle sign out
-      else if (event === 'SIGNED_OUT') {
-        loadedUserIdRef.current = null;
-        isInitializedRef.current = false;
-        loadingRef.current = false;
-        setAuthState({
-          isAuthenticated: false,
-          user: null,
-          supabaseUser: null,
-          loading: false
-        });
-      }
-      // Ignore other events like USER_UPDATED to prevent loops
-    });
 
-    authSubscription = data.subscription;
+        // Handle sign in
+        if (event === 'SIGNED_IN') {
+          if (session?.user && loadUserProfileRef.current) {
+            // Reset initialization flag to force reload
+            isInitializedRef.current = false;
+            loadedUserIdRef.current = null;
+            loadUserProfileRef.current(session.user);
+          }
+        }
+        // Handle sign out
+        else if (event === 'SIGNED_OUT') {
+          loadedUserIdRef.current = null;
+          isInitializedRef.current = false;
+          loadingRef.current = false;
+          setAuthState({
+            isAuthenticated: false,
+            user: null,
+            supabaseUser: null,
+            loading: false
+          });
+        }
+        // Ignore other events like USER_UPDATED to prevent loops
+      });
+
+      authSubscription = data.subscription;
+    }
 
     return () => {
       mounted = false;
-      authSubscription?.unsubscribe();
+      if (authSubscription) {
+        authSubscription.unsubscribe();
+        authSubscription = null;
+      }
     };
   }, []);
 
