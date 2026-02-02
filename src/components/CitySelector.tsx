@@ -33,6 +33,12 @@ export const CitySelector = React.memo(function CitySelector({ value, onChange }
   useEffect(() => {
     if (!isOpen) return;
 
+    const scrollY = window.scrollY;
+    document.body.style.position = 'fixed';
+    document.body.style.top = `-${scrollY}px`;
+    document.body.style.width = '100%';
+    document.body.style.overflow = 'hidden';
+
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.key === 'Escape') {
         setIsOpen(false);
@@ -45,6 +51,12 @@ export const CitySelector = React.memo(function CitySelector({ value, onChange }
 
     return () => {
       document.removeEventListener('keydown', handleKeyDown);
+      const scrollY = document.body.style.top;
+      document.body.style.position = '';
+      document.body.style.top = '';
+      document.body.style.width = '';
+      document.body.style.overflow = '';
+      window.scrollTo(0, parseInt(scrollY || '0') * -1);
     };
   }, [isOpen]);
 

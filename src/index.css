@@ -3,7 +3,12 @@
 @tailwind utilities;
 
 @layer base {
-  html, body {
+  html {
+    scroll-behavior: auto !important;
+    overflow-x: hidden;
+  }
+
+  body {
     overflow-x: hidden;
     overflow-y: auto;
     height: 100%;
@@ -11,5 +16,17 @@
 
   #root {
     min-height: 100%;
+  }
+
+  * {
+    scroll-margin: 0;
+    scroll-padding: 0;
+  }
+
+  select,
+  input,
+  button {
+    scroll-margin: 0;
+    scroll-padding: 0;
   }
 }

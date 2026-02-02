@@ -45,12 +45,15 @@ export function AgeGroupSelector({ value, onChange }: AgeGroupSelectorProps) {
         canCloseRef.current = true;
       }, 600);
 
+      document.body.style.overflow = 'hidden';
+
       document.addEventListener('mousedown', handleClickOutside);
       document.addEventListener('keydown', handleKeyDown);
 
       return () => {
         clearTimeout(timer);
         canCloseRef.current = false;
+        document.body.style.overflow = '';
         document.removeEventListener('mousedown', handleClickOutside);
         document.removeEventListener('keydown', handleKeyDown);
       };

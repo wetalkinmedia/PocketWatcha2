@@ -46,6 +46,8 @@ export function CurrencySelector({ value, onChange }: CurrencySelectorProps) {
         canCloseRef.current = true;
       }, 600);
 
+      document.body.style.overflow = 'hidden';
+
       document.addEventListener('mousedown', handleClickOutside);
       document.addEventListener('keydown', handleKeyDown);
       setTimeout(() => searchInputRef.current?.focus(), 100);
@@ -53,6 +55,7 @@ export function CurrencySelector({ value, onChange }: CurrencySelectorProps) {
       return () => {
         clearTimeout(timer);
         canCloseRef.current = false;
+        document.body.style.overflow = '';
         document.removeEventListener('mousedown', handleClickOutside);
         document.removeEventListener('keydown', handleKeyDown);
       };
