@@ -61,7 +61,7 @@ export const BudgetOverview = React.memo(function BudgetOverview({ onNavigate }:
   }, []);
 
   useEffect(() => {
-    console.log('BudgetOverview useEffect triggered, userId:', userId, 'loadedRef:', loadedRef.current);
+    console.log('BudgetOverview useEffect triggered, userId:', userId, 'loadedRef:', loadedRef.current, 'loadedUserId:', loadedUserIdRef.current);
 
     if (!userId) {
       if (mountedRef.current) {
@@ -73,15 +73,26 @@ export const BudgetOverview = React.memo(function BudgetOverview({ onNavigate }:
       return;
     }
 
-    // Skip if we already loaded this user's data
+    // Skip if we already loaded this user's data - use strict comparison
     if (loadedRef.current && loadedUserIdRef.current === userId) {
-      console.log('BudgetOverview already loaded for this user, skipping');
+      console.log('BudgetOverview already loaded for this user, skipping load');
+      return;
+    }
+
+    // Prevent concurrent loads
+    if (loadedRef.current && loadedUserIdRef.current !== userId) {
+      console.log('User changed, resetting and loading new user data');
+      loadedRef.current = false;
+    }
+
+    if (loadedRef.current) {
+      console.log('Already loading, skipping');
       return;
     }
 
     loadedRef.current = true;
     loadedUserIdRef.current = userId;
-    console.log('Loading budget overview data...');
+    console.log('Loading budget overview data for user:', userId);
 
     const checkProfileCompletion = async () => {
       try {

@@ -67,7 +67,7 @@ export const Dashboard = React.memo(function Dashboard() {
   }, []);
 
   useEffect(() => {
-    console.log('Dashboard useEffect triggered, userId:', userId, 'loadedRef:', loadedRef.current);
+    console.log('Dashboard useEffect triggered, userId:', userId, 'loadedRef:', loadedRef.current, 'loadedUserId:', loadedUserIdRef.current);
 
     if (!userId) {
       setLoading(false);
@@ -76,15 +76,26 @@ export const Dashboard = React.memo(function Dashboard() {
       return;
     }
 
-    // Skip if we already loaded this user's data
+    // Skip if we already loaded this user's data - use strict comparison
     if (loadedRef.current && loadedUserIdRef.current === userId) {
-      console.log('Dashboard already loaded for this user, skipping');
+      console.log('Dashboard already loaded for this user, skipping load');
+      return;
+    }
+
+    // Prevent concurrent loads
+    if (loadedRef.current && loadedUserIdRef.current !== userId) {
+      console.log('User changed, resetting and loading new user data');
+      loadedRef.current = false;
+    }
+
+    if (loadedRef.current) {
+      console.log('Already loading, skipping');
       return;
     }
 
     loadedRef.current = true;
     loadedUserIdRef.current = userId;
-    console.log('Loading dashboard data...');
+    console.log('Loading dashboard data for user:', userId);
 
     const loadDashboardData = async () => {
       try {

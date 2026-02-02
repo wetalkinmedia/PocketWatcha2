@@ -493,7 +493,7 @@ function App() {
                 </div>
               </div>
             </div>
-            <Dashboard />
+            <Dashboard key="main-dashboard" />
           </div>
         )}
 

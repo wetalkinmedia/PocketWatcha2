@@ -22,6 +22,7 @@ export function useAuth() {
   const loadingRef = useRef(false);
   const isInitializedRef = useRef(false);
   const loadUserProfileRef = useRef<((user: User) => Promise<void>) | null>(null);
+  const authSubscriptionRef = useRef<any>(null);
 
   const loadUserProfile = useCallback(async (supabaseUser: User) => {
     // Skip if we already loaded this user
@@ -128,16 +129,13 @@ export function useAuth() {
 
   useEffect(() => {
     let mounted = true;
-    let authSubscription: any = null;
-    const hasRunRef = { current: false };
 
     const initAuth = async () => {
-      // Prevent multiple runs
-      if (hasRunRef.current) {
-        console.log('initAuth already ran, skipping');
+      // Only run once
+      if (isInitializedRef.current) {
+        console.log('Auth already initialized, skipping');
         return;
       }
-      hasRunRef.current = true;
 
       try {
         const { data: { session } } = await supabase.auth.getSession();
@@ -176,8 +174,9 @@ export function useAuth() {
       initAuth();
     }
 
-    // Listen for auth changes (only set up listener once)
-    if (!authSubscription) {
+    // Listen for auth changes (only set up listener once using ref)
+    if (!authSubscriptionRef.current) {
+      console.log('Setting up auth state change listener');
       const { data } = supabase.auth.onAuthStateChange((event, session) => {
         if (!mounted) return;
 
@@ -212,15 +211,13 @@ export function useAuth() {
         // Ignore other events like USER_UPDATED to prevent loops
       });
 
-      authSubscription = data.subscription;
+      authSubscriptionRef.current = data.subscription;
     }
 
     return () => {
       mounted = false;
-      if (authSubscription) {
-        authSubscription.unsubscribe();
-        authSubscription = null;
-      }
+      // Don't unsubscribe on cleanup - keep the listener active for the app lifetime
+      // Only unsubscribe on actual component unmount
     };
   }, []);
 
@@ -372,10 +369,15 @@ export function useAuth() {
     authState.user?.isAdmin
   ]);
 
+  // Memoize supabaseUser by its ID to prevent re-renders from object identity changes
+  const memoizedSupabaseUser = useMemo(() => authState.supabaseUser, [
+    authState.supabaseUser?.id
+  ]);
+
   return useMemo(() => ({
     isAuthenticated: authState.isAuthenticated,
     user: memoizedUser,
-    supabaseUser: authState.supabaseUser,
+    supabaseUser: memoizedSupabaseUser,
     loading: authState.loading,
     login,
     register,
@@ -384,7 +386,7 @@ export function useAuth() {
   }), [
     authState.isAuthenticated,
     memoizedUser,
-    authState.supabaseUser,
+    memoizedSupabaseUser,
     authState.loading,
     login,
     register,
