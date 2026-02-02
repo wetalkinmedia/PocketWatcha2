@@ -43,7 +43,7 @@ export function LivingSituationSelector({ value, onChange }: LivingSituationSele
       canCloseRef.current = false;
       const timer = setTimeout(() => {
         canCloseRef.current = true;
-      }, 300);
+      }, 600);
 
       document.addEventListener('mousedown', handleClickOutside);
       document.addEventListener('keydown', handleKeyDown);

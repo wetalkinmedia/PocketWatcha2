@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { X, Info, HelpCircle, ExternalLink, Play } from 'lucide-react';
 
 interface Hotspot {
@@ -19,6 +19,29 @@ interface InteractiveHotspotProps {
 
 export function InteractiveHotspot({ imageUrl, title, description, hotspots }: InteractiveHotspotProps) {
   const [selectedHotspot, setSelectedHotspot] = useState<Hotspot | null>(null);
+  const [hoveredHotspot, setHoveredHotspot] = useState<string | null>(null);
+  const hoverTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+
+  const handleMouseEnter = (hotspotId: string) => {
+    if (hoverTimeoutRef.current) {
+      clearTimeout(hoverTimeoutRef.current);
+    }
+    setHoveredHotspot(hotspotId);
+  };
+
+  const handleMouseLeave = () => {
+    hoverTimeoutRef.current = setTimeout(() => {
+      setHoveredHotspot(null);
+    }, 800);
+  };
+
+  useEffect(() => {
+    return () => {
+      if (hoverTimeoutRef.current) {
+        clearTimeout(hoverTimeoutRef.current);
+      }
+    };
+  }, []);
 
   const getHotspotIcon = (type: string) => {
     switch (type) {
@@ -56,10 +79,13 @@ export function InteractiveHotspot({ imageUrl, title, description, hotspots }: I
         
         {hotspots.map((hotspot, index) => {
           const Icon = getHotspotIcon(hotspot.type);
+          const isHovered = hoveredHotspot === hotspot.id;
           return (
             <button
               key={hotspot.id}
               onClick={() => setSelectedHotspot(hotspot)}
+              onMouseEnter={() => handleMouseEnter(hotspot.id)}
+              onMouseLeave={handleMouseLeave}
               className={`absolute w-8 h-8 ${getHotspotColor(hotspot.type)} text-white rounded-full flex items-center justify-center shadow-lg hover:scale-110 transition-all duration-300 animate-pulse hover:animate-none`}
               style={{
                 left: `${hotspot.x}%`,
@@ -69,7 +95,11 @@ export function InteractiveHotspot({ imageUrl, title, description, hotspots }: I
               title={hotspot.title}
             >
               <Icon size={16} />
-              <span className="absolute -top-8 left-1/2 transform -translate-x-1/2 bg-black bg-opacity-75 text-white text-xs px-2 py-1 rounded opacity-0 hover:opacity-100 transition-opacity whitespace-nowrap">
+              <span
+                className={`absolute -top-8 left-1/2 transform -translate-x-1/2 bg-black bg-opacity-90 text-white text-xs px-2 py-1 rounded transition-opacity duration-200 whitespace-nowrap pointer-events-none ${
+                  isHovered ? 'opacity-100' : 'opacity-0'
+                }`}
+              >
                 {index + 1}
               </span>
             </button>
