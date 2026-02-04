@@ -43,7 +43,7 @@ export function AgeGroupSelector({ value, onChange }: AgeGroupSelectorProps) {
       canCloseRef.current = false;
       const timer = setTimeout(() => {
         canCloseRef.current = true;
-      }, 600);
+      }, 100);
 
       document.body.style.overflow = 'hidden';
 

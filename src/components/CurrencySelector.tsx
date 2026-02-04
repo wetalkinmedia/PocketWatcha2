@@ -44,13 +44,13 @@ export function CurrencySelector({ value, onChange }: CurrencySelectorProps) {
       canCloseRef.current = false;
       const timer = setTimeout(() => {
         canCloseRef.current = true;
-      }, 600);
+      }, 100);
 
       document.body.style.overflow = 'hidden';
 
       document.addEventListener('mousedown', handleClickOutside);
       document.addEventListener('keydown', handleKeyDown);
-      setTimeout(() => searchInputRef.current?.focus(), 100);
+      setTimeout(() => searchInputRef.current?.focus(), 50);
 
       return () => {
         clearTimeout(timer);

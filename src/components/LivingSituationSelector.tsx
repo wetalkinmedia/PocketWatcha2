@@ -43,7 +43,7 @@ export function LivingSituationSelector({ value, onChange }: LivingSituationSele
       canCloseRef.current = false;
       const timer = setTimeout(() => {
         canCloseRef.current = true;
-      }, 600);
+      }, 100);
 
       document.body.style.overflow = 'hidden';
 
