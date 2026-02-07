@@ -12,7 +12,6 @@ export function CurrencySelector({ value, onChange }: CurrencySelectorProps) {
   const [searchTerm, setSearchTerm] = useState('');
   const containerRef = useRef<HTMLDivElement>(null);
   const searchInputRef = useRef<HTMLInputElement>(null);
-  const canCloseRef = useRef(false);
 
   const selectedCurrency = currencies.find(c => c.code === value) || currencies[0];
 
@@ -23,8 +22,8 @@ export function CurrencySelector({ value, onChange }: CurrencySelectorProps) {
 
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
-      if (!canCloseRef.current) return;
-      if (containerRef.current && !containerRef.current.contains(event.target as Node)) {
+      const target = event.target as HTMLElement;
+      if (containerRef.current && !containerRef.current.contains(target)) {
         setIsOpen(false);
         setSearchTerm('');
       }
@@ -35,26 +34,19 @@ export function CurrencySelector({ value, onChange }: CurrencySelectorProps) {
         setIsOpen(false);
         setSearchTerm('');
       }
-      if (event.key === 'Enter' && !canCloseRef.current) {
-        canCloseRef.current = true;
-      }
     }
 
     if (isOpen) {
-      canCloseRef.current = false;
-      const timer = setTimeout(() => {
-        canCloseRef.current = true;
-      }, 100);
-
       document.body.style.overflow = 'hidden';
 
-      document.addEventListener('mousedown', handleClickOutside);
-      document.addEventListener('keydown', handleKeyDown);
+      setTimeout(() => {
+        document.addEventListener('mousedown', handleClickOutside);
+        document.addEventListener('keydown', handleKeyDown);
+      }, 200);
+
       setTimeout(() => searchInputRef.current?.focus(), 50);
 
       return () => {
-        clearTimeout(timer);
-        canCloseRef.current = false;
         document.body.style.overflow = '';
         document.removeEventListener('mousedown', handleClickOutside);
         document.removeEventListener('keydown', handleKeyDown);

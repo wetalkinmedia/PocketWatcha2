@@ -18,14 +18,13 @@ const situations = [
 export function LivingSituationSelector({ value, onChange }: LivingSituationSelectorProps) {
   const [isOpen, setIsOpen] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
-  const canCloseRef = useRef(false);
 
   const selectedSituation = situations.find(s => s.value === value);
 
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
-      if (!canCloseRef.current) return;
-      if (containerRef.current && !containerRef.current.contains(event.target as Node)) {
+      const target = event.target as HTMLElement;
+      if (containerRef.current && !containerRef.current.contains(target)) {
         setIsOpen(false);
       }
     }
@@ -34,25 +33,17 @@ export function LivingSituationSelector({ value, onChange }: LivingSituationSele
       if (event.key === 'Escape') {
         setIsOpen(false);
       }
-      if (event.key === 'Enter' && !canCloseRef.current) {
-        canCloseRef.current = true;
-      }
     }
 
     if (isOpen) {
-      canCloseRef.current = false;
-      const timer = setTimeout(() => {
-        canCloseRef.current = true;
-      }, 100);
-
       document.body.style.overflow = 'hidden';
 
-      document.addEventListener('mousedown', handleClickOutside);
-      document.addEventListener('keydown', handleKeyDown);
+      setTimeout(() => {
+        document.addEventListener('mousedown', handleClickOutside);
+        document.addEventListener('keydown', handleKeyDown);
+      }, 200);
 
       return () => {
-        clearTimeout(timer);
-        canCloseRef.current = false;
         document.body.style.overflow = '';
         document.removeEventListener('mousedown', handleClickOutside);
         document.removeEventListener('keydown', handleKeyDown);
